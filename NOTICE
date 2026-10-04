@@ -1,0 +1,57 @@
+Grok Build Center
+Copyright 2026 dragon43pp
+
+This product includes software developed as a derivative work of an Apache
+License 2.0 licensed project.
+
+---------------------------------------------------------------------------
+上游项目 / Upstream
+---------------------------------------------------------------------------
+
+项目名称：UniRound-Tec/hrack（Harness Rack）
+仓库地址：https://github.com/UniRound-Tec/hrack
+许可协议：Apache License 2.0
+原作者　：UniRound-Tec（版权归 UniRound-Tec 所有）
+
+本项目以 UniRound-Tec/hrack 为原型（fork）进行二次开发。原始作品的著作权
+与许可声明由 UniRound-Tec 保留；本项目按 Apache License 2.0 第 4 条要求，
+在 LICENSE 文件中保留原始版权声明与许可声明副本。
+
+---------------------------------------------------------------------------
+本项目的主要变更 / Modifications
+---------------------------------------------------------------------------
+
+本项目在原型基础上做了以下主要改动（仅列真实发生的变更）：
+
+1. 品牌更名
+   产品名从 HRack / Harness Rack 改为 Grok Build Center（简称 GBC），
+   重新设计自有视觉资产（字标、图标、主题），并将仓库名改为 grok-build-center。
+
+2. 会话中心
+   将「会话浏览 / 历史恢复 / 日志记录」作为主功能重做，新增会话查找、
+   查重归并、隐藏、删除（系统回收站）与会话恢复能力。
+
+3. AI 助手
+   新增会话历史智能查找（自配 OpenAI 兼容模型，密钥仅存主进程）与
+   AI 管理 Agent 功能。
+
+4. 飞书（Feishu / Lark）对接
+   新增飞书助手，可从飞书打开指定的历史会话。
+
+5. Python 会话工具与飞书助手合并
+   桌面程序的 Python 会话工具与飞书助手并入本仓库 `hub/` 目录，
+   与桌面程序（`src/` + `electron/`）作为同一套产品一同分发。
+
+6. 打包与发布
+   Windows / macOS / Linux 三平台安装包统一产出为 `GrokBuildCenter-*`，
+   并修复发布脚本与实际产物名不一致导致的发版失败问题。
+
+---------------------------------------------------------------------------
+版权声明 / Copyright
+---------------------------------------------------------------------------
+
+本项目（以 Grok Build Center 名义发布的全部代码与资产）版权归
+dragon43pp 所有，并按 Apache License 2.0 发布。
+
+原项目 UniRound-Tec/hrack 的著作权与许可声明完整保留，
+详见上文「上游项目」一节与仓库根目录的 LICENSE 文件。

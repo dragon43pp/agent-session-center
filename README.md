@@ -12,14 +12,17 @@
   <p>Keep the native TUI. Stop babysitting terminal tabs.</p>
 
   <p>
-    <a href="https://github.com/UniRound-Tec/Grok Build Center/releases"><img alt="Latest release" src="https://img.shields.io/github/v/release/UniRound-Tec/Grok Build Center?style=flat-square"></a>
-    <a href="https://github.com/UniRound-Tec/Grok Build Center/releases"><img alt="Release downloads" src="https://img.shields.io/github/downloads/UniRound-Tec/Grok Build Center/total?style=flat-square"></a>
-    <img alt="Windows, macOS, and Linux" src="https://img.shields.io/badge/Windows%20%7C%20macOS%20%7C%20Linux-ready-5b5b78?style=flat-square">
-    <a href="./LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-blue?style=flat-square"></a>
+    <!-- Cold start: only 3 badges on purpose. Do NOT re-add `v/release` or
+         `downloads` until this repo actually has its first GitHub Release —
+         with 0 releases they render as "No releases" / 0 and advertise an
+         empty project. Re-add them right after publishing v1.0.0. -->
+    <a href="./LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/github/license/dragon43pp/grok-build-center?style=flat-square"></a>
+    <a href="https://github.com/dragon43pp/grok-build-center/commits/main"><img alt="Last commit" src="https://img.shields.io/github/last-commit/dragon43pp/grok-build-center?style=flat-square"></a>
+    <a href="https://github.com/dragon43pp/grok-build-center"><img alt="Repository size" src="https://img.shields.io/github/repo-size/dragon43pp/grok-build-center?style=flat-square"></a>
   </p>
 </div>
 
-**Grok Build Center** — short for **Harness Rack** — is a desktop terminal for multi-agent coding workflows. It keeps every CLI's native TUI intact, then adds the layer that is usually missing around it: session status, attention cues, a floating monitor, quick launch, and a read-only workspace viewer.
+**Grok Build Center (GBC)** is a desktop terminal for multi-agent coding workflows. It keeps every CLI's native TUI intact, then adds the layer that is usually missing around it: session status, attention cues, a floating monitor, quick launch, and a read-only workspace viewer.
 
 The desktop app is the repository root. The Python session tools and Feishu helper are the same product, in [`hub/`](./hub).
 
@@ -124,11 +127,11 @@ Grok Build Center can also discover and launch Devin CLI, Cline, Qwen Code, Amp,
 
 ## Install
 
-Download the latest build from [GitHub Releases](https://github.com/UniRound-Tec/Grok Build Center/releases):
+Download the latest build from [GitHub Releases](https://github.com/dragon43pp/grok-build-center/releases):
 
-- Windows x64: `Grok Build Center-Setup-*.exe`
-- macOS Apple Silicon: `Grok Build Center-*-macos-arm64.dmg`
-- Linux x64: `Grok Build Center-*-linux-x64.AppImage` or `Grok Build Center-*-linux-x64.deb`
+- Windows x64: `GrokBuildCenter-Setup-*.exe`
+- macOS Apple Silicon: `GrokBuildCenter-*-macos-arm64.dmg`
+- Linux x64: `GrokBuildCenter-*-linux-x64.AppImage` or `GrokBuildCenter-*-linux-x64.deb`
 
 The builds are not commercially code-signed yet, so the operating system may show a security prompt on first launch.
 
@@ -143,15 +146,11 @@ If Codex asks you to review Hooks, open `/hooks`, inspect the Grok Build Center 
 
 ## Development
 
-Clone the remote App and relay together with Grok Build Center:
+The desktop app lives in the repository root (`src/` + `electron/`).
 
 ```bash
-git clone --recurse-submodules https://github.com/UniRound-Tec/gbc.git
-```
-
-For an existing checkout, initialize them with `git submodule update --init --recursive`. Their source is indexed under `remotes/app` and `remotes/server`; each remains an independently versioned repository.
-
-```bash
+git clone https://github.com/dragon43pp/grok-build-center.git
+cd grok-build-center
 npm install
 npm run dev
 ```
@@ -161,14 +160,17 @@ Useful checks:
 ```bash
 npm run typecheck
 npm run build
-npm run e2e:only
 ```
+
+End-to-end tests are not part of the GitHub CI pipeline — they need a real DeepSeek Harness host and a desktop session. Run them locally with `npm run e2e:only` if you touch an observer or the terminal layer.
 
 Windows, macOS, and Linux release packages must be built on their matching operating systems through `npm run release:win`, `npm run release:mac`, and `npm run release:linux`. DSH e2e tests install an isolated, gitignored `dsh-runtime` fixture via `npm run ensure:dsh`; it is not packaged into releases.
 
 ## Contributing
 
-Bug reports, reproducible edge cases, and focused pull requests are welcome. Observer changes should include a fixture or runtime test that proves event ordering and fallback behavior. Please open an [issue](https://github.com/UniRound-Tec/Grok Build Center/issues) before starting a large feature.
+Bug reports, reproducible edge cases, and focused pull requests are welcome. Observer changes should include a fixture or runtime test that proves event ordering and fallback behavior. Please open an [issue](https://github.com/dragon43pp/grok-build-center/issues) before starting a large feature.
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for the local setup, branch naming, and commit conventions.
 
 ## Friends
 

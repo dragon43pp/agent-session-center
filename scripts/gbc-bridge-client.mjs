@@ -2,6 +2,7 @@ import { createConnection } from 'node:net'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
+// HRACK_USER_DATA_DIR 的 HRACK_ 前缀是历史遗留（早期工作名 HRack），保留以兼容既有配置。
 const userData = process.env.GBC_USER_DATA_DIR || process.env.HRACK_USER_DATA_DIR
   ?? join(process.env.APPDATA ?? '', 'GBC Dev')
 const token = (process.env.GBC_BRIDGE_TOKEN

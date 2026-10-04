@@ -87,6 +87,8 @@ import { DiagnosticLogEventChannel } from '../shared/diagnostic-log'
 
 // E2E/开发：隔离 userData，保证 stats/主题等持久化断言从干净状态出发。
 // 必须在 app ready 之前调用。
+// HRACK_USER_DATA_DIR 的 HRACK_ 前缀是历史遗留（早期工作名 HRack），保留是为了
+// 兼容既有配置与外部脚本；新代码请一律用 GBC_USER_DATA_DIR。
 registerWindowsAppUserModelId()
 const userDataOverride =
   process.env['GBC_USER_DATA_DIR'] || process.env['HRACK_USER_DATA_DIR']

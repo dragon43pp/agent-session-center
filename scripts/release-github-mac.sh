@@ -7,6 +7,9 @@ tag_name="${1:-${GITHUB_REF_NAME:-}}"
 version="$(node -p "require('$workspace/package.json').version")"
 expected_tag="v$version"
 
+# 与 release-mac.sh 保持一致的环境变量名（含历史 HRACK_ 前缀，见 CONTRIBUTING）。
+arch="${HRACK_MAC_ARCH:-arm64}"
+
 if [[ -z "$tag_name" ]]; then
   echo 'A release tag is required. Pass vX.Y.Z or set GITHUB_REF_NAME.' >&2
   exit 1
@@ -20,8 +23,8 @@ cd "$workspace"
 npm run typecheck
 npm run release:mac
 
-image_name="HRack-${version}-macos-arm64.dmg"
-archive_name="HRack-${version}-macos-arm64.zip"
+image_name="GrokBuildCenter-${version}-macos-${arch}.dmg"
+archive_name="GrokBuildCenter-${version}-macos-${arch}.zip"
 for required in \
   "$workspace/artifacts/$image_name" \
   "$workspace/artifacts/$image_name.blockmap" \

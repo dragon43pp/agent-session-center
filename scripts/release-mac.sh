@@ -5,13 +5,15 @@ set -euo pipefail
 workspace="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 package_path="$workspace/package.json"
 version="$(node -p "require('$package_path').version")"
+# HRACK_MAC_ARCH 是历史遗留的环境变量名（早期工作名 HRack），保留以兼容既有
+# CI/本地配置。默认值 arm64 与 package.json 的 mac.target arch 一致。
 arch="${HRACK_MAC_ARCH:-arm64}"
 artifact_dir="$workspace/artifacts"
-image_name="HRack-${version}-macos-${arch}.dmg"
-archive_name="HRack-${version}-macos-${arch}.zip"
+image_name="GrokBuildCenter-${version}-macos-${arch}.dmg"
+archive_name="GrokBuildCenter-${version}-macos-${arch}.zip"
 release_root="${TMPDIR:-/tmp}"
 release_root="${release_root%/}"
-release_dir="$(mktemp -d "$release_root/hrack-release-mac.XXXXXX")"
+release_dir="$(mktemp -d "$release_root/gbc-release-mac.XXXXXX")"
 mount_dir="$release_dir/mount"
 mounted=false
 
@@ -19,7 +21,7 @@ cleanup() {
   if [[ "$mounted" == true ]]; then
     hdiutil detach "$mount_dir" -quiet || true
   fi
-  if [[ -d "$release_dir" && "$release_dir" == "$release_root"/hrack-release-mac.* ]]; then
+  if [[ -d "$release_dir" && "$release_dir" == "$release_root"/gbc-release-mac.* ]]; then
     rm -rf -- "$release_dir"
   fi
 }
@@ -48,8 +50,8 @@ blockmap_path="$image_path.blockmap"
 archive_path="$release_dir/$archive_name"
 archive_blockmap_path="$archive_path.blockmap"
 metadata_path="$release_dir/latest-mac.yml"
-app_path="$(find "$release_dir" -maxdepth 3 -type d -name 'HRack.app' -print -quit)"
-executable_path="$app_path/Contents/MacOS/HRack"
+app_path="$(find "$release_dir" -maxdepth 3 -type d -name 'Grok Build Center.app' -print -quit)"
+executable_path="$app_path/Contents/MacOS/Grok Build Center"
 info_plist="$app_path/Contents/Info.plist"
 packaged_update_config="$app_path/Contents/Resources/app-update.yml"
 
@@ -83,7 +85,7 @@ node "$workspace/scripts/assert-packaged-update-config.cjs" "$packaged_update_co
 bundle_id="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$info_plist")"
 bundle_version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$info_plist")"
 bundle_icon="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIconFile' "$info_plist")"
-if [[ "$bundle_id" != com.hrack.app ]]; then
+if [[ "$bundle_id" != com.grokbuildcenter.app ]]; then
   echo "Unexpected bundle identifier: $bundle_id" >&2
   exit 1
 fi
@@ -109,14 +111,14 @@ mkdir -p "$mount_dir"
 hdiutil attach "$image_path" -readonly -nobrowse -mountpoint "$mount_dir" >/dev/null
 mounted=true
 
-mounted_executable="$mount_dir/HRack.app/Contents/MacOS/HRack"
+mounted_executable="$mount_dir/Grok Build Center.app/Contents/MacOS/Grok Build Center"
 if [[ ! -x "$mounted_executable" ]]; then
-  echo 'Mounted DMG does not contain an executable HRack.app.' >&2
+  echo 'Mounted DMG does not contain an executable Grok Build Center.app.' >&2
   exit 1
 fi
 node "$workspace/scripts/verify-packaged-tray.cjs" "$mounted_executable"
 
-mounted_dsh="$mount_dir/HRack.app/Contents/Resources/dsh-runtime"
+mounted_dsh="$mount_dir/Grok Build Center.app/Contents/Resources/dsh-runtime"
 if [[ -e "$mounted_dsh" ]]; then
   echo "Packaged dsh runtime must be absent: $mounted_dsh" >&2
   exit 1

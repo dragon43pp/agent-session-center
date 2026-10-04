@@ -1,5 +1,5 @@
 {
-  "name": "hrack-dsh-runtime",
+  "name": "gbc-dsh-runtime",
   "private": true,
   "description": "e2e/dev 夹具用的 deepseek-harness 隔离依赖树（不随发行版打包）。",
   "dependencies": {

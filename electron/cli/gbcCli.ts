@@ -31,6 +31,7 @@ const GBC_NOT_RUNNING =
 
 function defaultUserDataCandidates(): string[] {
   if (process.env.GBC_USER_DATA_DIR) return [process.env.GBC_USER_DATA_DIR]
+  // HRACK_ 前缀是历史遗留（早期工作名 HRack），保留以兼容既有配置。
   if (process.env.HRACK_USER_DATA_DIR) return [process.env.HRACK_USER_DATA_DIR]
   const appData =
     process.env.APPDATA ||

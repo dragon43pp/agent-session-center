@@ -1,0 +1,22 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# 只跑 typecheck + build。
+# 不跑 e2e：e2e 需要真实的 DeepSeek Harness宿主和 Electron 桌面环境，
+# GitHub runner 上跑不起来，硬跑只会变成长期红灯。
+# 不做发版：发版是发 tag + 建 Release 的不可逆操作，由 maintainer 手动确认后执行。
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build

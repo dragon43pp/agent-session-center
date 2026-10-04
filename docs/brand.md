@@ -18,7 +18,8 @@
 
 ### 改名的教训（记下来免得再犯）
 
-这项目叫过 `grok-build-pager`，再之前叫过 `SessionDeck`。两次改名换来三条规矩：
+这项目叫过 `hrack`（原型来自第三方 Apache-2.0 项目 UniRound-Tec/hrack），
+再之前叫过 `grok-build-pager`，最早叫过 `SessionDeck`。三次改名换来三条规矩：
 
 1. **名字不能是比喻。** pager（传呼机）这个比喻其实很准 —— 但用户遇到问题时
    搜的是 `grok build session manager`，**没人会去搜一个比喻**。

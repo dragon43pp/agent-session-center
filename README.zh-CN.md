@@ -12,14 +12,16 @@
   <p>保留原生 TUI，不再守着终端标签页。</p>
 
   <p>
-    <a href="https://github.com/UniRound-Tec/Grok Build Center/releases"><img alt="最新版本" src="https://img.shields.io/github/v/release/UniRound-Tec/Grok Build Center?style=flat-square"></a>
-    <a href="https://github.com/UniRound-Tec/Grok Build Center/releases"><img alt="下载量" src="https://img.shields.io/github/downloads/UniRound-Tec/Grok Build Center/total?style=flat-square"></a>
-    <img alt="Windows、macOS 与 Linux" src="https://img.shields.io/badge/Windows%20%7C%20macOS%20%7C%20Linux-ready-5b5b78?style=flat-square">
-    <a href="./LICENSE"><img alt="开源协议：Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-blue?style=flat-square"></a>
+    <!-- 冷启动期只放 3 个徽章：故意不放 v/release 与 downloads。仓库目前 0 Release，
+         放上去会渲染成"No releases" / 0，等于自己对外宣告这是一个空项目。
+         等发出第一个 Release（v1.0.0）后再加回来。 -->
+    <a href="./LICENSE"><img alt="开源协议：Apache-2.0" src="https://img.shields.io/github/license/dragon43pp/grok-build-center?style=flat-square"></a>
+    <a href="https://github.com/dragon43pp/grok-build-center/commits/main"><img alt="最近提交" src="https://img.shields.io/github/last-commit/dragon43pp/grok-build-center?style=flat-square"></a>
+    <a href="https://github.com/dragon43pp/grok-build-center"><img alt="仓库体积" src="https://img.shields.io/github/repo-size/dragon43pp/grok-build-center?style=flat-square"></a>
   </p>
 </div>
 
-**Grok Build Center**（**Harness Rack**）是一个面向多 Coding Agent 工作流的桌面终端。它保留每个 CLI 原本的 TUI，在外层补上会话状态、注意力提醒、悬浮监控、快速启动和只读工作区浏览。
+**Grok Build Center（GBC）** 是一个面向多 Coding Agent 工作流的桌面终端。它保留每个 CLI 原本的 TUI，在外层补上会话状态、注意力提醒、悬浮监控、快速启动和只读工作区浏览。
 
 桌面程序在仓库根目录。Python 会话工具和飞书助手是同一套产品，在 [`hub/`](./hub)。
 
@@ -128,11 +130,11 @@ Grok Build Center 还可以扫描并启动 Devin CLI、Cline、Qwen Code、Amp�
 
 ## 安装
 
-从 [GitHub Releases](https://github.com/UniRound-Tec/Grok Build Center/releases) 下载最新版本：
+从 [GitHub Releases](https://github.com/dragon43pp/grok-build-center/releases) 下载最新版本：
 
-- Windows x64：`Grok Build Center-Setup-*.exe`
-- macOS Apple Silicon：`Grok Build Center-*-macos-arm64.dmg`
-- Linux x64：`Grok Build Center-*-linux-x64.AppImage` 或 `Grok Build Center-*-linux-x64.deb`
+- Windows x64：`GrokBuildCenter-Setup-*.exe`
+- macOS Apple Silicon：`GrokBuildCenter-*-macos-arm64.dmg`
+- Linux x64：`GrokBuildCenter-*-linux-x64.AppImage` 或 `GrokBuildCenter-*-linux-x64.deb`
 
 安装包暂时没有商业代码签名，首次启动时系统可能显示安全提醒。
 
@@ -147,15 +149,11 @@ Grok Build Center 还可以扫描并启动 Devin CLI、Cline、Qwen Code、Amp�
 
 ## 本地开发
 
-克隆 Grok Build Center 时一并取得远程 App 和中继服务：
+桌面程序在仓库根目录（`src/` + `electron/`）。
 
 ```bash
-git clone --recurse-submodules https://github.com/UniRound-Tec/gbc.git
-```
-
-已有工作区可运行 `git submodule update --init --recursive` 完成初始化。两者的源码分别位于 `remotes/app` 和 `remotes/server`，便于在主仓库内索引，同时仍保留各自独立的版本历史。
-
-```bash
+git clone https://github.com/dragon43pp/grok-build-center.git
+cd grok-build-center
 npm install
 npm run dev
 ```
@@ -165,14 +163,17 @@ npm run dev
 ```bash
 npm run typecheck
 npm run build
-npm run e2e:only
 ```
+
+端到端测试不在 GitHub CI 里跑 —— 它需要真实的 DeepSeek Harness 宿主和桌面会话。改到 observer 或终端层时，可以在本地用 `npm run e2e:only` 跑。
 
 Windows、macOS、Linux 安装包需要在对应系统上通过 `npm run release:win`、`npm run release:mac` 和 `npm run release:linux` 构建。DSH e2e 会通过 `npm run ensure:dsh` 安装隔离且不入库的 `dsh-runtime` 夹具，它不会打进发行包。
 
 ## 参与贡献
 
-欢迎提交 Bug、可复现的边界情况和范围明确的 Pull Request。修改 Observer 时，请补充 fixture 或 Runtime 测试来证明事件顺序和降级行为。大型功能建议先开一个 [Issue](https://github.com/UniRound-Tec/Grok Build Center/issues)。
+欢迎提交 Bug、可复现的边界情况和范围明确的 Pull Request。修改 Observer 时，请补充 fixture 或 Runtime 测试来证明事件顺序和降级行为。大型功能建议先开一个 [Issue](https://github.com/dragon43pp/grok-build-center/issues)。
+
+本地环境、分支命名和 commit 规范见 [CONTRIBUTING.md](./CONTRIBUTING.md)。
 
 ## 友情链接
 

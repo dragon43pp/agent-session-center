@@ -2,7 +2,6 @@
   "name": "grok-build-center",
   "version": "1.0.0",
   "description": "Session center for every AI coding CLI on your machine — browse, resume, total up and export",
-  "private": true,
   "main": "out/main/index.js",
   "scripts": {
     "predev": "npm run subset-fonts",
@@ -30,11 +29,15 @@
     "record:cli-demo": "node scripts/recording/01-create-cli-sessions.cjs",
     "e2e": "npm run ensure:dsh && npm run build && playwright test",
     "e2e:only": "playwright test",
-    "gbc": "electron ./out/main/index.js",
-    "hrack": "electron ./out/main/index.js"
+    "gbc": "electron ./out/main/index.js"
   },
-  "author": "",
+  "author": "dragon43pp",
   "license": "Apache-2.0",
+  "homepage": "https://github.com/dragon43pp/grok-build-center#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dragon43pp/grok-build-center.git"
+  },
   "build": {
     "appId": "com.grokbuildcenter.app",
     "productName": "Grok Build Center",
@@ -131,7 +134,7 @@
       "artifactName": "GrokBuildCenter-${version}-linux-${arch}.${ext}",
       "maintainer": "Grok Build Center",
       "vendor": "Grok Build Center",
-      "synopsis": "Harness Rack for AI CLI sessions"
+      "synopsis": "Desktop terminal for AI coding CLI sessions"
     },
     "dmg": {
       "title": "Grok Build Center ${version}"

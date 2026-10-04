@@ -1,0 +1,48 @@
+name: Feature request
+description: 提出新功能或改进建议
+title: "[Feature] "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        建议先读一遍 [README](https://github.com/dragon43pp/grok-build-center#readme)，
+        确认这个需求目前确实还没有被实现。
+
+  - type: textarea
+    id: scenario
+    attributes:
+      label: 使用场景
+      description: 你在做什么的时候遇到了这个缺口？描述具体的工作流，而不是抽象的功能名。
+      placeholder: |
+        我同时开着 6 个 Agent，跑一段时间后回来，
+        只能一个个终端标签页点过去看哪个在等我。
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 期望方案
+      description: 你希望它怎么工作？如果有多个思路，都写出来。
+    validations:
+      required: true
+
+  - type: textarea
+    id: workaround
+    attributes:
+      label: 你的替代做法
+      description: 现在这件事你是怎么绕过去的？用了脚本、别的工具，还是只能忍着？
+      placeholder: "目前用一个 shell 脚本轮询日志文件"
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 提交前自查
+      options:
+        - label: 我已搜索过现有 issue 和 PR，没有重复的请求
+          required: true
+        - label: 这个需求我愿意自己实现（我会在评论里说明）
+          required: false
