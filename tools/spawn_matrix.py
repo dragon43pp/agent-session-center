@@ -3,7 +3,7 @@
 任务背景：「幽灵启动」要回答的问题是「哪一步把 CLI 拉起来了」。逐个 profile 读日志
 效率太低，这里一次性把每个 profile 的
   · 阶段（从目录名解析）
-  · 有没有 `[hrack] spawn ptyId`
+  · 有没有 `[gbc] spawn ptyId`
   · 有没有 renderer 的 `[gbc-diag]` 追踪行
   · 探测脚本自己报的「首次出现 grok」秒数
 三列并排，才能看出相关性。纯只读。
@@ -25,7 +25,7 @@ def profile_stage(name: str) -> str:
 def summarize(profile: Path) -> dict:
     info = {'stage': profile_stage(profile.name), 'log': '', 'spawns': [], 'diag': [], 'first': '-'}
 
-    log_file = profile / 'logs' / 'hrack-diagnostic.jsonl'
+    log_file = profile / 'logs' / 'gbc-diagnostic.jsonl'
     if log_file.exists():
         for raw in log_file.read_text(encoding='utf-8', errors='replace').splitlines():
             raw = raw.strip()
@@ -39,7 +39,7 @@ def summarize(profile: Path) -> dict:
             if 'Render frame was disposed' in msg:
                 continue
             if 'spawn ptyId' in msg:
-                info['spawns'].append(msg.replace('[hrack] ', ''))
+                info['spawns'].append(msg.replace('[gbc] ', ''))
             elif '[gbc-diag]' in msg:
                 info['diag'].append(msg.split('|')[0].strip())
 

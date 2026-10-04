@@ -284,7 +284,7 @@ const sessionsA = [
   makeSession({
     sessionId: 'ses-2',
     agent: 'codex',
-    title: 'hrack 桌面版排查',
+    title: 'gbc 桌面版排查',
     updatedAt: undefined,
     messageCount: 0
   })
@@ -374,7 +374,7 @@ const sessionsA = [
     makeSession({
       sessionId: 'ses-2',
       agent: 'codex',
-      title: 'hrack 桌面版排查',
+      title: 'gbc 桌面版排查',
       updatedAt: undefined,
       messageCount: 0
     })

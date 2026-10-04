@@ -112,7 +112,7 @@ function makeFixture(deps: Deps = {}) {
         ? deps.historyImpl()
         : Promise.resolve([
             makeSession({ sessionId: 'ses-1' }),
-            makeSession({ sessionId: 'ses-2', agent: 'codex', title: 'hrack 排查' })
+            makeSession({ sessionId: 'ses-2', agent: 'codex', title: 'gbc 排查' })
           ])
     },
     listActive: async () => {

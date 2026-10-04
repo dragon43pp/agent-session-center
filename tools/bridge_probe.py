@@ -76,7 +76,7 @@ def socket_path() -> str:
     runtime = os.environ.get("XDG_RUNTIME_DIR", "").strip()
     if runtime:
         return str(Path(runtime) / "grok-build-center" / "bridge.sock")
-    return str(Path.home() / ".hrack" / "bridge.sock")
+    return str(Path.home() / ".gbc" / "bridge.sock")
 
 
 def token_paths() -> list[Path]:
