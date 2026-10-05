@@ -148,7 +148,7 @@ export const en = {
     homeLabel: 'DSH_HOME',
     homeIsolated: 'Isolated (recommended)',
     homeShared: 'Share ~/.dsh',
-    homeEnvOverride: 'GBC_DSH_HOME is overriding the path.',
+    homeEnvOverride: 'ASC_DSH_HOME is overriding the path.',
     homeSwitchConfirm:
       'Switching DSH_HOME restarts the host and reloads the window. Existing sessions are not migrated. Continue?',
     retentionLabel: 'Session retention',

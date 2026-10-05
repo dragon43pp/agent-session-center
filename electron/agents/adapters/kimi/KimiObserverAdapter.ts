@@ -282,10 +282,10 @@ export class KimiObserverAdapter implements AgentObserverAdapter {
     return {
       launch: {
         env: {
-          GBC_KIMI_HOOK_DROP: runtimePaths.dropDir,
-          GBC_KIMI_HOOK_BRIDGE: runtimePaths.posixBridge,
-          GBC_KIMI_HOOK_BRIDGE_WINDOWS: runtimePaths.windowsBridge,
-          GBC_KIMI_HOOK_SCHEMA: '1'
+          ASC_KIMI_HOOK_DROP: runtimePaths.dropDir,
+          ASC_KIMI_HOOK_BRIDGE: runtimePaths.posixBridge,
+          ASC_KIMI_HOOK_BRIDGE_WINDOWS: runtimePaths.windowsBridge,
+          ASC_KIMI_HOOK_SCHEMA: '1'
         }
       },
       capabilities: KIMI_HOOK_CAPABILITIES,
@@ -348,7 +348,7 @@ export class KimiObserverAdapter implements AgentObserverAdapter {
       const command = wslRuntimeCommand(
         context,
         ['--version'],
-        'gbc-kimi-version'
+        'asc-kimi-version'
       )
       return this.runCommand(command.file, command.args)
     }
@@ -402,7 +402,7 @@ export class KimiObserverAdapter implements AgentObserverAdapter {
       '/bin/sh',
       '-c',
       'set -eu; d="$1"; n="$2"; p="$d/.$n.partial"; printf "%s" "$n" > "$p"; mv "$p" "$d/$n.probe"',
-      'gbc-kimi-drop-probe',
+      'asc-kimi-drop-probe',
       runtimeDropDir,
       nonce
     ])

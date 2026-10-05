@@ -12,7 +12,7 @@
  *
  * ⚠️ **必须对一个隔离 userData 的实例跑**：
  *
- *   GBC_USER_DATA_DIR="$TEMP/gbc-grade-ud" \
+ *   ASC_USER_DATA_DIR="$TEMP/asc-grade-ud" \
  *     ./node_modules/electron/dist/electron.exe ./out/main/index.js --remote-debugging-port=9368
  *
  * 因为这套断言以「**从未绑定**」为起点（未绑定态、扫码按钮可点、二维码要出来）。

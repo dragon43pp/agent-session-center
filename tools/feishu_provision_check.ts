@@ -276,7 +276,7 @@ function makeDeps(
 
 // ------------------------------------------------------------------ 用例
 
-const dir = mkdtempSync(join(tmpdir(), 'gbc-provision-'))
+const dir = mkdtempSync(join(tmpdir(), 'asc-provision-'))
 const statePath = join(dir, 'feishu-bitable.json')
 
 const sessionsA = [
@@ -284,7 +284,7 @@ const sessionsA = [
   makeSession({
     sessionId: 'ses-2',
     agent: 'codex',
-    title: 'gbc 桌面版排查',
+    title: 'asc 桌面版排查',
     updatedAt: undefined,
     messageCount: 0
   })
@@ -374,7 +374,7 @@ const sessionsA = [
     makeSession({
       sessionId: 'ses-2',
       agent: 'codex',
-      title: 'gbc 桌面版排查',
+      title: 'asc 桌面版排查',
       updatedAt: undefined,
       messageCount: 0
     })

@@ -1,6 +1,6 @@
 {
   "id": "light",
-  "name": "GBC Light",
+  "name": "ASC Light",
   "type": "light",
   "colors": {
     "bg.app": "#F5F7FA",

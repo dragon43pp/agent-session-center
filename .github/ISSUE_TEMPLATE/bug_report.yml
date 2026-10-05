@@ -37,7 +37,7 @@ body:
     id: harness
     attributes:
       label: CLI / Harness 名称
-      description: 出问题的那个 Coding CLI，例如 Codex CLI、Claude Code、OpenCode、DeepSeek Harness、Grok Build等。桌面终端本身的问题请填「GBC 本身」。
+      description: 出问题的那个 Coding CLI，例如 Codex CLI、Claude Code、OpenCode、DeepSeek Harness、Grok Build等。桌面终端本身的问题请填「ASC 本身」。
       placeholder: "Codex CLI"
     validations:
       required: false
@@ -78,8 +78,8 @@ body:
       description: |
         相关日志片段直接贴在下面即可（Ctrl+A 全选前请先检查是否含有密钥、token 等敏感信息）。
 
-        - 桌面端：主进程日志中的 `[gbc]` 前缀行
-        - 诊断日志：用户数据目录下的 `logs/gbc-diagnostic.jsonl` 里的 `[gbc] spawn` 行
+        - 桌面端：主进程日志中的 `[asc]` 前缀行
+        - 诊断日志：用户数据目录下的 `logs/asc-diagnostic.jsonl` 里的 `[asc] spawn` 行
     validations:
       required: false
 

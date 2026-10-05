@@ -94,7 +94,7 @@ export async function resolveRemoteJoin(
     throw new RemoteNodeResolutionError('resolver-unavailable')
   }
 
-  if (response.status === 404 && response.headers.get('x-gbc-resolver') !== '1') {
+  if (response.status === 404 && response.headers.get('x-asc-resolver') !== '1') {
     return join
   }
   if (!response.ok) {

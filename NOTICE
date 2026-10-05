@@ -15,7 +15,7 @@ License 2.0 licensed project.
 许可协议：Apache License 2.0
 原作者　：UniRound-Tec（版权归 UniRound-Tec 所有）
 
-本项目以 UniRound-Tec/hrack 为原型（fork）进行二次开发。原始作品的著作权
+本项目以 UniRound-Tec/hrack 为原型（fork）进行二次开发。依据 Apache License 2.0 第 4(b) 条：上述被修改的源码文件均经过品牌更名与功能扩展，改动范围涵盖本仓库中与上游同路径的源码文件，总体变更说明见本文件「本项目的主要变更」一节。原始作品的著作权
 与许可声明由 UniRound-Tec 保留；本项目按 Apache License 2.0 第 4 条要求，
 在 LICENSE 文件中保留原始版权声明与许可声明副本。
 

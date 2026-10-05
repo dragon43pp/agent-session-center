@@ -1,10 +1,10 @@
 import { randomBytes } from 'node:crypto'
-import { mkdir, readFile, rename, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import {
   buildGrokManagedHookFile,
   grokHookFileName,
-  isGbcGrokHookFile,
+  isAscGrokHookFile,
   type GrokHookPlatform
 } from './GrokHookConfig'
 
@@ -76,7 +76,7 @@ export async function ensureGrokManagedHooks(options: {
         } catch {
           return { ok: false, reason: 'grok-hook-file-conflict' }
         }
-        if (!isGbcGrokHookFile(parsed)) {
+        if (!isAscGrokHookFile(parsed)) {
           return { ok: false, reason: 'grok-hook-file-conflict' }
         }
       }
@@ -89,6 +89,10 @@ export async function ensureGrokManagedHooks(options: {
       )
       await writeFile(temp, next, { encoding: 'utf8', mode: 0o600, flag: 'wx' })
       await rename(temp, hookPath)
+      // 早期版本把 hook 写在旧文件名下；写入新文件后顺手清掉，避免残留在用户磁盘上
+      await rm(join(grokHooksDirectory(options.grokHome), 'gbc-observer.json'), {
+        force: true
+      }).catch(() => {})
       return { ok: true, changed: true, path: hookPath }
     } catch {
       return { ok: false, reason: 'grok-hook-write-failed' }

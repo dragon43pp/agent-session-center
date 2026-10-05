@@ -36,12 +36,12 @@ function expectMessage(raw: unknown): RemoteMessage {
 
 test.describe('join URL', () => {
   test('parses the SPEC https / subpath / http examples', () => {
-    expect(expectJoin('https://gbc.dev/aK3')).toEqual({
-      origin: 'https://gbc.dev',
+    expect(expectJoin('https://asc.dev/aK3')).toEqual({
+      origin: 'https://asc.dev',
       base: '',
       roomId: 'aK3',
-      wsUrl: 'wss://gbc.dev/v1/ws',
-      href: 'https://gbc.dev/aK3'
+      wsUrl: 'wss://asc.dev/v1/ws',
+      href: 'https://asc.dev/aK3'
     })
     expect(expectJoin('https://my.box:8443/remote/aK3')).toEqual({
       origin: 'https://my.box:8443',
@@ -60,7 +60,7 @@ test.describe('join URL', () => {
   })
 
   test('maps https to wss and keeps ws join URLs for the P1 test relay', () => {
-    expect(expectJoin('https://gbc.dev/aK3').wsUrl.startsWith('wss:')).toBe(
+    expect(expectJoin('https://asc.dev/aK3').wsUrl.startsWith('wss:')).toBe(
       true
     )
     expect(expectJoin('http://127.0.0.1:9/aK3').wsUrl.startsWith('ws:')).toBe(
@@ -79,17 +79,17 @@ test.describe('join URL', () => {
   })
 
   test('treats a trailing slash as the same join URL', () => {
-    expect(expectJoin('https://gbc.dev/aK3/')).toEqual(
-      expectJoin('https://gbc.dev/aK3')
+    expect(expectJoin('https://asc.dev/aK3/')).toEqual(
+      expectJoin('https://asc.dev/aK3')
     )
   })
 
   test('rejects a missing room segment and non-http(s)/ws(s) schemes', () => {
-    expect(parseJoinUrl('https://gbc.dev').ok).toBe(false)
-    expect(parseJoinUrl('https://gbc.dev/').ok).toBe(false)
-    expect(parseJoinUrl('ftp://gbc.dev/aK3').ok).toBe(false)
+    expect(parseJoinUrl('https://asc.dev').ok).toBe(false)
+    expect(parseJoinUrl('https://asc.dev/').ok).toBe(false)
+    expect(parseJoinUrl('ftp://asc.dev/aK3').ok).toBe(false)
     expect(parseJoinUrl('not a url').ok).toBe(false)
-    expect(parseJoinUrl(`https://gbc.dev/${'a'.repeat(129)}`)).toEqual({
+    expect(parseJoinUrl(`https://asc.dev/${'a'.repeat(129)}`)).toEqual({
       ok: false,
       reason: 'invalid-room'
     })
@@ -104,9 +104,9 @@ test.describe('join URL', () => {
   })
 
   test('ignores query and hash and keeps deeper bases', () => {
-    expect(expectJoin('https://gbc.dev/aK3?x=1#y')).toMatchObject({
+    expect(expectJoin('https://asc.dev/aK3?x=1#y')).toMatchObject({
       roomId: 'aK3',
-      href: 'https://gbc.dev/aK3'
+      href: 'https://asc.dev/aK3'
     })
     expect(expectJoin('https://my.box/remote/foo/aK3')).toMatchObject({
       base: '/remote/foo',

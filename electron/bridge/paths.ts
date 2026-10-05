@@ -10,11 +10,11 @@ export function sanitizePipeUser(name: string): string {
 
 export function bridgeSocketPath(): string {
   if (process.platform === 'win32') {
-    return `\\\\.\\pipe\\gbc-bridge-${sanitizePipeUser(userInfo().username)}`
+    return `\\\\.\\pipe\\asc-bridge-${sanitizePipeUser(userInfo().username)}`
   }
   const runtime = process.env.XDG_RUNTIME_DIR?.trim()
   if (runtime) return join(runtime, 'agent-session-center', 'bridge.sock')
-  return join(homedir(), '.gbc', 'bridge.sock')
+  return join(homedir(), '.asc', 'bridge.sock')
 }
 
 export function bridgeTokenPath(userDataDir: string): string {

@@ -90,7 +90,7 @@ function validateRemoteConfig(config: RemoteDshHostConfig): void {
 }
 
 function dshHomeOverride(): string | undefined {
-  return process.env['GBC_DSH_HOME']?.trim() || undefined
+  return process.env['ASC_DSH_HOME']?.trim() || undefined
 }
 
 interface ManagedDshChild {
@@ -137,7 +137,7 @@ export interface DshHostManagerOptions {
   broadcast: (channel: string, payload: DshHostStatus) => void
   onBecameReady?: () => void
   onLeftReady?: () => void
-  /** Host is stopping only to start again; keep GBC slots and the surface. */
+  /** Host is stopping only to start again; keep ASC slots and the surface. */
   onRestarting?: () => void
 }
 
@@ -439,7 +439,7 @@ export class DshHostManager {
     if (override) {
       if (!override.startsWith('/') || override.includes('\0')) {
         throw new Error(
-          'GBC_DSH_HOME must be a Linux absolute path for a WSL DSH runtime'
+          'ASC_DSH_HOME must be a Linux absolute path for a WSL DSH runtime'
         )
       }
       return override
@@ -710,7 +710,7 @@ export class DshHostManager {
     )
     const overlayPath = stdout.trim()
     if (!overlayPath.startsWith('/') || overlayPath.includes('\0')) {
-      throw new Error('cannot map the GBC DSH overlay into WSL')
+      throw new Error('cannot map the ASC DSH overlay into WSL')
     }
     return { publicOrigin: config.publicOrigin, overlayPath }
   }

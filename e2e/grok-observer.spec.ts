@@ -8,7 +8,7 @@ import {
   buildGrokManagedHookFile,
   grokWindowsBridgeScript,
   grokWindowsHookCommand,
-  isGbcGrokHookFile
+  isAscGrokHookFile
 } from '../electron/agents/adapters/grok/GrokHookConfig'
 import { parseGrokHook } from '../electron/agents/adapters/grok/GrokHookParser'
 import { GrokHookProjector } from '../electron/agents/adapters/grok/GrokHookProjector'
@@ -29,7 +29,7 @@ test.describe('Grok observer adapter', () => {
   })
 
   test('installs a dedicated hook file without rewriting sibling hooks', async () => {
-    const grokHome = await mkdtemp(join(tmpdir(), 'gbc-grok-hooks-'))
+    const grokHome = await mkdtemp(join(tmpdir(), 'asc-grok-hooks-'))
     const sibling = join(grokHome, 'hooks', 'user-session-start.json')
     try {
       await mkdir(join(grokHome, 'hooks'), { recursive: true })
@@ -42,7 +42,7 @@ test.describe('Grok observer adapter', () => {
       if (!first.ok) return
       expect(first.changed).toBe(true)
       const installed = await readFile(first.path, 'utf8')
-      expect(isGbcGrokHookFile(JSON.parse(installed))).toBe(true)
+      expect(isAscGrokHookFile(JSON.parse(installed))).toBe(true)
       expect(installed).toContain('EncodedCommand')
       expect(installed).toContain('"matcher": "permission_prompt"')
       expect(installed).toContain('"timeout": 3')
@@ -58,9 +58,9 @@ test.describe('Grok observer adapter', () => {
     }
   })
 
-  test('refuses to overwrite a foreign gbc-observer.json', async () => {
-    const grokHome = await mkdtemp(join(tmpdir(), 'gbc-grok-conflict-'))
-    const hookPath = join(grokHome, 'hooks', 'gbc-observer.json')
+  test('refuses to overwrite a foreign asc-observer.json', async () => {
+    const grokHome = await mkdtemp(join(tmpdir(), 'asc-grok-conflict-'))
+    const hookPath = join(grokHome, 'hooks', 'asc-observer.json')
     const original = '{"hooks":{"SessionStart":[{"hooks":[{"type":"command","command":"echo hi"}]}]}}\n'
     try {
       await mkdir(join(grokHome, 'hooks'), { recursive: true })
@@ -76,9 +76,9 @@ test.describe('Grok observer adapter', () => {
     }
   })
 
-  test('is a silent no-op outside a GBC-launched Windows session', async () => {
+  test('is a silent no-op outside a ASC-launched Windows session', async () => {
     test.skip(process.platform !== 'win32')
-    const runDir = await mkdtemp(join(tmpdir(), 'gbc-grok-noop-'))
+    const runDir = await mkdtemp(join(tmpdir(), 'asc-grok-noop-'))
     const sentinel = join(runDir, 'unexpected.txt')
     const bridge = join(runDir, 'should-not-run.ps1')
     try {
@@ -88,9 +88,9 @@ test.describe('Grok observer adapter', () => {
         'utf8'
       )
       const env = { ...process.env }
-      delete env.GBC_GROK_HOOK_BRIDGE_WINDOWS
-      delete env.GBC_GROK_HOOK_BRIDGE
-      delete env.GBC_GROK_HOOK_DROP
+      delete env.ASC_GROK_HOOK_BRIDGE_WINDOWS
+      delete env.ASC_GROK_HOOK_BRIDGE
+      delete env.ASC_GROK_HOOK_DROP
       const child = spawn(grokWindowsHookCommand(), {
         shell: true,
         env,
@@ -117,7 +117,7 @@ test.describe('Grok observer adapter', () => {
 
   test('preserves UTF-8 JSON through the real Windows bridge', async () => {
     test.skip(process.platform !== 'win32')
-    const runDir = await mkdtemp(join(tmpdir(), 'gbc-grok-bytes-'))
+    const runDir = await mkdtemp(join(tmpdir(), 'asc-grok-bytes-'))
     const dropDir = join(runDir, 'drop')
     const bridge = join(runDir, 'bridge.ps1')
     const payload = JSON.stringify({
@@ -132,8 +132,8 @@ test.describe('Grok observer adapter', () => {
         shell: true,
         env: {
           ...process.env,
-          GBC_GROK_HOOK_DROP: dropDir,
-          GBC_GROK_HOOK_BRIDGE_WINDOWS: bridge
+          ASC_GROK_HOOK_DROP: dropDir,
+          ASC_GROK_HOOK_BRIDGE_WINDOWS: bridge
         },
         stdio: ['pipe', 'ignore', 'ignore'],
         windowsHide: true
@@ -311,7 +311,7 @@ test.describe('Grok observer adapter', () => {
   })
 
   test('prepares a temporary route and delivers Hooks through the adapter seam', async () => {
-    const runDir = await mkdtemp(join(tmpdir(), 'gbc-grok-adapter-'))
+    const runDir = await mkdtemp(join(tmpdir(), 'asc-grok-adapter-'))
     const grokHome = join(runDir, 'grok-home')
     const adapter = new GrokObserverAdapter({
       pollIntervalMs: 20,
@@ -346,10 +346,10 @@ test.describe('Grok observer adapter', () => {
         approvals: 'structured'
       })
       const hookFile = await readFile(
-        join(grokHome, 'hooks', 'gbc-observer.json'),
+        join(grokHome, 'hooks', 'asc-observer.json'),
         'utf8'
       )
-      expect(isGbcGrokHookFile(JSON.parse(hookFile))).toBe(true)
+      expect(isAscGrokHookFile(JSON.parse(hookFile))).toBe(true)
 
       const events: AdapterEvent[] = []
       const handle = await prepared.attach(
@@ -364,7 +364,7 @@ test.describe('Grok observer adapter', () => {
         },
         (event) => events.push(event)
       )
-      const dropDir = prepared.launch.env?.GBC_GROK_HOOK_DROP
+      const dropDir = prepared.launch.env?.ASC_GROK_HOOK_DROP
       expect(dropDir).toBeTruthy()
       await writeFile(
         join(dropDir!, '0001.json'),
@@ -425,7 +425,7 @@ test.describe('Grok observer adapter', () => {
       platform: 'win32',
       workspace: 'C:/workspace',
       args: ['-p', 'do not observe this'],
-      runDir: join(tmpdir(), 'gbc-grok-unused'),
+      runDir: join(tmpdir(), 'asc-grok-unused'),
       installation: {
         id: 'grok:host:test',
         definitionId: 'grok',
@@ -446,7 +446,7 @@ test.describe('Grok observer adapter', () => {
         installationId: 'grok:host:test',
         adapterId: 'grok',
         ptyId: 'pty',
-        runDir: join(tmpdir(), 'gbc-grok-unused'),
+        runDir: join(tmpdir(), 'asc-grok-unused'),
         cols: 80,
         rows: 24
       },
@@ -466,12 +466,12 @@ test.describe('Grok observer adapter', () => {
     expect(() => JSON.parse(windows)).not.toThrow()
     expect(() => JSON.parse(posix)).not.toThrow()
     expect(buildGrokManagedHookFile('windows')).toBe(windows)
-    expect(posix).toContain('GBC_GROK_HOOK_BRIDGE')
+    expect(posix).toContain('ASC_GROK_HOOK_BRIDGE')
     expect(posix).not.toContain('powershell.exe')
   })
 
   test('resolves the WSL hook home without starting a login shell', async () => {
-    const runDir = await mkdtemp(join(tmpdir(), 'gbc-grok-wsl-home-'))
+    const runDir = await mkdtemp(join(tmpdir(), 'asc-grok-wsl-home-'))
     const calls: Array<{ file: string; args: readonly string[] }> = []
     try {
       const result = await ensureWslGrokManagedHooks(
@@ -491,10 +491,10 @@ test.describe('Grok observer adapter', () => {
             verification: 'verified'
           }
         },
-        '/mnt/c/gbc-observer-run',
+        '/mnt/c/asc-observer-run',
         async (file, args) => {
           calls.push({ file, args })
-          if (args.includes('gbc-grok-hook-home')) {
+          if (args.includes('asc-grok-hook-home')) {
             return {
               code: 0,
               stdout: 'HOME=/home/reporter\0GROK_HOME=\0'
@@ -506,7 +506,7 @@ test.describe('Grok observer adapter', () => {
 
       expect(result).toMatchObject({
         ok: true,
-        path: '/home/reporter/.grok/hooks/gbc-observer.json'
+        path: '/home/reporter/.grok/hooks/asc-observer.json'
       })
       expect(calls.flatMap((call) => call.args)).not.toContain('-lic')
     } finally {
@@ -534,7 +534,7 @@ test.describe('Grok observer adapter', () => {
     }
     test.skip(!distro, 'No WSL distro is available')
 
-    const runDir = await mkdtemp(join(tmpdir(), 'gbc-grok-wsl-'))
+    const runDir = await mkdtemp(join(tmpdir(), 'asc-grok-wsl-'))
     const exec = promisify(execFile)
     const runCommand = async (
       file: string,
@@ -581,7 +581,7 @@ test.describe('Grok observer adapter', () => {
           verification: 'verified'
         }
       })
-      expect(prepared.launch.env?.GBC_GROK_HOOK_DROP?.startsWith('/')).toBe(true)
+      expect(prepared.launch.env?.ASC_GROK_HOOK_DROP?.startsWith('/')).toBe(true)
       expect(prepared.capabilities?.tools).toBe('lifecycle')
       const hostDrops = await readdir(join(runDir, 'grok-drop'))
       expect(hostDrops.some((name) => name.endsWith('.probe'))).toBe(false)

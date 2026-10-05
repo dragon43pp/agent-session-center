@@ -129,7 +129,7 @@ def write_selfdestruct_cmd(target_dir: str) -> str:
         'del "%~f0"\r\n'
     )
     path = os.path.join(tempfile.gettempdir(),
-                        "gbc-uninstall-%d.cmd" % os.getpid())
+                        "asc-uninstall-%d.cmd" % os.getpid())
     with open(path, "wb") as fh:
         fh.write(body.encode("ascii"))
     return path

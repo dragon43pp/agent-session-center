@@ -36,12 +36,12 @@ test.describe('remote settings', () => {
     ;({ app, window: page, userDataDir } = await launchApp({
       createDefaultTerminal: false,
       env: {
-        GBC_FIXTURE_OBSERVER: '1',
-        GBC_FIXTURE_OBSERVER_HOLD: '1'
+        ASC_FIXTURE_OBSERVER: '1',
+        ASC_FIXTURE_OBSERVER_HOLD: '1'
       }
     }))
     await page.evaluate(() => {
-      window.__gbcDebugShell?.navigate('settings')
+      window.__ascDebugShell?.navigate('settings')
     })
     await page.getByTestId('settings-category-remote').click()
   })
@@ -55,7 +55,7 @@ test.describe('remote settings', () => {
     const joinUrl = relay.joinUrl('aK3')
     await expect(page.getByTestId('settings-remote-create-url')).toHaveAttribute(
       'href',
-      'https://gbc.dev/'
+      'https://asc.dev/'
     )
     await page.getByTestId('settings-remote-url').fill(joinUrl)
     await expect(page.getByTestId('settings-remote-qr')).toHaveAttribute(
@@ -138,8 +138,8 @@ test.describe('remote settings', () => {
       userDataDir,
       createDefaultTerminal: false,
       env: {
-        GBC_FIXTURE_OBSERVER: '1',
-        GBC_FIXTURE_OBSERVER_HOLD: '1'
+        ASC_FIXTURE_OBSERVER: '1',
+        ASC_FIXTURE_OBSERVER_HOLD: '1'
       }
     })
     app = restarted.app
@@ -150,7 +150,7 @@ test.describe('remote settings', () => {
     await expect.poll(() => page.evaluate(() => window.remoteApi.getState()))
       .toMatchObject({ phase: 'peer-online', href: joinUrl })
 
-    await page.evaluate(() => window.__gbcDebugShell?.navigate('settings'))
+    await page.evaluate(() => window.__ascDebugShell?.navigate('settings'))
     await page.getByTestId('settings-category-remote').click()
     await expect(page.getByTestId('settings-remote-url')).toHaveValue(joinUrl)
     await expect(page.getByTestId('settings-remote-status')).toHaveText(
@@ -170,7 +170,7 @@ test.describe('remote settings', () => {
       )
       .toBe('waiting-phone')
 
-    await page.evaluate(() => window.__gbcDebugShell?.navigate('home'))
+    await page.evaluate(() => window.__ascDebugShell?.navigate('home'))
     await page.getByTestId('home-quick-codex').click()
     await page.getByTestId('cli-session-name').fill('Remote real fixture')
     await page.getByTestId('cli-workspace').fill(process.cwd())
@@ -240,7 +240,7 @@ test.describe('remote settings', () => {
       )
       .toBe(true)
 
-    await page.evaluate(() => window.__gbcDebugShell?.navigate('settings'))
+    await page.evaluate(() => window.__ascDebugShell?.navigate('settings'))
     await page.getByTestId('settings-category-remote').click()
     await expect(page.getByTestId('settings-remote-revoke')).toHaveCount(0)
     await page.getByTestId('settings-remote-disconnect').click()

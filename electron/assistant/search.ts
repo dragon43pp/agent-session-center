@@ -17,7 +17,7 @@ const CHAT_HISTORY_LIMIT = 6
 const REQUEST_TIMEOUT_MS = 60_000
 
 const SYSTEM_PROMPT = [
-  '你是「GBC 会话历史」的检索助手。用户在管理多个 AI CLI（grok/codex/claude/opencode/kimi/pi/antigravity/workbuddy）的本地会话历史。',
+  '你是「ASC 会话历史」的检索助手。用户在管理多个 AI CLI（grok/codex/claude/opencode/kimi/pi/antigravity/workbuddy）的本地会话历史。',
   '下面给你一份会话清单（每行：key | agent | 标题 | 工作目录 | 模型 | 更新时间 | 消息数 | tokens）。',
   '用户的问题是自然语言查找请求，例如「找上周关于飞书路由的 codex 会话」「哪些会话在做日报自动化」「帮我找重复的会话」。',
   '你的任务：',

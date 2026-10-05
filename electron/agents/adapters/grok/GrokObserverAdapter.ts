@@ -303,10 +303,10 @@ export class GrokObserverAdapter implements AgentObserverAdapter {
     return {
       launch: {
         env: {
-          GBC_GROK_HOOK_DROP: runtimePaths.dropDir,
-          GBC_GROK_HOOK_BRIDGE: runtimePaths.posixBridge,
-          GBC_GROK_HOOK_BRIDGE_WINDOWS: runtimePaths.windowsBridge,
-          GBC_GROK_HOOK_SCHEMA: GROK_HOOK_SCHEMA
+          ASC_GROK_HOOK_DROP: runtimePaths.dropDir,
+          ASC_GROK_HOOK_BRIDGE: runtimePaths.posixBridge,
+          ASC_GROK_HOOK_BRIDGE_WINDOWS: runtimePaths.windowsBridge,
+          ASC_GROK_HOOK_SCHEMA: GROK_HOOK_SCHEMA
         }
       },
       capabilities: GROK_HOOK_CAPABILITIES,
@@ -369,7 +369,7 @@ export class GrokObserverAdapter implements AgentObserverAdapter {
       const command = wslRuntimeCommand(
         context,
         ['--version'],
-        'gbc-grok-version'
+        'asc-grok-version'
       )
       return this.runCommand(command.file, command.args)
     }
@@ -423,7 +423,7 @@ export class GrokObserverAdapter implements AgentObserverAdapter {
       '/bin/sh',
       '-c',
       'set -eu; d="$1"; n="$2"; p="$d/.$n.partial"; printf "%s" "$n" > "$p"; mv "$p" "$d/$n.probe"',
-      'gbc-grok-drop-probe',
+      'asc-grok-drop-probe',
       runtimeDropDir,
       nonce
     ])

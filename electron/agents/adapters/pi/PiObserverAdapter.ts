@@ -244,9 +244,9 @@ export class PiObserverAdapter implements AgentObserverAdapter {
       launch: {
         prependArgs: ['--extension', runtimePaths.extensionPath],
         env: {
-          GBC_PI_DROP_DIR: runtimePaths.dropDir,
-          GBC_PI_SESSION_ID: context.sessionId,
-          GBC_PI_SCHEMA: '1'
+          ASC_PI_DROP_DIR: runtimePaths.dropDir,
+          ASC_PI_SESSION_ID: context.sessionId,
+          ASC_PI_SCHEMA: '1'
         }
       },
       capabilities: PI_OBSERVER_CAPABILITIES,
@@ -309,7 +309,7 @@ export class PiObserverAdapter implements AgentObserverAdapter {
       const command = wslRuntimeCommand(
         context,
         ['--version'],
-        'gbc-pi-version'
+        'asc-pi-version'
       )
       return this.runCommand(command.file, command.args)
     }
@@ -348,7 +348,7 @@ export class PiObserverAdapter implements AgentObserverAdapter {
       '/bin/sh',
       '-c',
       'set -eu; d="$1"; n="$2"; p="$d/.$n.partial"; printf "%s" "$n" > "$p"; mv "$p" "$d/$n.probe"',
-      'gbc-pi-probe',
+      'asc-pi-probe',
       runtimeDropDir,
       nonce
     ])

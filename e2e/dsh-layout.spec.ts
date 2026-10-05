@@ -8,7 +8,7 @@ test('DSH surface keeps the top-left rounded corner without padding', async () =
     const contentBounds = await content.boundingBox()
     expect(contentBounds).not.toBeNull()
     await window.evaluate(() => {
-      window.__gbcDebugShell?.navigate('home')
+      window.__ascDebugShell?.navigate('home')
     })
     await window.getByTestId('home-quick-dsh').click()
     const surface = window.getByTestId('dsh-page')
@@ -22,13 +22,13 @@ test('DSH surface keeps the top-left rounded corner without padding', async () =
       () => app.evaluate(() => {
         const inspection = (
           globalThis as unknown as {
-            __gbcMainDebug: {
+            __ascMainDebug: {
               dshSurfaceInspect(): Promise<{
                 bounds?: { x: number; y: number; width: number; height: number }
               }> | null
             }
           }
-        ).__gbcMainDebug.dshSurfaceInspect()
+        ).__ascMainDebug.dshSurfaceInspect()
         return inspection?.then((value) => value?.bounds ?? null) ?? null
       }),
       { timeout: 20_000, intervals: [50, 100, 250] }

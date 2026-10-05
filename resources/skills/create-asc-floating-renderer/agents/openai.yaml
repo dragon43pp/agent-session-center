@@ -1,4 +1,4 @@
 interface:
   display_name: "Agent Session Center Floating Renderer Creator"
   short_description: "Build state-driven Agent Session Center floating windows and Live2D companions"
-  default_prompt: "Use $create-gbc-floating-renderer to build or update a sandboxed Agent Session Center floating renderer driven by real CLI turn state."
+  default_prompt: "Use $create-asc-floating-renderer to build or update a sandboxed Agent Session Center floating renderer driven by real CLI turn state."

@@ -3,11 +3,11 @@ import path from 'node:path'
 import { PNG } from 'pngjs'
 import { encode } from 'uqr'
 
-const joinUrl = process.env.GBC_CAMERA_JOIN_URL
-const outputPath = process.env.GBC_CAMERA_QR_OUTPUT
+const joinUrl = process.env.ASC_CAMERA_JOIN_URL
+const outputPath = process.env.ASC_CAMERA_QR_OUTPUT
 
 if (!joinUrl || !outputPath) {
-  throw new Error('GBC_CAMERA_JOIN_URL and GBC_CAMERA_QR_OUTPUT are required')
+  throw new Error('ASC_CAMERA_JOIN_URL and ASC_CAMERA_QR_OUTPUT are required')
 }
 
 const matrix = encode(joinUrl).data

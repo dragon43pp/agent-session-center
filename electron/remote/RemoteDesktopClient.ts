@@ -27,7 +27,7 @@ import { resolveRemoteJoin } from '../../shared/remote-node-resolver'
 const METRICS_BROADCAST_INTERVAL_MS = 500
 const LATENCY_PROBE_INTERVAL_MS = 5_000
 const LATENCY_PROBE_TIMEOUT_MS = 10_000
-const LATENCY_PROBE_PREFIX = 'gbc-rtt:'
+const LATENCY_PROBE_PREFIX = 'asc-rtt:'
 
 type RemoteDesktopCoreState = Omit<
   RemoteDesktopState,

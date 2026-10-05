@@ -221,7 +221,7 @@ test.describe('remote desktop client', () => {
     await relay.close()
   })
 
-  test('starting the test relay does not spawn an GBC GUI', () => {
+  test('starting the test relay does not spawn an ASC GUI', () => {
     expect(process.versions.electron).toBeUndefined()
   })
 

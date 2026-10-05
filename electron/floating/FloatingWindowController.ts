@@ -28,7 +28,7 @@ import {
 } from './FloatingRendererProtocol'
 
 const EDGE_GAP = 20
-const FLOATING_PARTITION = 'gbc-floating-renderers'
+const FLOATING_PARTITION = 'asc-floating-renderers'
 /** Highest practical always-on-top level; macOS maps this above normal apps. */
 const FLOATING_ALWAYS_ON_TOP_LEVEL = 'screen-saver' as const
 /** Re-assert topmost periodically so other topmost/fullscreen apps cannot keep it buried. */

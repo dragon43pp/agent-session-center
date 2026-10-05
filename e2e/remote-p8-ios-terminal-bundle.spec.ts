@@ -11,7 +11,7 @@ import {
 } from '@playwright/test'
 import { PNG } from 'pngjs'
 
-const appRoot = process.env.GBC_REMOTE_APP_ROOT
+const appRoot = process.env.ASC_REMOTE_APP_ROOT
 
 interface TerminalReadyMessage {
   type: 'ready'
@@ -70,8 +70,8 @@ function visibleTextMetrics(screenshot: Buffer): {
 async function nativeMessages(page: Page): Promise<NativeMessage[]> {
   return page.evaluate(() => {
     const messages = (
-      window as typeof window & { __gbcNativeMessages?: unknown[] }
-    ).__gbcNativeMessages
+      window as typeof window & { __ascNativeMessages?: unknown[] }
+    ).__ascNativeMessages
     return (messages ?? []) as NativeMessage[]
   })
 }
@@ -79,7 +79,7 @@ async function nativeMessages(page: Page): Promise<NativeMessage[]> {
 async function installNativeBridge(page: Page): Promise<void> {
   await page.addInitScript(() => {
     const messages: unknown[] = []
-    Object.defineProperty(window, '__gbcNativeMessages', {
+    Object.defineProperty(window, '__ascNativeMessages', {
       configurable: false,
       value: messages
     })
@@ -125,7 +125,7 @@ async function runTerminalBundleGate(
   const indexPath = resolve(
     appRoot,
     'assets',
-    'gbc-terminal-ios',
+    'asc-terminal-ios',
     'index.html'
   )
   expect(existsSync(indexPath)).toBe(true)
@@ -193,9 +193,9 @@ async function runTerminalBundleGate(
     }) => {
       const terminal = (
         window as typeof window & {
-          gbcTerminal?: { receive(command: unknown): void }
+          ascTerminal?: { receive(command: unknown): void }
         }
-      ).gbcTerminal
+      ).ascTerminal
       if (!terminal) throw new Error('terminal bridge is unavailable')
       terminal.receive({
         type: 'open',
@@ -289,9 +289,9 @@ async function runTerminalBundleGate(
   await page.evaluate(() => {
     const terminal = (
       window as typeof window & {
-        gbcTerminal?: { receive(command: unknown): void }
+        ascTerminal?: { receive(command: unknown): void }
       }
-    ).gbcTerminal
+    ).ascTerminal
     terminal?.receive({ type: 'focus' })
   })
   await page.keyboard.type('ios-input')
@@ -322,9 +322,9 @@ async function runTerminalBundleGate(
   await page.evaluate(() => {
     const terminal = (
       window as typeof window & {
-        gbcTerminal?: { receive(command: unknown): void }
+        ascTerminal?: { receive(command: unknown): void }
       }
-    ).gbcTerminal
+    ).ascTerminal
     terminal?.receive({ type: 'force-fallback' })
   })
   await expect
@@ -343,7 +343,7 @@ for (const browserName of ['chromium', 'webkit'] as const) {
   test.describe(`remote P8 iOS terminal bundle in ${browserName}`, () => {
     test.skip(
       !appRoot,
-      'set GBC_REMOTE_APP_ROOT to verify the generated iOS terminal asset'
+      'set ASC_REMOTE_APP_ROOT to verify the generated iOS terminal asset'
     )
 
     test('runs the offline renderer and full native bridge', async ({}, testInfo) => {

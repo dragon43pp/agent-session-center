@@ -69,7 +69,7 @@ http://127.0.0.1:<random>/ 真实 dsh web
 
 DSH 根页面、启动 manifest、插件模块和运行时都使用 `/assets/*`、`/plugins/*`、`/api/*` 等根绝对路径。把它挂到现有 `/remote/<room>/dsh/` 会迫使 Agent Session Center 重写 HTML、动态插件 URL、`fetch`、WebSocket 和未来新增的 Worker/EventSource，版本升级极易失效。
 
-因此 DSH Gateway 必须独占一个 origin，例如 `https://dsh.gbc.dev`。不要求每房间一个子域名，也不要求 wildcard 证书；房间映射由该 origin 上的短期 Cookie 完成。自部署者配置自己的单独 origin 和正式 TLS 即可。
+因此 DSH Gateway 必须独占一个 origin，例如 `https://dsh.asc.dev`。不要求每房间一个子域名，也不要求 wildcard 证书；房间映射由该 origin 上的短期 Cookie 完成。自部署者配置自己的单独 origin 和正式 TLS 即可。
 
 ### 3.2 顶层页面而不是 iframe
 
@@ -158,7 +158,7 @@ wss://<relay-origin>/<base>/v1/dsh-tunnel
 - 128 bit 以上 CSPRNG，服务端存摘要；URL 中不编码 roomId、端口或 seat token；
 - 一次性、30 秒内使用，使用后立即失效；
 - 只接受顶层 GET；响应设置 `Referrer-Policy: no-referrer`、`Cache-Control: no-store`；
-- 成功时设置 `__Host-gbc-dsh=<opaque-session>`，必须 `Secure; HttpOnly; SameSite=Strict; Path=/` 且无 Domain，然后 `303 Location: /`；
+- 成功时设置 `__Host-asc-dsh=<opaque-session>`，必须 `Secure; HttpOnly; SameSite=Strict; Path=/` 且无 Domain，然后 `303 Location: /`；
 - ticket 路径、Cookie、query、authorization 和完整 DSH API 路径关闭 access log，应用日志只记录无标识计数和错误类别。
 
 Cookie session 绑定原 Phone seat connection、Room、Desktop tunnel generation 与 DSH host generation。主 Phone WSS 一旦断开就立即停止新请求并失效 Cookie；DSH 第一版不跨连接恢复 Web session，App 重连主房间后必须取得新 ticket。现有 PTY 的 15 秒驾驶释放宽限保持原样，不能套用到权限更宽的 DSH 网页。Cookie 最长 12 小时，且不得写入 App SecureStore、共享浏览器或系统浏览器。
@@ -170,7 +170,7 @@ Cookie session 绑定原 Phone seat connection、Room、Desktop tunnel generatio
 DSH 始终使用：
 
 ```text
-dsh --profile web --patch <gbc-owned-overlay> \
+dsh --profile web --patch <asc-owned-overlay> \
   --host 127.0.0.1 --port <random> \
   --trusted-host <dsh-public-authority> --no-open
 ```
@@ -487,11 +487,11 @@ D0 新增显式 opt-in 门禁 `e2e/remote-dsh-d0.spec.ts` 和固定原型 overla
 真实门禁命令：
 
 ```powershell
-$env:GBC_E2E_REAL_DSH=(Get-Command dsh.cmd).Source
+$env:ASC_E2E_REAL_DSH=(Get-Command dsh.cmd).Source
 npx playwright test e2e/remote-dsh-d0.spec.ts -g "D0 real DSH supports a trusted public browser without loopback privilege"
 ```
 
-未设置 `GBC_E2E_REAL_DSH` 时该用例明确 skip，普通开发机不会悄悄使用 fixture 冒充真实 DSH。D0 只冻结安全与 carrier 可行性；Desktop 产品实现、持久设置和 tunnel client 在 D1 完成。
+未设置 `ASC_E2E_REAL_DSH` 时该用例明确 skip，普通开发机不会悄悄使用 fixture 冒充真实 DSH。D0 只冻结安全与 carrier 可行性；Desktop 产品实现、持久设置和 tunnel client 在 D1 完成。
 
 ## 16. D1 Desktop 实现与验证记录
 
@@ -525,7 +525,7 @@ D1 已实现桌面端产品链，而不是把 D0 测试脚本直接搬进产品�
 真实门禁命令：
 
 ```powershell
-$env:GBC_E2E_REAL_DSH=(Get-Command dsh.cmd).Source
+$env:ASC_E2E_REAL_DSH=(Get-Command dsh.cmd).Source
 npx playwright test e2e/remote-dsh-d1.spec.ts -g "D1 Desktop carries real DSH"
 ```
 
@@ -533,12 +533,12 @@ D1 真实复跑还捕获并修复了三个不能由普通 mock 暴露的问题�
 
 ## 17. D2 Server 实现与验证记录
 
-D2 已在 `gbc-remote-server` 完成独立 Server carrier：
+D2 已在 `asc-remote-server` 完成独立 Server carrier：
 
 - `DSH_PUBLIC_ORIGIN` 为显式可选、规范 HTTPS 且必须不同于平台 origin；未配置时旧客户端、旧房间和 PTY Relay 行为不变，也不发布 DSH capability；
 - Desktop 主 seat 获得短期、绑定当前 connection 的随机 `dshSeatToken`，专用 `{base}/v1/dsh-tunnel` 第一帧完成 room/seat/token/唯一 tunnel 校验；
 - Phone 的 `dsh-ticket-request` 由 Relay 自己消费，不转发 Desktop；ticket 为 256-bit CSPRNG、摘要存储、一次性且最长 30 秒；
-- 独立 DSH virtual host 的 `/_connect/<ticket>` 设置 `__Host-gbc-dsh`（`Secure; HttpOnly; SameSite=Strict; Path=/`）并 303 到根页面；Cookie 同时绑定 Phone connection、Room、Desktop connection、tunnel generation 和 DSH surface generation，掉线、generation 变化与 revoke 都立即失效；
+- 独立 DSH virtual host 的 `/_connect/<ticket>` 设置 `__Host-asc-dsh`（`Secure; HttpOnly; SameSite=Strict; Path=/`）并 303 到根页面；Cookie 同时绑定 Phone connection、Room、Desktop connection、tunnel generation 和 DSH surface generation，掉线、generation 变化与 revoke 都立即失效；
 - 公网 route/method/header 为双层 allowlist；匿名只开放 `/_healthz`，绝对 URL、重复编码穿越、反斜杠、NUL、`CONNECT`/`TRACE` 和未知 route fail closed；Cookie、Authorization、Forwarded 与本地 `Set-Cookie`/Server 不穿 tunnel；
 - HTTP、SSE 和两条 event WebSocket 经独立二进制 tunnel 多路复用，落实 32 KiB control、64 KiB frame、sequence、credit、16 MiB request、32 MiB普通 response、64 HTTP/1 SSE/2 WS、512 KiB/stream、2 MiB/room 及 header/idle/首响应超时；
 - 带 content revision 的静态资源只允许 `private, immutable`，其余根页面/API 为 `no-store`、SSE 为 `no-cache`；`Accept-Encoding` 可穿透到真实 DSH，正文保持流式而不在 Relay 聚合；
@@ -556,7 +556,7 @@ D2 证明的是 Server carrier 和边界，不把 fixture Desktop 冒充真实 D
 
 ## 18. D3 App 实现与验证记录
 
-D3 已在 `gbc-remote-app` 完成手机产品控制面与原生 WebView 边界：
+D3 已在 `asc-remote-app` 完成手机产品控制面与原生 WebView 边界：
 
 - App 同步 D2 协议后，只从认证 `hello-ok.relayCapabilities` 接受规范 DSH public origin；D3 当时把
   `RemoteWebSurface` 作为独立列表入口。该早期展示模型已由 2026-08-25 增量勘误替代：surface 只保留
@@ -584,7 +584,7 @@ D3 的 HTML tunnel 端使用确定性 fixture，只证明 App + 真实 Server ca
 
 ## 19. D4 公网 Android 实现与验证记录
 
-D4 使用已安装 Android release App、Android x64 模拟器、真实 Electron 主进程、系统安装的 DSH `0.1.0-rc.7`、生产 Remote WSS 与独立公网 TLS DSH origin 完成组合链。DSH 临时 origin 使用公开受信的 Let's Encrypt 证书；最终 `dsh.gbc.modplex.app` 在服务器公共解析器上仍无记录，因此本节不把临时 origin 冒充最终生产域名，正式域名切换保留到 D5。
+D4 使用已安装 Android release App、Android x64 模拟器、真实 Electron 主进程、系统安装的 DSH `0.1.0-rc.7`、生产 Remote WSS 与独立公网 TLS DSH origin 完成组合链。DSH 临时 origin 使用公开受信的 Let's Encrypt 证书；最终 `dsh.asc.modplex.app` 在服务器公共解析器上仍无记录，因此本节不把临时 origin 冒充最终生产域名，正式域名切换保留到 D5。
 
 定向门禁 `e2e/remote-dsh-d4-android-live.spec.ts` 实际完成：
 
@@ -615,7 +615,7 @@ D5 已在 2026-08-24 按 12.4 的显式发布风险接受例外关门，逐项�
 
 - `production-monitor` 同时检查平台与独立 DSH origin 的受信 TLS/健康接口，现网连续报告 `ok=true`；Relay `runtime-metrics.dsh` 只含健康、并发、buffer、双向字节和五类错误计数，不含 origin/path/room/ticket/Cookie/body；
 - 使用与 `modplex.app` 无关的公开 sslip.io 域名、Let's Encrypt 证书和 `DSH_PUBLIC_ORIGIN` 完成另一组真实域名/TLS 配置验证；生产 DSH 实现未硬编码 `modplex.app`；
-- `dsh.gbc.modplex.app` 公共 DNS 已指向生产主机，正式 ECDSA 证书有效期至 2026-11-22；主机名校验、ALPN `h2`、证书续期复制/配置检查/热重载钩子均实跑通过；
+- `dsh.asc.modplex.app` 公共 DNS 已指向生产主机，正式 ECDSA 证书有效期至 2026-11-22；主机名校验、ALPN `h2`、证书续期复制/配置检查/热重载钩子均实跑通过；
 - Relay 与生产监控已切换到正式 `DSH_PUBLIC_ORIGIN`；正式域名 `/_healthz` 返回 200，匿名根路径返回 401，监控的 `public-dsh-tls` 与 `public-dsh-health` 均为 `ok=true`；
 - 运行中的 OpenResty 配置在 server/location 两层均为 `access_log off`，并关闭 request/response buffering、保留一小时流超时；正式入口已真实承载完整 boot graph 与两条 event WebSocket；
 - 新增重启组合门禁：恢复同一持久房间后，上一代未消费 ticket 为 404、Cookie 为 401，重连 Desktop/Phone/Tunnel 后新 ticket 为 303；生产又创建 32,597 字节备份并在隔离卷通过 SHA-256、SQLite `integrity_check=ok` 与 11 张表检查；
@@ -626,7 +626,7 @@ D5 已在 2026-08-24 按 12.4 的显式发布风险接受例外关门，逐项�
 正式域名最终门禁输出：
 
 ```text
-[dsh-d4-red] origin=https://dsh.gbc.modplex.app device=emulator
+[dsh-d4-red] origin=https://dsh.asc.modplex.app device=emulator
 firstLoadMs=18378 cacheReentryMs=4519 backgroundResumeMs=5003
 blankSession=created ticket=one-use privileged=denied websocket=2
 pty=driven ptyAckBytes=385 ptyInputAckMs=375

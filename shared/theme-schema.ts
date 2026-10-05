@@ -192,5 +192,5 @@ export function resolveUiTheme(
 }
 
 export function uiTokenToCssVariable(token: UiColorToken): string {
-  return `--gbc-${token.replaceAll('.', '-')}`
+  return `--asc-${token.replaceAll('.', '-')}`
 }

@@ -36,7 +36,7 @@ const EMPTY_STATS: AllTimeStats = {
 
 /** 原型全局 ClickSpark 参数（App.tsx：#1a1a1a / 8 / 18 / 10 / 450）。 */
 const clickSparkProps = {
-  sparkColor: 'var(--gbc-accent-spark)',
+  sparkColor: 'var(--asc-accent-spark)',
   sparkSize: 8,
   sparkRadius: 18,
   sparkCount: 10,
@@ -397,13 +397,13 @@ export default function HomePage({
             {strings.home.freshLabel}
           </p>
           <div className="mt-5">
-            <ShinyText text="gbc" color="var(--gbc-brand-logo)" shineColor="var(--gbc-brand-logoShine)" speed={3.2} spread={100} className="font-brand text-[54px] leading-none tracking-[0.08em]" />
+            <ShinyText text="asc" color="var(--asc-brand-logo)" shineColor="var(--asc-brand-logoShine)" speed={3.2} spread={100} className="font-brand text-[54px] leading-none tracking-[0.08em]" />
           </div>
           <TextType
             as="h1"
             text={strings.home.freshTitle}
             keywords={['CLI']}
-            keywordColor="var(--gbc-accent-flame)"
+            keywordColor="var(--asc-accent-flame)"
             typingSpeed={42}
             initialDelay={160}
             loop={false}
@@ -515,7 +515,7 @@ export default function HomePage({
               as="h1"
               text={greeting.text}
               keywords={[...greeting.keywords]}
-              keywordColor="var(--gbc-accent-flame)"
+              keywordColor="var(--asc-accent-flame)"
               typingSpeed={42}
               initialDelay={120}
               loop={false}

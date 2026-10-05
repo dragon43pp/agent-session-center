@@ -239,9 +239,9 @@ export interface AgentCorrelationState {
 }
 
 export interface AgentSessionProjection {
-  /** GBC-owned stable identity for this monitored entry. */
+  /** ASC-owned stable identity for this monitored entry. */
   sessionId: string
-  /** Adapter-owned session identity when it differs from the GBC entry id. */
+  /** Adapter-owned session identity when it differs from the ASC entry id. */
   adapterSessionId?: string
   terminalId: string
   installationId: string

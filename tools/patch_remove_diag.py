@@ -44,7 +44,7 @@ def main() -> int:
       .slice(2, 6)
       .map((line) => line.trim().replace(/\\s*\\(.*/, ''))
       .join(' <- ')
-    console.info(`[gbc-diag] ${tag} ${detail} | ${frames}`)
+    console.info(`[asc-diag] ${tag} ${detail} | ${frames}`)
   }
 """,
         'traceLaunch 定义',
@@ -63,9 +63,9 @@ def main() -> int:
         shell = cut(shell, anchor, label)
 
     for label, anchor in (
-        ('handleResume', "      // [TEMP-DIAG] 幽灵启动排查：确认调用到底来自哪个手势。\n      console.info('[gbc-diag] handleResume ' + session.id)\n"),
-        ('row-dblclick', "        // [TEMP-DIAG]\n        console.info('[gbc-diag] row-dblclick ' + session.id + ' resumable=' + String(Boolean(option)))\n"),
-        ('btn-click', "            // [TEMP-DIAG]\n            console.info('[gbc-diag] btn-click ' + session.id + ' resumable=' + String(Boolean(option)))\n"),
+        ('handleResume', "      // [TEMP-DIAG] 幽灵启动排查：确认调用到底来自哪个手势。\n      console.info('[asc-diag] handleResume ' + session.id)\n"),
+        ('row-dblclick', "        // [TEMP-DIAG]\n        console.info('[asc-diag] row-dblclick ' + session.id + ' resumable=' + String(Boolean(option)))\n"),
+        ('btn-click', "            // [TEMP-DIAG]\n            console.info('[asc-diag] btn-click ' + session.id + ' resumable=' + String(Boolean(option)))\n"),
     ):
         page = cut(page, anchor, label)
 
@@ -74,7 +74,7 @@ def main() -> int:
 
     for path in (SHELL, PAGE):
         body = path.read_text(encoding='utf-8', newline='')
-        left = body.count('TEMP-DIAG') + body.count('traceLaunch') + body.count('[gbc-diag]')
+        left = body.count('TEMP-DIAG') + body.count('traceLaunch') + body.count('[asc-diag]')
         print(f'{path.name}: 剩余插桩引用 {left}')
         assert left == 0, f'{path.name} 还有残留'
     print('全部拆干净')

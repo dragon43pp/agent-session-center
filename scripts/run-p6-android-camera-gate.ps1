@@ -1,5 +1,5 @@
 param(
-  [string]$RelayBase = 'https://gbc.dev',
+  [string]$RelayBase = 'https://asc.dev',
   [string]$Adb = 'C:\Users\Jesse\AppData\Local\Android\Sdk\platform-tools\adb.exe',
   [string]$Emulator = 'C:\Users\Jesse\AppData\Local\Android\Sdk\emulator\emulator.exe',
   [string]$Avd = 'nuva_x64'
@@ -24,8 +24,8 @@ $room = Invoke-RestMethod `
 $testExit = 1
 
 try {
-  $env:GBC_CAMERA_JOIN_URL = $room.joinUrl
-  $env:GBC_CAMERA_QR_OUTPUT = $qrPath
+  $env:ASC_CAMERA_JOIN_URL = $room.joinUrl
+  $env:ASC_CAMERA_QR_OUTPUT = $qrPath
   node scripts/write-camera-qr.mjs
   if ($LASTEXITCODE -ne 0) { throw 'Failed to generate private camera QR' }
 
@@ -62,11 +62,11 @@ try {
   & $Adb shell input keyevent 82
   & $Adb shell input swipe 540 1800 540 400 300
 
-  $env:GBC_REMOTE_P6_URL = "$RelayBase/"
-  $env:GBC_ANDROID_ADB = $Adb
-  $env:GBC_REMOTE_P6_JOIN_URL = $room.joinUrl
-  $env:GBC_REMOTE_P6_REVOKE_TOKEN = $room.revokeToken
-  $env:GBC_ANDROID_CAMERA_QR = '1'
+  $env:ASC_REMOTE_P6_URL = "$RelayBase/"
+  $env:ASC_ANDROID_ADB = $Adb
+  $env:ASC_REMOTE_P6_JOIN_URL = $room.joinUrl
+  $env:ASC_REMOTE_P6_REVOKE_TOKEN = $room.revokeToken
+  $env:ASC_ANDROID_CAMERA_QR = '1'
   npx playwright test e2e/remote-p6-android-live.spec.ts
   $testExit = $LASTEXITCODE
 } finally {

@@ -29,7 +29,7 @@ function check(name: string, ok: boolean, extra = ''): void {
   }
 }
 
-const dir = mkdtempSync(join(tmpdir(), 'gbc-wb-reader-'))
+const dir = mkdtempSync(join(tmpdir(), 'asc-wb-reader-'))
 const home = join(dir, 'workbuddy-home')
 mkdirSync(home, { recursive: true })
 const dbPath = join(home, 'workbuddy.db')

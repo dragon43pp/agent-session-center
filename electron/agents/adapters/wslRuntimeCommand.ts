@@ -16,7 +16,7 @@ export interface WslRuntimeCommand {
 export function wslRuntimeCommand(
   context: ObserverPreparationContext,
   commandArgs: readonly string[],
-  argv0 = 'gbc-adapter-probe'
+  argv0 = 'asc-adapter-probe'
 ): WslRuntimeCommand {
   if (context.installation.runtime.kind !== 'wsl') {
     throw new Error('wslRuntimeCommand requires a WSL installation')

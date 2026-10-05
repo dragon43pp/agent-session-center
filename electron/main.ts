@@ -1,5 +1,5 @@
 import { app, BrowserWindow } from 'electron'
-import { mkdirSync, readFileSync } from 'node:fs'
+import { cpSync, existsSync, mkdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { createWindow } from './window'
 import { registerIpc, type IpcContext } from './ipc'
@@ -62,7 +62,7 @@ import { resolveAppUserDataDir } from './app-paths'
 import type { BridgeHistorySession, BridgeResumeResult, BridgeSessionInfo } from '../shared/bridge-protocol'
 import { createFeishuRouter } from './feishu/router'
 import { openDomesticWorkbuddy } from './sessions/open-workbuddy'
-import { extractGbcCliArgv, runGbcCli } from './cli/gbcCli'
+import { extractAscCliArgv, runAscCli } from './cli/ascCli'
 import { BridgeServer } from './bridge/BridgeServer'
 import { OpenCodeControlPlane } from './bridge/OpenCodeControlPlane'
 import { BridgeStateStore } from './bridge/state'
@@ -85,13 +85,28 @@ import { discoverSessions } from './sessions'
 import { DiagnosticLogEventChannel } from '../shared/diagnostic-log'
 
 
+/**
+ * 品牌更名（Agent Session Center）后 userData 目录同步改名：把旧品牌名目录里
+ * 的本地数据（飞书 token、LLM key、主题、桥接 token 等）整体搬进新目录，
+ * 避免老用户重新配置一遍。
+ *
+ * 注意：下面的旧目录名是定位旧数据的唯一钥匙，在确认用户都已迁移完成之前，
+ * 不要删除这两个字面量，也不要删除本函数。
+ */
+function migrateLegacyUserDataDir(appDataDir: string, newDir: string): void {
+  const legacyDir = join(
+    appDataDir,
+    app.isPackaged ? 'Grok Build Center' : 'Grok Build Center Dev'
+  )
+  if (existsSync(newDir) || !existsSync(legacyDir)) return
+  cpSync(legacyDir, newDir, { recursive: true })
+}
+
 // E2E/开发：隔离 userData，保证 stats/主题等持久化断言从干净状态出发。
 // 必须在 app ready 之前调用。
-// HRACK_USER_DATA_DIR 的 HRACK_ 前缀是历史遗留（早期工作名 HRack），保留是为了
-// 兼容既有配置与外部脚本；新代码请一律用 GBC_USER_DATA_DIR。
+// 环境变量统一为 ASC_ 前缀；早期工作名的前缀已全部废弃，不再做兼容读取。
 registerWindowsAppUserModelId()
-const userDataOverride =
-  process.env['GBC_USER_DATA_DIR'] || process.env['HRACK_USER_DATA_DIR']
+const userDataOverride = process.env['ASC_USER_DATA_DIR']
 if (userDataOverride) {
   app.setPath('userData', userDataOverride)
 } else {
@@ -99,6 +114,7 @@ if (userDataOverride) {
     app.getPath('appData'),
     app.isPackaged
   )
+  migrateLegacyUserDataDir(app.getPath('appData'), userDataDir)
   mkdirSync(userDataDir, { recursive: true })
   app.setPath('userData', userDataDir)
 }
@@ -106,9 +122,9 @@ registerFloatingRendererScheme()
 // 事件提示音在后台/非聚焦时也可能触发；允许无手势自动播放。
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
 
-const cliArgv = extractGbcCliArgv(process.argv)
+const cliArgv = extractAscCliArgv(process.argv)
 if (cliArgv) {
-  void runGbcCli(cliArgv, {
+  void runAscCli(cliArgv, {
     stdout: process.stdout,
     stderr: process.stderr,
     userDataDir: app.getPath('userData')
@@ -118,7 +134,7 @@ if (cliArgv) {
 const isPrimaryInstance = cliArgv ? false : app.requestSingleInstanceLock()
 
 const diagnosticLog = new DiagnosticLog(
-  join(app.getPath('userData'), 'logs', 'gbc-diagnostic.jsonl')
+  join(app.getPath('userData'), 'logs', 'asc-diagnostic.jsonl')
 )
 if (isPrimaryInstance) {
   diagnosticLog.installConsoleCapture()
@@ -435,7 +451,8 @@ const feishu = new FeishuService({
 })
 
 const updateService = new UpdateService({
-  enabled: false,
+  // 打包版默认开启自动更新检查；排查与回归测试时可用 ASC_DISABLE_UPDATES=1 关掉。
+  enabled: app.isPackaged && process.env.ASC_DISABLE_UPDATES !== '1',
   currentVersion: packageMetadata.version,
   driver: new ElectronUpdaterDriver(),
   autoDownload: false,
@@ -558,7 +575,7 @@ if (!cliArgv && !isPrimaryInstance) {
 
 if (isPrimaryInstance) app.whenReady().then(async () => {
   // M0 验收：抵达此行即证明 node-pty 已按 Electron ABI 成功加载
-  console.log('[gbc] app ready; node-pty loaded against Electron ABI OK')
+  console.log('[asc] app ready; node-pty loaded against Electron ABI OK')
   try {
     mkdirSync(join(app.getPath('userData'), 'logs'), { recursive: true })
   } catch {
@@ -618,9 +635,9 @@ if (isPrimaryInstance) app.whenReady().then(async () => {
   try {
     await bridgeServer.start()
   } catch (error) {
-    // Official and Dev share \\.\pipe\gbc-bridge-<user>. A busy pipe must
+    // Official and Dev share \\.\pipe\asc-bridge-<user>. A busy pipe must
     // not block the window — skip-approval / TUI still work without the bridge.
-    console.warn('[gbc] bridge listen failed; continuing without it', error)
+    console.warn('[asc] bridge listen failed; continuing without it', error)
   }
   winRef = createWindow(prefs)
   attachDshSurface(winRef)
@@ -649,8 +666,8 @@ if (isPrimaryInstance) app.whenReady().then(async () => {
   startThemeWatcher()
 
   // E2E：主进程调试钩子（托盘菜单点击 / 快捷键注册状态无法从 renderer 注入）。
-  if (process.env['GBC_E2E']) {
-    ;(globalThis as Record<string, unknown>)['__gbcMainDebug'] = {
+  if (process.env['ASC_E2E']) {
+    ;(globalThis as Record<string, unknown>)['__ascMainDebug'] = {
       hasTray: () => Boolean(trayRef),
       isWindowVisible: () => Boolean(winRef && !winRef.isDestroyed() && winRef.isVisible()),
       isWindowDestroyed: () => Boolean(winRef?.isDestroyed()),

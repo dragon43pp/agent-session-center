@@ -2,19 +2,19 @@ const { existsSync, readdirSync } = require('node:fs')
 const { join } = require('node:path')
 
 const REQUIRED_TRAY_ASSETS = [
-  'gbc-16.png',
-  'gbc-32.png',
-  'gbc-256.png',
-  'gbc-white-16.png',
-  'gbc-white-32.png',
-  'gbc-white-256.png',
-  'gbcTemplate-16.png',
-  'gbcTemplate-32.png',
-  'gbc.ico',
-  'gbc-white.ico',
-  'gbc-app-16.png',
-  'gbc-app-32.png',
-  'gbc-app.ico'
+  'asc-16.png',
+  'asc-32.png',
+  'asc-256.png',
+  'asc-white-16.png',
+  'asc-white-32.png',
+  'asc-white-256.png',
+  'ascTemplate-16.png',
+  'ascTemplate-32.png',
+  'asc.ico',
+  'asc-white.ico',
+  'asc-app-16.png',
+  'asc-app-32.png',
+  'asc-app.ico'
 ]
 
 function packagedResourcesDir(context) {

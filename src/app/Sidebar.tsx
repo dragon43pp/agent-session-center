@@ -161,9 +161,9 @@ export default function Sidebar({
     >
       <div className="flex justify-center">
         <ShinyText
-          text="gbc"
-          color="var(--gbc-brand-logo)"
-          shineColor="var(--gbc-brand-logoShine)"
+          text="asc"
+          color="var(--asc-brand-logo)"
+          shineColor="var(--asc-brand-logoShine)"
           speed={3.2}
           spread={100}
           className="font-brand text-[26px] leading-none tracking-[0.08em]"

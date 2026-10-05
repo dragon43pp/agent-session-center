@@ -142,7 +142,7 @@ export default function AssistantSettingsSection(): React.JSX.Element {
             data-testid="settings-assistant-enabled"
             checked={enabled}
             onChange={(event) => setEnabled(event.target.checked)}
-            className="size-3 accent-[var(--gbc-brand,#FF6B4A)]"
+            className="size-3 accent-[var(--asc-brand,#FF6B4A)]"
           />
           {t.assistantEnabled}
         </label>

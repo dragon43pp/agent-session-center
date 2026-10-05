@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { DiagnosticLog } from '../electron/diagnostics/DiagnosticLog'
 
 test('clearing during log rotation removes old writes and preserves new writes', async () => {
-  const directory = await mkdtemp(join(tmpdir(), 'gbc-log-clear-'))
+  const directory = await mkdtemp(join(tmpdir(), 'asc-log-clear-'))
   const path = join(directory, 'diagnostics.jsonl')
   // Force the next append into real asynchronous rotation, with no mocked I/O.
   await writeFile(path, ' '.repeat(2 * 1024 * 1024))

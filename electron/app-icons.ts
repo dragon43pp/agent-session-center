@@ -47,9 +47,9 @@ export function createThemedCenterIcon(): NativeImage {
 /** Desktop window/taskbar artwork stays branded; only the tray follows system contrast. */
 export function createCenterAppIcon(): NativeImage {
   const directory = iconAssetsDirectory()
-  const image = nativeImage.createFromPath(join(directory, 'gbc-app-16.png'))
+  const image = nativeImage.createFromPath(join(directory, 'asc-app-16.png'))
   const highDpiImage = nativeImage.createFromPath(
-    join(directory, 'gbc-app-32.png')
+    join(directory, 'asc-app-32.png')
   )
   if (!highDpiImage.isEmpty()) {
     image.addRepresentation({
@@ -84,11 +84,11 @@ export function applyCenterWindowIcon(win: BrowserWindow): void {
   syncWindowsShortcutIcon(appIconPath)
 }
 
-/** Taskbar follows the Start Menu / Desktop .lnk, which NSIS pins to GBC.exe,0 (black master). */
+/** Taskbar follows the Start Menu / Desktop .lnk, which NSIS pins to ASC.exe,0 (black master). */
 export function windowsShortcutCandidates(): string[] {
   const appData = process.env.APPDATA ?? join(homedir(), 'AppData', 'Roaming')
   const programs = join(appData, 'Microsoft', 'Windows', 'Start Menu', 'Programs')
-  const product = packageMetadata.build?.productName ?? 'GBC'
+  const product = packageMetadata.build?.productName ?? 'ASC'
   return [
     join(homedir(), 'Desktop', `${product}.lnk`),
     join(programs, `${product}.lnk`),

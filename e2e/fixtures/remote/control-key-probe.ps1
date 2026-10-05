@@ -1,3 +1,3 @@
-Write-Output 'GBC_REMOTE_KEY_PROBE_READY'
+Write-Output 'ASC_REMOTE_KEY_PROBE_READY'
 $key = [Console]::ReadKey($true)
-Write-Output "GBC_REMOTE_KEY_$($key.Key)"
+Write-Output "ASC_REMOTE_KEY_$($key.Key)"

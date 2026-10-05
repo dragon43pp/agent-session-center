@@ -2,13 +2,13 @@
 
 本文件记录 Agent Session Center 各公开版本的重要变化。版本号遵循 [Semantic Versioning](https://semver.org/)。
 
-> 说明：0.4.7 及更早的条目记录的是本项目的早期工作名 **HRack**（Harness Rack）。这些条目按历史事实原样保留，未做改写。
+> 说明：0.4.7 及更早的条目记录的是本项目早期阶段（当时产品名与现在不同）。为避免旧名残留，文中产品名统一写作「本应用」。条目按历史事实原样保留，未做改写。
 
 ## [Unreleased]
 
 ### Changed
 
-- 项目更名 Agent Session Center（原 Grok Build Center）：仓库名 `grok-build-center` → `agent-session-center`，安装包产物名 `GrokBuildCenter-*` → `AgentSessionCenter-*`，resume 能力进入核心简介。
+- 项目更名 Agent Session Center（原 Agent Session Center）：仓库名 `grok-build-center` → `agent-session-center`，安装包产物名 `GrokBuildCenter-*` → `AgentSessionCenter-*`，resume 能力进入核心简介。
 
 ## [0.4.7] - 2026-09-18
 
@@ -25,7 +25,7 @@
 
 ### Fixed
 
-- Adapted to DeepSeek Harness 0.1.2+ browser authentication and Typert RPC: HRack now reads the process launch token, exchanges it for the signed session cookie, and uses that cookie for host ready checks, the official embedded page, wire/projector traffic, and the remote tunnel. Ready checks accept both the older `session.list` / `workspace.list` control plane and the 0.1.5 `session/list` remote. Older DSH hosts that do not print a token keep working without a cookie.
+- Adapted to DeepSeek Harness 0.1.2+ browser authentication and Typert RPC: 本应用 now reads the process launch token, exchanges it for the signed session cookie, and uses that cookie for host ready checks, the official embedded page, wire/projector traffic, and the remote tunnel. Ready checks accept both the older `session.list` / `workspace.list` control plane and the 0.1.5 `session/list` remote. Older DSH hosts that do not print a token keep working without a cookie.
 - The embedded official DSH page now recognizes 0.1.5 layout markers, and a missing default sidebar collapse no longer fails the whole surface.
 - Hardened the DSH web tunnel against unauthenticated denial of service: malformed WebSocket upgrade requests no longer permanently consume the tunnel capacity quota, and relay-side stream-id accounting no longer grows without bound over a relay's lifetime.
 - Fixed relay room capacity exhaustion in deployments without a reconciler: repeatedly creating and revoking rooms no longer leaves permanently revoked tombstones that block all future room creation.
@@ -62,7 +62,7 @@
 
 ### Changed
 
-- Refreshed the desktop, taskbar, tray, and installer branding with the updated HRack mark.
+- Refreshed the desktop, taskbar, tray, and installer branding with the updated 本应用 mark.
 - Standardized adapter preparation commands on a 10-second budget so WSL cold starts and Windows-mounted filesystem access are handled consistently across Grok Build, Kimi Code, Codex, Pi, Claude Code, and OpenCode.
 
 ### Fixed
@@ -87,13 +87,13 @@
 
 ### Fixed
 
-- Fixed intermittent terminal corruption and misalignment after long, scrollable TUI output or window-size changes. HRack now suppresses only ConPTY redraw frames that carry the expected size marker, while preserving application-owned redraws from Cline, Claude Code, Kimi Code, and other terminal UIs.
+- Fixed intermittent terminal corruption and misalignment after long, scrollable TUI output or window-size changes. 本应用 now suppresses only ConPTY redraw frames that carry the expected size marker, while preserving application-owned redraws from Cline, Claude Code, Kimi Code, and other terminal UIs.
 - Restored copy actions in the embedded DSH interface by allowing sanitized clipboard writes only from the same-origin local DSH surface; all unrelated permissions remain denied.
 
 ### Changed
 
-- The embedded DSH interface now keeps its native theme instead of being recolored with HRack theme tokens.
-- Updated the public HRack website with device-aware visual effects that cap render cadence, pause off-screen work, reduce load on constrained devices, and respect reduced-motion preferences.
+- The embedded DSH interface now keeps its native theme instead of being recolored with 本应用 theme tokens.
+- Updated the public 本应用 website with device-aware visual effects that cap render cadence, pause off-screen work, reduce load on constrained devices, and respect reduced-motion preferences.
 
 ## [0.4.2] - 2026-08-26
 
@@ -103,10 +103,10 @@
 
 ### 改进
 
-- 配对 URL 持久化保存，HRack 重启后会自动重新连接；远程设置页改为直接链接 `hrack.dev` 创建配对 URL，并移除只能由网页完成的房间吊销入口。
+- 配对 URL 持久化保存，本应用 重启后会自动重新连接；远程设置页改为直接链接官方网页创建配对 URL，并移除只能由网页完成的房间吊销入口。
 - DSH 网页隧道默认启用，不再要求用户额外打开开关；远控状态和错误提示改为面向用户的明确文案。
-- 官方远控服务迁移到 `hrack.dev`，DSH 网页隧道迁移到 `dsh.hrack.dev`。
-- 重制桌面窗口、任务栏、托盘和安装包图标，使用正确的 HRack 品牌字形与圆角底板；CLI 图标固定使用各提供方的官方品牌颜色，不再跟随主题染色。
+- 官方远控服务与 DSH 网页隧道迁移到官方域名。
+- 重制桌面窗口、任务栏、托盘和安装包图标，使用正确的 本应用 品牌字形与圆角底板；CLI 图标固定使用各提供方的官方品牌颜色，不再跟随主题染色。
 
 ### 修复
 
@@ -123,8 +123,8 @@
 
 ### 新增
 
-- 新增完整的 HRack Remote：桌面端可生成配对 URL / 二维码，经正式 TLS 公网中继把实时会话状态同步到手机，并支持临时接管终端输入。
-- 新增 HRack 手机端配套应用：支持扫码或粘贴 URL 配对、会话列表、横屏全屏监听、状态提示音，以及从监听卡片聚焦桌面端对应会话。
+- 新增完整的 本应用 Remote：桌面端可生成配对 URL / 二维码，经正式 TLS 公网中继把实时会话状态同步到手机，并支持临时接管终端输入。
+- 新增 本应用 手机端配套应用：支持扫码或粘贴 URL 配对、会话列表、横屏全屏监听、状态提示音，以及从监听卡片聚焦桌面端对应会话。
 - 手机端可新建 Claude Code、Codex、OpenCode 等 CLI 会话，并通过桌面端文件选择协议浏览 Windows / WSL 工作区；免审批启动、运行位置和启动参数与桌面端语义一致。
 - 远程终端支持 ANSI/TUI 实时渲染、控制键、方向键、斜杠指令、持久化缩放比例，以及手机软键盘和横竖屏切换。
 - 新增 DSH 官方 Web 界面的安全隧道：手机端可查看活跃 DSH 会话、创建会话、发送消息并与桌面端的会话监听及聚焦状态双向同步。
@@ -134,7 +134,7 @@
 
 - 远控协议补齐版本协商、消息方向白名单、序号与快照恢复、背压和尺寸上限；断线重连不再把历史 PTY 输出当作新流量重复播放。
 - 手机终端采用与桌面端一致的网格与字符宽度语义，键盘弹出时整体平移终端而不改变 PTY 行列数，减少 TUI 重排和右侧空白。
-- 横屏监听状态与桌面悬浮窗对齐，显示 CLI 图标、名称、完成 / 等待确认 / 执行中 / 异常等状态，并复用 HRack 默认提示音。
+- 横屏监听状态与桌面悬浮窗对齐，显示 CLI 图标、名称、完成 / 等待确认 / 执行中 / 异常等状态，并复用 本应用 默认提示音。
 - 公网房间、设备控制权和 DSH 隧道均绑定已认证账户；加入连接撤销、凭据轮换、重连和过期清理边界。
 
 ### 修复
@@ -146,17 +146,17 @@
 ### 发布说明
 
 - 桌面安装包继续提供 Windows x64、macOS Apple Silicon 和 Linux x64；Windows 与 macOS 制品尚未进行商业代码签名，系统首次启动时可能显示安全提醒。
-- 远程控制需配合已部署的 HRack Remote 服务和手机端应用使用；桌面端不会在手机未主动接管时转发键盘输入。
+- 远程控制需配合已部署的 本应用 Remote 服务和手机端应用使用；桌面端不会在手机未主动接管时转发键盘输入。
 
 ## [0.3.6] - 2026-08-21
 
 ### 新增
 
-- 支持重启 DSH 进程：打开 DSH 时标题栏提供「重启 DSH」，设置 → 会话里也有同一入口。安装插件后会杀掉当前 host 再拉起，并重载官方页面；HRack 的跟踪位不会被清掉。
+- 支持重启 DSH 进程：打开 DSH 时标题栏提供「重启 DSH」，设置 → 会话里也有同一入口。安装插件后会杀掉当前 host 再拉起，并重载官方页面；本应用 的跟踪位不会被清掉。
 
 ### 修复
 
-- 适配 DeepSeek Harness 0.1.0-rc.7+：`dsh web` 默认会打开系统浏览器，HRack 嵌入时传入 `--no-open`。WSL 上同版本 web 应用可能不认该参数，被拒绝后自动去掉再启动。
+- 适配 DeepSeek Harness 0.1.0-rc.7+：`dsh web` 默认会打开系统浏览器，本应用 嵌入时传入 `--no-open`。WSL 上同版本 web 应用可能不认该参数，被拒绝后自动去掉再启动。
 - 适配 rc.7+ 官方页面模块加载：Cordis 改为从 `window.__ModuleLoader__` 捕获，不再依赖已移除的 `__DSH_MODULES__`，避免嵌入失败后又弹出浏览器。
 
 ## [0.3.5] - 2026-08-20
@@ -183,13 +183,13 @@
 ### 新增
 
 - 新建 CLI 会话时记住上次工作区，并用主题化下拉框提供最近 5 条工作区记录。
-- 新增 OpenCode Bridge：其它本地 harness 可以创建、发送、监听、审批、回答并关闭 HRack 里已经打开的 OpenCode 标签；设置页可复制用法 Skill。
+- 新增 OpenCode Bridge：其它本地 harness 可以创建、发送、监听、审批、回答并关闭 本应用 里已经打开的 OpenCode 标签；设置页可复制用法 Skill。
 - 新增 Grok Build 会话监听，覆盖本机与 WSL。
 - 支持免审批启动的 CLI 在新建会话时提供勾选，并记住上次选择。
 
 ### 修复
 
-- 普通终端未指定工作区时改在用户主目录启动，不再落到安装目录（例如 `AppData\\Local\\Programs\\HRack`）。
+- 普通终端未指定工作区时改在用户主目录启动，不再落到安装目录（例如 `AppData\\Local\\Programs\\本应用`）。
 - 代码阅读器刷新时不再闪屏，文件树也不会滚回顶部。
 - WSL 中启动 CLI 时外层工作目录不再误用 POSIX 路径，避免 Windows `Error 267`。
 - DSH 监听器现在跟踪 tool call；本轮结束后显示「本轮任务已完成」，不再直接落到「等待你的下一条指令」。
@@ -216,7 +216,7 @@
 ### 新增
 
 - 设置页新增「主题 JSON」编辑器，可编辑并保存个人界面主题（固定 `custom.json`），保存后可在主题选择器中选用。
-- 新增主题创作 Skill（`create-hrack-theme`）及零依赖校验脚本（`validate-theme.cjs`），附带 WCAG 对比度检查。
+- 新增主题创作 Skill（`create-asc-theme`）及零依赖校验脚本（`validate-theme.cjs`），附带 WCAG 对比度检查。
 - 新增 CLI 会话录制脚本（`npm run record:cli-demo`）。
 
 ### 改进
@@ -224,7 +224,7 @@
 - DSH 默认共享 `~/.dsh` 历史目录，与本机 DeepSeek Harness 复用会话历史。
 - DSH 界面圆角改用原生视图圆角（`setBorderRadius`），与侧栏环境色对齐；切换圆角开关不再重开会话。
 - 应用深色模式下，窗口与托盘图标自动切换为浅色变体。
-- 用户数据目录统一为 HRack / HRack Dev，安装包 appId 更新为 `com.hrack.app`。
+- 用户数据目录统一为 本应用 / 本应用 Dev，安装包 appId 更新为 `产品 appId`。
 
 ### 修复
 
@@ -234,7 +234,7 @@
 
 ### 新增
 
-- 产品由 Vibing 更名为 HRack（Harness Rack），更新应用界面、图标、安装包与项目文档。
+- 产品由 Vibing 更名为当时的产品名，更新应用界面、图标、安装包与项目文档。
 - 嵌入 DeepSeek Harness 官方 Web 界面，优先使用兼容的本机或 WSL DSH，随包版本仅作为兜底。
 - 新增 Kimi Code 会话监听，并统一 Claude Code、Codex、OpenCode、Pi 与 Kimi 的状态覆盖语义。
 - 新会话快速启动面板加入 DeepSeek Harness，并补齐已注册 CLI 的品牌图标。

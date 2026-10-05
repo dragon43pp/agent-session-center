@@ -221,9 +221,9 @@ export class CodexObserverAdapter implements AgentObserverAdapter {
     }
 
     const hookEnvironment = {
-      GBC_CODEX_HOOK_DROP: runtimePaths.dropDir,
-      GBC_CODEX_HOOK_BRIDGE: runtimePaths.posixBridge,
-      GBC_CODEX_HOOK_BRIDGE_WINDOWS: runtimePaths.windowsBridge
+      ASC_CODEX_HOOK_DROP: runtimePaths.dropDir,
+      ASC_CODEX_HOOK_BRIDGE: runtimePaths.posixBridge,
+      ASC_CODEX_HOOK_BRIDGE_WINDOWS: runtimePaths.windowsBridge
     }
 
     return {
@@ -278,7 +278,7 @@ export class CodexObserverAdapter implements AgentObserverAdapter {
       const command = wslRuntimeCommand(
         context,
         ['features', 'list'],
-        'gbc-codex-features'
+        'asc-codex-features'
       )
       return this.runCommand(command.file, command.args)
     }
@@ -328,7 +328,7 @@ export class CodexObserverAdapter implements AgentObserverAdapter {
       '/bin/sh',
       '-c',
       'set -eu; d="$1"; n="$2"; p="$d/.$n.partial"; printf "%s" "$n" > "$p"; mv "$p" "$d/$n.probe"',
-      'gbc-codex-probe',
+      'asc-codex-probe',
       runtimeDropDir,
       nonce
     ])

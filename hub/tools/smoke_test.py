@@ -1297,7 +1297,7 @@ def test_ui_panel() -> None:
           "st.steps" in ui.HTML and "会话库" not in ui.HTML)
 
     # ---- 起服务 ----
-    tmp = tempfile.mkdtemp(prefix="gbc-ui-")
+    tmp = tempfile.mkdtemp(prefix="asc-ui-")
     try:
         panel = ui.Panel(os.path.join(tmp, "config.json"),
                          os.path.join(tmp, "session-history.html"))
@@ -1413,7 +1413,7 @@ def test_flow_shared() -> None:
     check("退出 with 后归零", scan._CACHE_TTL == 0)
     check("退出 with 后缓存清空", scan._RECORDS_CACHE == {})
 
-    tmp = tempfile.mkdtemp(prefix="gbc-flow-")
+    tmp = tempfile.mkdtemp(prefix="asc-flow-")
     try:
         out = os.path.join(tmp, "h.html")
         # 只扫一个本机没有的 CLI：快，但走的还是完整那条路（真读盘、真渲染、真落盘）

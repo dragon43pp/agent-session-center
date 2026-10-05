@@ -64,9 +64,9 @@ test.describe('remote P5 creation with real Electron PTY', () => {
     ;({ app, window: page } = await launchApp({
       createDefaultTerminal: false,
       env: {
-        GBC_FIXTURE_OBSERVER: '1',
-        GBC_FIXTURE_OBSERVER_HOLD: '1',
-        GBC_E2E_CLI_EXECUTABLE: resolve(
+        ASC_FIXTURE_OBSERVER: '1',
+        ASC_FIXTURE_OBSERVER_HOLD: '1',
+        ASC_E2E_CLI_EXECUTABLE: resolve(
           __dirname,
           'fixtures/remote/interactive-cli.cmd'
         )
@@ -198,7 +198,7 @@ test.describe('remote P5 creation with real Electron PTY', () => {
         .filter({ hasText: 'Codex' })
     ).toHaveAttribute('data-remote-driven', 'true')
 
-    const marker = `GBC_P5_REAL_${Date.now()}`
+    const marker = `ASC_P5_REAL_${Date.now()}`
     phone.ws.send(
       JSON.stringify({
         v: 1,

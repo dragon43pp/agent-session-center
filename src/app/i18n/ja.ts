@@ -145,7 +145,7 @@ export const ja = {
     homeLabel: 'DSH_HOME',
     homeIsolated: '隔離（推奨）',
     homeShared: '共有 ~/.dsh',
-    homeEnvOverride: 'GBC_DSH_HOME がパスを上書きしています。',
+    homeEnvOverride: 'ASC_DSH_HOME がパスを上書きしています。',
     homeSwitchConfirm:
       'DSH_HOME を切り替えると host が再起動し、ウィンドウが再読み込みされます。既存セッションは移行されません。続けますか？',
     retentionLabel: 'セッション保持',

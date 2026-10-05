@@ -17,7 +17,7 @@ import { wslLaunchOptions } from '../electron/ai-cli-discovery'
 import { projectAdapterEvents } from './helpers/agent-projection-contract'
 
 test.describe('Codex observer adapter', () => {
-  test('uses only guarded GBC hook transport names', () => {
+  test('uses only guarded ASC hook transport names', () => {
     const entries = buildCodexInlineHookConfig()
     expect(entries).toHaveLength(11)
     expect(entries.every((entry) => entry.includes('-EncodedCommand'))).toBe(
@@ -28,7 +28,7 @@ test.describe('Codex observer adapter', () => {
     )?.[1]
     expect(encoded).toBeTruthy()
     const windowsScript = Buffer.from(encoded!, 'base64').toString('utf16le')
-    expect(windowsScript).toContain('GBC_CODEX_HOOK_BRIDGE_WINDOWS')
+    expect(windowsScript).toContain('ASC_CODEX_HOOK_BRIDGE_WINDOWS')
     expect(windowsScript).toContain('Test-Path -LiteralPath')
     expect(windowsScript).not.toContain('VIBING_CODEX_')
     const config = entries.join('\n')
@@ -55,7 +55,7 @@ test.describe('Codex observer adapter', () => {
         }
       },
       ['features', 'list'],
-      'gbc-codex-features'
+      'asc-codex-features'
     )
 
     expect(command).toEqual({
@@ -67,7 +67,7 @@ test.describe('Codex observer adapter', () => {
         '/bin/sh',
         '-lc',
         'p="$1"; shift; PATH="$(dirname "$p"):$PATH" exec "$p" "$@"',
-        'gbc-codex-features',
+        'asc-codex-features',
         '/home/user/.nvm/versions/node/v22.22.3/bin/codex',
         'features',
         'list'
@@ -412,7 +412,7 @@ test.describe('Codex observer adapter', () => {
   })
 
   test('honors explicit inline Hook overrides and degrades without probing', async () => {
-    const runDir = await mkdtemp(join(tmpdir(), 'gbc-codex-conflict-'))
+    const runDir = await mkdtemp(join(tmpdir(), 'asc-codex-conflict-'))
     let probed = false
     const adapter = new CodexObserverAdapter({
       runCommand: async () => {
@@ -467,7 +467,7 @@ test.describe('Codex observer adapter', () => {
   })
 
   test('prepares a per-session host drop and delivers hooks through the adapter seam', async () => {
-    const runDir = await mkdtemp(join(tmpdir(), 'gbc-codex-adapter-'))
+    const runDir = await mkdtemp(join(tmpdir(), 'asc-codex-adapter-'))
     const adapter = new CodexObserverAdapter({
       runCommand: async () => ({ code: 0, stdout: 'hooks stable true\n' }),
       pollIntervalMs: 10
@@ -498,13 +498,13 @@ test.describe('Codex observer adapter', () => {
       expect(prepared.launch.prependArgs).not.toContain(
         '--dangerously-bypass-hook-trust'
       )
-      const dropDir = prepared.launch.env?.GBC_CODEX_HOOK_DROP
+      const dropDir = prepared.launch.env?.ASC_CODEX_HOOK_DROP
       expect(dropDir).toBeTruthy()
       expect(prepared.launch.prependArgs).toContain(
-        `--config=shell_environment_policy.set.GBC_CODEX_HOOK_DROP=${JSON.stringify(dropDir)}`
+        `--config=shell_environment_policy.set.ASC_CODEX_HOOK_DROP=${JSON.stringify(dropDir)}`
       )
       expect(prepared.launch.prependArgs).toContain(
-        `--config=shell_environment_policy.set.GBC_CODEX_HOOK_BRIDGE_WINDOWS=${JSON.stringify(prepared.launch.env?.GBC_CODEX_HOOK_BRIDGE_WINDOWS)}`
+        `--config=shell_environment_policy.set.ASC_CODEX_HOOK_BRIDGE_WINDOWS=${JSON.stringify(prepared.launch.env?.ASC_CODEX_HOOK_BRIDGE_WINDOWS)}`
       )
 
       const events: AdapterEvent[] = []
@@ -541,7 +541,7 @@ test.describe('Codex observer adapter', () => {
 
   test('preserves non-ASCII hook JSON through the real Windows byte bridge', async () => {
     test.skip(process.platform !== 'win32')
-    const runDir = await mkdtemp(join(tmpdir(), 'gbc-codex-bytes-'))
+    const runDir = await mkdtemp(join(tmpdir(), 'asc-codex-bytes-'))
     const adapter = new CodexObserverAdapter({
       pollIntervalMs: 20,
       runCommand: async () => ({ code: 0, stdout: 'hooks stable true\n' })
@@ -631,7 +631,7 @@ test.describe('Codex observer adapter', () => {
   })
 
   test('translates and round-trips a WSL drop without using curl.exe', async () => {
-    const runDir = await mkdtemp(join(tmpdir(), 'gbc-codex-wsl-'))
+    const runDir = await mkdtemp(join(tmpdir(), 'asc-codex-wsl-'))
     const calls: Array<{ file: string; args: readonly string[] }> = []
     const adapter = new CodexObserverAdapter({
       runCommand: async (file, args) => {
@@ -640,10 +640,10 @@ test.describe('Codex observer adapter', () => {
           return { code: 0, stdout: 'hooks stable true\n' }
         }
         if (args.includes('wslpath')) {
-          return { code: 0, stdout: '/mnt/c/gbc-run\n' }
+          return { code: 0, stdout: '/mnt/c/asc-run\n' }
         }
         const nonce = args.at(-1)
-        if (args.includes('gbc-codex-probe') && nonce) {
+        if (args.includes('asc-codex-probe') && nonce) {
           await writeFile(join(runDir, 'codex-drop', `${nonce}.probe`), nonce)
           return { code: 0, stdout: '' }
         }
@@ -671,11 +671,11 @@ test.describe('Codex observer adapter', () => {
           verification: 'verified'
         }
       })
-      expect(prepared.launch.env?.GBC_CODEX_HOOK_DROP).toBe(
-        '/mnt/c/gbc-run/codex-drop'
+      expect(prepared.launch.env?.ASC_CODEX_HOOK_DROP).toBe(
+        '/mnt/c/asc-run/codex-drop'
       )
-      expect(prepared.launch.env?.GBC_CODEX_HOOK_BRIDGE).toBe(
-        '/mnt/c/gbc-run/codex-hook-bridge.sh'
+      expect(prepared.launch.env?.ASC_CODEX_HOOK_BRIDGE).toBe(
+        '/mnt/c/asc-run/codex-hook-bridge.sh'
       )
       expect(calls[0]).toEqual({
         file: 'wsl.exe',
@@ -715,8 +715,8 @@ test.describe('Codex observer adapter', () => {
       [],
       {
         env: {
-          GBC_CODEX_HOOK_DROP: '/mnt/c/gbc-run/codex-drop',
-          GBC_CODEX_HOOK_BRIDGE: '/mnt/c/gbc-run/codex-hook-bridge.sh'
+          ASC_CODEX_HOOK_DROP: '/mnt/c/asc-run/codex-drop',
+          ASC_CODEX_HOOK_BRIDGE: '/mnt/c/asc-run/codex-hook-bridge.sh'
         }
       }
     )
@@ -730,8 +730,8 @@ test.describe('Codex observer adapter', () => {
       '/home/test',
       '--exec',
       'env',
-      'GBC_CODEX_HOOK_DROP=/mnt/c/gbc-run/codex-drop',
-      'GBC_CODEX_HOOK_BRIDGE=/mnt/c/gbc-run/codex-hook-bridge.sh',
+      'ASC_CODEX_HOOK_DROP=/mnt/c/asc-run/codex-drop',
+      'ASC_CODEX_HOOK_BRIDGE=/mnt/c/asc-run/codex-hook-bridge.sh',
       '/home/test/bin/codex'
     ])
   })

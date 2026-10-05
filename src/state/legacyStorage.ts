@@ -1,4 +1,4 @@
-/** Copy one pre-GBC localStorage entry without deleting the rollback source. */
+/** Copy one pre-ASC localStorage entry without deleting the rollback source. */
 export function migrateLegacyStorageKey(
   currentKey: string,
   legacyKey: string

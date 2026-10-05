@@ -13,7 +13,7 @@ import { WorkspaceReader } from '../electron/workspace/WorkspaceReader'
 import { useWorkspaceReaderStore } from '../src/workspace-reader/workspaceReaderStore'
 
 test('decodes supported text while rejecting binary content', async () => {
-  const root = mkdtempSync(join(tmpdir(), 'gbc-workspace-reader-'))
+  const root = mkdtempSync(join(tmpdir(), 'asc-workspace-reader-'))
   try {
     writeFileSync(join(root, 'utf16.txt'), Buffer.concat([
       Buffer.from([0xff, 0xfe]),
@@ -41,7 +41,7 @@ test('decodes supported text while rejecting binary content', async () => {
 })
 
 test('rejects a junction whose real target escapes the mounted root', async () => {
-  const parent = mkdtempSync(join(tmpdir(), 'gbc-workspace-boundary-'))
+  const parent = mkdtempSync(join(tmpdir(), 'asc-workspace-boundary-'))
   try {
     const root = join(parent, 'root')
     const outside = join(parent, 'outside')

@@ -1,7 +1,7 @@
 /**
  * 会话历史的管理操作（本机视图层）。
  *
- * 「隐藏」= GBC 视图里的墓碑，绝不写各 agent 自己的数据目录 ——
+ * 「隐藏」= ASC 视图里的墓碑，绝不写各 agent 自己的数据目录 ——
  * 历史扫描永远只读，这条纪律不因管理功能破例。
  * 「移入回收站」走主进程 shell.trashItem，系统级可恢复。
  */
@@ -30,6 +30,6 @@ export const useSessionOpsStore = create<SessionOpsState>()(
         })),
       clearHidden: () => set({ hiddenKeys: [] })
     }),
-    { name: 'gbc-session-tombstones' }
+    { name: 'asc-session-tombstones' }
   )
 )

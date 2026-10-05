@@ -45,8 +45,8 @@ async function openPhone(joinUrl: string): Promise<PhoneFixture> {
   return { ws, messages }
 }
 
-async function connectGbc(page: Page, joinUrl: string): Promise<void> {
-  await page.evaluate(() => window.__gbcDebugShell?.navigate('settings'))
+async function connectAsc(page: Page, joinUrl: string): Promise<void> {
+  await page.evaluate(() => window.__ascDebugShell?.navigate('settings'))
   await page.getByTestId('settings-category-remote').click()
   await page.getByTestId('settings-remote-url').fill(joinUrl)
   await page.getByTestId('settings-remote-connect').click()
@@ -57,12 +57,12 @@ async function connectGbc(page: Page, joinUrl: string): Promise<void> {
   )
 }
 
-const targetUrl = process.env.GBC_REMOTE_P5_URL
+const targetUrl = process.env.ASC_REMOTE_P5_URL
 
 test.describe('remote P5 live relay', () => {
   test.skip(
     !targetUrl,
-    'set GBC_REMOTE_P5_URL to a real relay generate page to run this gate'
+    'set ASC_REMOTE_P5_URL to a real relay generate page to run this gate'
   )
 
   test('creates and drives one real Electron PTY through the deployed relay', async ({
@@ -90,17 +90,17 @@ test.describe('remote P5 live relay', () => {
       const launched = await launchApp({
         createDefaultTerminal: false,
         env: {
-          GBC_FIXTURE_OBSERVER: '1',
-          GBC_FIXTURE_OBSERVER_HOLD: '1',
-          GBC_E2E_CLI_EXECUTABLE: resolve(
+          ASC_FIXTURE_OBSERVER: '1',
+          ASC_FIXTURE_OBSERVER_HOLD: '1',
+          ASC_E2E_CLI_EXECUTABLE: resolve(
             __dirname,
             'fixtures/remote/interactive-cli.cmd'
           )
         }
       })
       app = launched.app
-      const gbcPage = launched.window
-      await connectGbc(gbcPage, joinUrl)
+      const ascPage = launched.window
+      await connectAsc(ascPage, joinUrl)
 
       phone = await openPhone(joinUrl)
       const catalog = await expect
@@ -155,7 +155,7 @@ test.describe('remote P5 live relay', () => {
       const session = await expect
         .poll(
           () =>
-            gbcPage.evaluate(async (sessionId) => {
+            ascPage.evaluate(async (sessionId) => {
               const found = (await window.agentApi.listActive()).find(
                 (candidate) => candidate.sessionId === sessionId
               )
@@ -167,7 +167,7 @@ test.describe('remote P5 live relay', () => {
         )
         .not.toBeNull()
       void session
-      const real = await gbcPage.evaluate(async (sessionId) => {
+      const real = await ascPage.evaluate(async (sessionId) => {
         const active = (await window.agentApi.listActive()).find(
           (candidate) => candidate.sessionId === sessionId
         )
@@ -182,18 +182,18 @@ test.describe('remote P5 live relay', () => {
         }
       }, created.sessionId)
       expect(real.args).toEqual(['--yolo', '--model', 'p5-live-model'])
-      const latestSize = await gbcPage.evaluate(async (ptyId) => {
+      const latestSize = await ascPage.evaluate(async (ptyId) => {
         const events = (await window.ptyApi.getHistory(ptyId))?.events ?? []
         return events.filter((event) => event.kind === 'resize').at(-1) ?? null
       }, real.ptyId)
       expect(latestSize).toMatchObject({ cols: 44, rows: 19 })
       await expect(
-        gbcPage
+        ascPage
           .getByTestId('sidebar-session-item')
           .filter({ hasText: 'Codex' })
       ).toHaveAttribute('data-remote-driven', 'true')
 
-      const marker = `GBC_P5_LIVE_${Date.now()}`
+      const marker = `ASC_P5_LIVE_${Date.now()}`
       phone.ws.send(
         JSON.stringify({
           v: 1,
@@ -246,7 +246,7 @@ test.describe('remote P5 live relay', () => {
             ).length
         )
         .toBe(2)
-      expect(await gbcPage.evaluate(
+      expect(await ascPage.evaluate(
         async (sessionId) =>
           (await window.agentApi.listActive()).filter(
             (candidate) => candidate.sessionId === sessionId
@@ -262,7 +262,7 @@ test.describe('remote P5 live relay', () => {
         })
       )
       await expect
-        .poll(() => gbcPage.evaluate(() => window.remoteApi.getDriveState()))
+        .poll(() => ascPage.evaluate(() => window.remoteApi.getDriveState()))
         .toMatchObject({ phase: 'idle', sessionId: null })
 
       await relayPage.getByTestId('revoke-room').click()

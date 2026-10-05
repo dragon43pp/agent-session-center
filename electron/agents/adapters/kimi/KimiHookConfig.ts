@@ -4,8 +4,8 @@ export type KimiManagedHookMerge =
   | { ok: true; changed: boolean; content: string }
   | { ok: false; reason: 'kimi-config-marker-conflict' }
 
-const MANAGED_START = '# >>> gbc:kimi-observer:v1'
-const MANAGED_END = '# <<< gbc:kimi-observer:v1'
+const MANAGED_START = '# >>> asc:kimi-observer:v1'
+const MANAGED_END = '# <<< asc:kimi-observer:v1'
 
 const EVENTS = [
   'SessionStart',
@@ -24,9 +24,9 @@ const EVENTS = [
 ] as const
 
 const POSIX_COMMAND =
-  'if [ -n "${GBC_KIMI_HOOK_BRIDGE:-}" ] && [ -f "$GBC_KIMI_HOOK_BRIDGE" ]; then /bin/sh "$GBC_KIMI_HOOK_BRIDGE" >/dev/null 2>&1 || :; fi'
+  'if [ -n "${ASC_KIMI_HOOK_BRIDGE:-}" ] && [ -f "$ASC_KIMI_HOOK_BRIDGE" ]; then /bin/sh "$ASC_KIMI_HOOK_BRIDGE" >/dev/null 2>&1 || :; fi'
 const WINDOWS_COMMAND =
-  'powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "if ($env:GBC_KIMI_HOOK_BRIDGE_WINDOWS -and (Test-Path -LiteralPath $env:GBC_KIMI_HOOK_BRIDGE_WINDOWS -PathType Leaf)) { & $env:GBC_KIMI_HOOK_BRIDGE_WINDOWS }; exit 0"'
+  'powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "if ($env:ASC_KIMI_HOOK_BRIDGE_WINDOWS -and (Test-Path -LiteralPath $env:ASC_KIMI_HOOK_BRIDGE_WINDOWS -PathType Leaf)) { & $env:ASC_KIMI_HOOK_BRIDGE_WINDOWS }; exit 0"'
 
 function lineEnding(source: string): '\r\n' | '\n' {
   return source.includes('\r\n') ? '\r\n' : '\n'
@@ -39,7 +39,7 @@ function tomlString(value: string): string {
 interface ManagedMarker {
   offset: number
   length: number
-  owner: 'gbc' | 'vibing'
+  owner: 'asc' | 'vibing'
   version: string
 }
 
@@ -49,8 +49,8 @@ function managedMarkers(
 ): ManagedMarker[] {
   const pattern =
     boundary === 'start'
-      ? /(^|\n)(# >>> (gbc|vibing):kimi-observer:v([0-9]+))(?=\r?\n|$)/g
-      : /(^|\n)(# <<< (gbc|vibing):kimi-observer:v([0-9]+))(?=\r?\n|$)/g
+      ? /(^|\n)(# >>> (asc|vibing):kimi-observer:v([0-9]+))(?=\r?\n|$)/g
+      : /(^|\n)(# <<< (asc|vibing):kimi-observer:v([0-9]+))(?=\r?\n|$)/g
   const markers: ManagedMarker[] = []
   for (const match of source.matchAll(pattern)) {
     markers.push({
@@ -82,7 +82,7 @@ export function buildKimiManagedHookBlock(
 export function kimiWindowsBridgeScript(): string {
   return `$ErrorActionPreference = 'Stop'
 try {
-  $drop = $env:GBC_KIMI_HOOK_DROP
+  $drop = $env:ASC_KIMI_HOOK_DROP
   if ([string]::IsNullOrWhiteSpace($drop) -or -not [IO.Directory]::Exists($drop)) { exit 0 }
   $inputStream = [Console]::OpenStandardInput()
   $memory = [IO.MemoryStream]::new()
@@ -108,9 +108,9 @@ export function kimiPosixBridgeScript(): string {
   return `#!/bin/sh
 set -eu
 umask 077
-drop="\${GBC_KIMI_HOOK_DROP:-}"
+drop="\${ASC_KIMI_HOOK_DROP:-}"
 [ -n "$drop" ] && [ -d "$drop" ] || exit 0
-tmp="$(mktemp "$drop/.gbc-kimi.XXXXXX.partial")" || exit 0
+tmp="$(mktemp "$drop/.asc-kimi.XXXXXX.partial")" || exit 0
 trap 'rm -f "$tmp"' EXIT HUP INT TERM
 dd bs=1048577 count=1 of="$tmp" 2>/dev/null || true
 size="$(wc -c < "$tmp" | tr -d ' ')"

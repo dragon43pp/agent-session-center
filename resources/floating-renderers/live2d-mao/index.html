@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>GBC Live2D · Mao</title>
+    <title>ASC Live2D · Mao</title>
     <style>
       :root {
         color-scheme: light dark;
@@ -133,14 +133,14 @@
       <span id="state-dot" class="dot idle"></span>
       <div class="copy">
         <p id="live2d-turn-status" class="title">正在加载 Live2D Mao…</p>
-        <p id="session-detail" class="detail">正在连接 GBC 回合状态</p>
+        <p id="session-detail" class="detail">正在连接 ASC 回合状态</p>
       </div>
       <button id="close" type="button" aria-label="关闭悬浮窗">×</button>
     </header>
     <p class="credit">Mao © Live2D Inc.</p>
     <script>
       (() => {
-        const api = window.gbcFloating
+        const api = window.ascFloating
         const statusNode = document.querySelector('#live2d-turn-status')
         const detailNode = document.querySelector('#session-detail')
         const dot = document.querySelector('#state-dot')

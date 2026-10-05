@@ -5,7 +5,7 @@ import { TERMINAL_BACKGROUND_SCHEME } from "../../shared/terminal-background";
 import { NOTIFICATION_SOUND_SCHEME } from "../../shared/notification-sound";
 import type { FloatingRendererRegistry } from "./FloatingRendererRegistry";
 
-export const FLOATING_RENDERER_SCHEME = "gbc-floating";
+export const FLOATING_RENDERER_SCHEME = "asc-floating";
 const MAX_ASSET_BYTES = 16 * 1024 * 1024;
 
 const CONTENT_TYPES: Record<string, string> = {

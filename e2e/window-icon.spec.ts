@@ -5,8 +5,8 @@ import { resolve } from 'node:path'
 import { PNG } from 'pngjs'
 import { windowsShortcutCandidates } from '../electron/app-icons'
 import {
-  gbcIconBasename,
-  gbcWindowsIconFile
+  ascIconBasename,
+  ascWindowsIconFile
 } from '../electron/icon-theme'
 import { launchApp } from './helpers'
 
@@ -37,24 +37,24 @@ function averageVisibleLuminance(path: string): number {
 }
 
 test('desktop uses the branded app icon and keeps the macOS tray template', () => {
-  expect(gbcIconBasename('win32', true)).toBe('gbc-white')
-  expect(gbcIconBasename('win32', false)).toBe('gbc')
-  expect(gbcIconBasename('darwin', true)).toBe('gbcTemplate')
-  expect(gbcWindowsIconFile()).toBe('gbc-app.ico')
+  expect(ascIconBasename('win32', true)).toBe('asc-white')
+  expect(ascIconBasename('win32', false)).toBe('asc')
+  expect(ascIconBasename('darwin', true)).toBe('ascTemplate')
+  expect(ascWindowsIconFile()).toBe('asc-app.ico')
   expect(
     averageVisibleLuminance(
-      resolve(__dirname, '../resources/tray/gbc-white-32.png')
+      resolve(__dirname, '../resources/tray/asc-white-32.png')
     )
   ).toBeGreaterThan(200)
   expect(
-    readFileSync(resolve(__dirname, '../resources/tray/gbc-app.ico')).length
+    readFileSync(resolve(__dirname, '../resources/tray/asc-app.ico')).length
   ).toBeGreaterThan(16)
   expect(icoContainsSize(
-    resolve(__dirname, '../resources/tray/gbc-app.ico'),
+    resolve(__dirname, '../resources/tray/asc-app.ico'),
     256
   )).toBe(true)
   expect(
-    windowsShortcutCandidates().some((path) => path.endsWith('GBC.lnk'))
+    windowsShortcutCandidates().some((path) => path.endsWith('ASC.lnk'))
   ).toBe(true)
 })
 
@@ -63,14 +63,14 @@ Add-Type -AssemblyName System.Drawing
 Add-Type @'
 using System;
 using System.Runtime.InteropServices;
-public static class GBCWindowIconProbe {
+public static class ASCWindowIconProbe {
   [DllImport("user32.dll", CharSet=CharSet.Auto)] public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
   [DllImport("user32.dll", EntryPoint="GetClassLongPtrW")] public static extern IntPtr GetClassLongPtr(IntPtr hWnd, int index);
 }
 '@
-$windowHandle = [IntPtr]([long]$env:GBC_ICON_HWND)
-$handle = [GBCWindowIconProbe]::SendMessage($windowHandle, 0x007F, [IntPtr]2, [IntPtr]::Zero)
-if ($handle -eq [IntPtr]::Zero) { $handle = [GBCWindowIconProbe]::GetClassLongPtr($windowHandle, -34) }
+$windowHandle = [IntPtr]([long]$env:ASC_ICON_HWND)
+$handle = [ASCWindowIconProbe]::SendMessage($windowHandle, 0x007F, [IntPtr]2, [IntPtr]::Zero)
+if ($handle -eq [IntPtr]::Zero) { $handle = [ASCWindowIconProbe]::GetClassLongPtr($windowHandle, -34) }
 if ($handle -eq [IntPtr]::Zero) { Write-Output 0; exit 0 }
 $bitmap = [System.Drawing.Icon]::FromHandle($handle).ToBitmap()
 $total = 0.0; $count = 0
@@ -97,7 +97,7 @@ test('a real Windows BrowserWindow applies the branded app icon', async () => {
         ['-NoProfile', '-NonInteractive', '-Command', WINDOWS_ICON_LUMINANCE_SCRIPT],
         {
           encoding: 'utf8',
-          env: { ...process.env, GBC_ICON_HWND: windowHandle }
+          env: { ...process.env, ASC_ICON_HWND: windowHandle }
         }
       ).trim()),
       { timeout: 10_000, intervals: [100, 250, 500] }

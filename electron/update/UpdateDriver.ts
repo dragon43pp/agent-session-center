@@ -66,9 +66,9 @@ export class ElectronUpdaterDriver implements UpdateDriver {
     updater.allowDowngrade = false
     updater.disableWebInstaller = true
     updater.logger = {
-      info: (...args: unknown[]) => console.info('[gbc:update]', ...args),
-      warn: (...args: unknown[]) => console.warn('[gbc:update]', ...args),
-      error: (...args: unknown[]) => console.error('[gbc:update]', ...args)
+      info: (...args: unknown[]) => console.info('[asc:update]', ...args),
+      warn: (...args: unknown[]) => console.warn('[asc:update]', ...args),
+      error: (...args: unknown[]) => console.error('[asc:update]', ...args)
     }
   }
 
@@ -123,7 +123,7 @@ export class ElectronUpdaterDriver implements UpdateDriver {
 
   quitAndInstall(): void {
     // electron-updater 6.x uses positional arguments. Keep the installer visible
-    // and relaunch GBC after it completes.
+    // and relaunch ASC after it completes.
     this.updater.quitAndInstall(false, true)
   }
 }

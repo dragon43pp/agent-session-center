@@ -22,8 +22,8 @@ async function waitHostReady(window: Page): Promise<void> {
 async function navigate(window: Page, page: string): Promise<void> {
   await window.evaluate((next) => {
     ;(
-      window as unknown as { __gbcDebugShell: { navigate(page: string): void } }
-    ).__gbcDebugShell.navigate(next)
+      window as unknown as { __ascDebugShell: { navigate(page: string): void } }
+    ).__ascDebugShell.navigate(next)
   }, page)
 }
 
@@ -36,7 +36,7 @@ async function homeDshBindings(window: Page): Promise<DshBinding[]> {
   return window.evaluate(() =>
     (
       window as unknown as {
-        __gbcDebugShell: {
+        __ascDebugShell: {
           agentSessions(): Array<{
             sessionId: string
             adapterSessionId?: string
@@ -44,7 +44,7 @@ async function homeDshBindings(window: Page): Promise<DshBinding[]> {
           }>
         }
       }
-    ).__gbcDebugShell
+    ).__ascDebugShell
       .agentSessions()
       .filter(
         (session) =>
@@ -134,15 +134,15 @@ async function inspectSurface(
 ): Promise<SurfaceInspection | null> {
   return app.evaluate(() =>
     (globalThis as unknown as {
-      __gbcMainDebug: {
+      __ascMainDebug: {
         dshSurfaceInspect(): Promise<SurfaceInspection> | null
         dshSurfaceDismissOnboarding(): Promise<boolean> | false
       }
-    }).__gbcMainDebug.dshSurfaceInspect()
+    }).__ascMainDebug.dshSurfaceInspect()
   )
 }
 
-test('the collapsed GBC rail has no separate DSH Home launcher', async () => {
+test('the collapsed ASC rail has no separate DSH Home launcher', async () => {
   const { app, window } = await launchApp({
     createDefaultTerminal: false,
     localDsh: true
@@ -152,9 +152,9 @@ test('the collapsed GBC rail has no separate DSH Home launcher', async () => {
     await window.evaluate(() => {
       ;(
         window as unknown as {
-          __gbcDebugShell: { setNavMode(mode: 'rail'): void }
+          __ascDebugShell: { setNavMode(mode: 'rail'): void }
         }
-      ).__gbcDebugShell.setNavMode('rail')
+      ).__ascDebugShell.setNavMode('rail')
     })
     await expect(window.getByTestId('icon-rail')).toBeVisible()
     await expect(window.getByTestId('rail-dsh')).toHaveCount(0)
@@ -170,7 +170,7 @@ test('the official DSH sidebar retries a transient first collapse failure withou
   const { app, window } = await launchApp({
     createDefaultTerminal: false,
     localDsh: true,
-    env: { GBC_E2E_DSH_COLLAPSE_FAIL_ONCE: '1' }
+    env: { ASC_E2E_DSH_COLLAPSE_FAIL_ONCE: '1' }
   })
   try {
     await expect(window.getByTestId('home-page')).toBeVisible({ timeout: 20_000 })
@@ -211,7 +211,7 @@ test('Home-created DSH slots independently follow the session selected inside ea
   })
   try {
     await expect(window.getByTestId('home-page')).toBeVisible({ timeout: 20_000 })
-    // Scale is a GBC-owned host concern, so it lives in general settings;
+    // Scale is a ASC-owned host concern, so it lives in general settings;
     // all DSH business settings stay in the complete official page.
     await navigate(window, 'settings')
     await expect(window.getByTestId('settings-page')).toBeVisible()
@@ -255,10 +255,10 @@ test('Home-created DSH slots independently follow the session selected inside ea
 
     await app.evaluate(() =>
       (globalThis as unknown as {
-        __gbcMainDebug: {
+        __ascMainDebug: {
           dshSurfaceDismissOnboarding(): Promise<boolean> | false
         }
-      }).__gbcMainDebug.dshSurfaceDismissOnboarding()
+      }).__ascMainDebug.dshSurfaceDismissOnboarding()
     )
     await expect
       .poll(async () => (await inspectSurface(app))?.page?.sidebarClosed, {
@@ -311,10 +311,10 @@ test('Home-created DSH slots independently follow the session selected inside ea
     await app.evaluate(
       (_electron, { sessionId }) =>
         (globalThis as unknown as {
-          __gbcMainDebug: {
+          __ascMainDebug: {
             dshSurfaceSelectSession(sessionId: string): Promise<boolean> | false
           }
-        }).__gbcMainDebug.dshSurfaceSelectSession(sessionId),
+        }).__ascMainDebug.dshSurfaceSelectSession(sessionId),
       { sessionId: sessionA.sessionId }
     )
     await expect
@@ -346,10 +346,10 @@ test('Home-created DSH slots independently follow the session selected inside ea
     await app.evaluate(
       (_electron, { sessionId }) =>
         (globalThis as unknown as {
-          __gbcMainDebug: {
+          __ascMainDebug: {
             dshSurfaceSelectSession(sessionId: string): Promise<boolean> | false
           }
-        }).__gbcMainDebug.dshSurfaceSelectSession(sessionId),
+        }).__ascMainDebug.dshSurfaceSelectSession(sessionId),
       { sessionId: sessionB.sessionId }
     )
     await expect
@@ -362,7 +362,7 @@ test('Home-created DSH slots independently follow the session selected inside ea
       hideCountBeforeOfficialSwitch
     )
 
-    // Only Home creates a second explicit GBC tracking slot. Official sessions
+    // Only Home creates a second explicit ASC tracking slot. Official sessions
     // created through RPC may also be auto-adopted under `official:` slots.
     await navigate(window, 'home')
     await window.getByTestId('home-quick-dsh').click()
@@ -386,10 +386,10 @@ test('Home-created DSH slots independently follow the session selected inside ea
     await app.evaluate(
       (_electron, { sessionId }) =>
         (globalThis as unknown as {
-          __gbcMainDebug: {
+          __ascMainDebug: {
             dshSurfaceSelectSession(sessionId: string): Promise<boolean> | false
           }
-        }).__gbcMainDebug.dshSurfaceSelectSession(sessionId),
+        }).__ascMainDebug.dshSurfaceSelectSession(sessionId),
       { sessionId: sessionC.sessionId }
     )
     await expect
@@ -413,10 +413,10 @@ test('Home-created DSH slots independently follow the session selected inside ea
     await app.evaluate(
       (_electron, { sessionId }) =>
         (globalThis as unknown as {
-          __gbcMainDebug: {
+          __ascMainDebug: {
             dshSurfaceSelectSession(sessionId: string): Promise<boolean> | false
           }
-        }).__gbcMainDebug.dshSurfaceSelectSession(sessionId),
+        }).__ascMainDebug.dshSurfaceSelectSession(sessionId),
       { sessionId: sessionD.sessionId }
     )
     await expect
@@ -469,8 +469,8 @@ test('Home-created DSH slots independently follow the session selected inside ea
     // Renderer portals must not sit underneath the native child view.
     await app.evaluate(() => {
       ;(globalThis as unknown as {
-        __gbcMainDebug: { openNewSession(): void }
-      }).__gbcMainDebug.openNewSession()
+        __ascMainDebug: { openNewSession(): void }
+      }).__ascMainDebug.openNewSession()
     })
     await expect(window.getByTestId('new-session-overlay')).toBeVisible()
     await expect

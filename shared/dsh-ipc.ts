@@ -3,7 +3,7 @@ import type { CliRuntime, CliRuntimeError } from './ipc-contract'
 /**
  * DSH host IPC 契约 —— 主进程 / preload / renderer 三方共享。
  *
- * gbc 把已发现的 deepseek-harness（dsh）作为 agent 运行时：主进程启动
+ * asc 把已发现的 deepseek-harness（dsh）作为 agent 运行时：主进程启动
  * 本机或 WSL 上的 dsh web profile（HTTP 上行 / WebSocket 下行），
  * renderer 通过这里暴露的 baseUrl 直连 host。本文件只描述 host 生命周期，
  * 不描述 dsh wire 协议本身。
@@ -35,7 +35,7 @@ export enum DshInvokeChannel {
   SurfaceHide = 'dsh:surface-hide',
   /** Kill the dsh process, spawn a new one, and reload the official page. */
   SurfaceRestart = 'dsh:surface-restart',
-  /** 只移除 GBC 的当前投影，不修改或归档 DSH 会话。 */
+  /** 只移除 ASC 的当前投影，不修改或归档 DSH 会话。 */
   SurfaceUnfollow = 'dsh:surface-unfollow'
 }
 
@@ -172,7 +172,7 @@ export interface DshApi {
   onStatusChanged(cb: (status: DshHostStatus) => void): () => void
   /**
    * host serve 的 index.html 里注入的 window.__DSH_BOOT__ 原始值。
-   * 形状由 @deepseek-ai/dsh-client-modules 定义（WebBootGraph）；gbc 不重复
+   * 形状由 @deepseek-ai/dsh-client-modules 定义（WebBootGraph）；asc 不重复
    * 声明该类型，renderer 侧交给 dsh-client-web 的 parseBootManifest 校验。
    */
   getBootManifest(): Promise<unknown>
@@ -189,7 +189,7 @@ export interface DshSurfaceBounds {
   cornerRadius: number
 }
 
-/** GBC 只负责 DSH Web surface 的宿主级显示参数，不干预 DSH 自身主题。 */
+/** ASC 只负责 DSH Web surface 的宿主级显示参数，不干预 DSH 自身主题。 */
 export interface DshSurfaceAppearance {
   locale: 'zh' | 'en'
   /** Electron zoom factor；0.75–1.25。 */
@@ -197,7 +197,7 @@ export interface DshSurfaceAppearance {
 }
 
 export interface DshSurfaceShowRequest {
-  /** Home 创建的稳定 GBC 跟踪位；官方页内切换不会改变它。 */
+  /** Home 创建的稳定 ASC 跟踪位；官方页内切换不会改变它。 */
   slotId: string
   /** Home 新建必须回到官方默认页；已有 slot 才恢复绑定会话。 */
   intent: 'new' | 'resume'
@@ -222,7 +222,7 @@ export interface DshSurfaceSnapshot {
 }
 
 /**
- * GBC renderer 的唯一 DSH presentation seam。官方页面的装配、DOM 与
+ * ASC renderer 的唯一 DSH presentation seam。官方页面的装配、DOM 与
  * Cordis runtime 全部留在主进程 Adapter 后面。
  */
 export interface DshSurfaceApi {
@@ -231,7 +231,7 @@ export interface DshSurfaceApi {
   hide(): Promise<void>
   /** Kill the dsh process, spawn a new host, and reload the official page. */
   restart(): Promise<DshSurfaceSnapshot>
-  /** Stop projecting one GBC slot locally; official DSH state is untouched. */
+  /** Stop projecting one ASC slot locally; official DSH state is untouched. */
   unfollow(slotId: string): Promise<void>
 }
 

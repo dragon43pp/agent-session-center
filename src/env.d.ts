@@ -22,7 +22,7 @@ import type {
 import type { NotificationSoundApi } from '../shared/notification-sound'
 import type { FloatingRendererApi } from '../shared/floating-window'
 import type { AssistantApi } from '../shared/assistant'
-import type { GBCDebugShellApi } from './app/AppShell'
+import type { ASCDebugShellApi } from './app/AppShell'
 import type { WorkspaceReaderApi } from '../shared/workspace-reader'
 import type { DshApi, DshSurfaceApi, DshWireApi } from '../shared/dsh-ipc'
 import type { DiagnosticLogApi } from '../shared/diagnostic-log'
@@ -34,7 +34,7 @@ declare global {
     clipboardApi: ClipboardApi
     windowApi: WindowApi
     floatingWindowApi: FloatingWindowApi
-    gbcFloating: FloatingRendererApi
+    ascFloating: FloatingRendererApi
     themeApi: ThemeApi
     dialogApi: DialogApi
     terminalBackgroundApi: TerminalBackgroundApi
@@ -55,8 +55,8 @@ declare global {
     dshWireApi: DshWireApi
     dshSurfaceApi: DshSurfaceApi
     diagnosticLogApi: DiagnosticLogApi
-    __GBC_E2E__?: true
-    __gbcDebugShell?: GBCDebugShellApi
+    __ASC_E2E__?: true
+    __ascDebugShell?: ASCDebugShellApi
   }
 }
 

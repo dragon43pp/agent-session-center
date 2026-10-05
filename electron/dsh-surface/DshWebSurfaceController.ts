@@ -18,7 +18,7 @@ const WAIT_FOR_RUNTIME_SCRIPT = `
 (async () => {
   const deadline = Date.now() + ${RUNTIME_READY_TIMEOUT_MS};
   while (Date.now() < deadline) {
-    const state = globalThis.__GBC_DSH_EMBED__;
+    const state = globalThis.__ASC_DSH_EMBED__;
     const ctx = state?.ctx;
     if (ctx) {
       try {
@@ -36,7 +36,7 @@ const WAIT_FOR_RUNTIME_SCRIPT = `
     }
     await new Promise((resolve) => setTimeout(resolve, 50));
   }
-  const state = globalThis.__GBC_DSH_EMBED__;
+  const state = globalThis.__ASC_DSH_EMBED__;
   throw new Error(
     'official DSH runtime bridge was not captured' +
     (state?.captureError ? ': ' + state.captureError : '')
@@ -45,9 +45,9 @@ const WAIT_FOR_RUNTIME_SCRIPT = `
 
 const INSTALL_ACTIVE_SESSION_REPORTER_SCRIPT = `
 (() => {
-  const state = globalThis.__GBC_DSH_EMBED__;
+  const state = globalThis.__ASC_DSH_EMBED__;
   const sessions = state?.ctx?.get?.('sessions');
-  const bridge = globalThis.__GBC_DSH_HOST_BRIDGE__;
+  const bridge = globalThis.__ASC_DSH_HOST_BRIDGE__;
   if (!state || !sessions?.list || typeof bridge?.reportActiveSession !== 'function') {
     throw new Error('official DSH active-session bridge is unavailable');
   }
@@ -71,10 +71,10 @@ const INSTALL_ACTIVE_SESSION_REPORTER_SCRIPT = `
 function collapseOfficialSidebarScript(forceTransientFailure = false): string {
   return `
 (async () => {
-  const state = globalThis.__GBC_DSH_EMBED__;
+  const state = globalThis.__ASC_DSH_EMBED__;
   const ctx = state?.ctx;
   if (!ctx) throw new Error('official DSH runtime is unavailable');
-  document.documentElement.dataset.gbcEmbedded = 'true';
+  document.documentElement.dataset.ascEmbedded = 'true';
 
   const frameDeadline = Date.now() + 5000;
   let frame;
@@ -89,7 +89,7 @@ function collapseOfficialSidebarScript(forceTransientFailure = false): string {
   if (!frame) throw new Error('official DSH layout frame is unavailable');
 
   // AppFrame derives its breakpoint from a ResizeObserver. Give that observer
-  // and React two paints to absorb the WebContents zoom set by GBC before
+  // and React two paints to absorb the WebContents zoom set by ASC before
   // deciding whether the current frame is actually expanded.
   await new Promise((resolve) => {
     let frames = 0;
@@ -228,9 +228,9 @@ function isTransientSidebarCollapseError(error: unknown): boolean {
 }
 
 /**
- * Owns the isolated official DSH page. The GBC renderer sees only the
+ * Owns the isolated official DSH page. The ASC renderer sees only the
  * semantic show / bounds / hide seam; official DOM, CSS, portals and Cordis
- * runtime never enter GBC's document.
+ * runtime never enter ASC's document.
  */
 export class DshWebSurfaceController {
   private view: WebContentsView | null = null
@@ -398,7 +398,7 @@ export class DshWebSurfaceController {
     try {
       const page = await view.webContents.executeJavaScript(
         `(() => {
-          const state = globalThis.__GBC_DSH_EMBED__;
+          const state = globalThis.__ASC_DSH_EMBED__;
           const sessions = state?.ctx?.get?.('sessions');
           const frame = document.querySelector('[data-details-collapsed]')
             || document.querySelector('[data-shell-overlay]')?.parentElement
@@ -427,7 +427,7 @@ export class DshWebSurfaceController {
             frameColumns: frameStyle?.gridTemplateColumns,
             sidebarClosed: frame?.hasAttribute('data-sidebar-collapsed') === true,
             sidebarDefaultApplied: state?.sidebarDefaultApplied === true,
-            embedded: document.documentElement.dataset.gbcEmbedded === 'true'
+            embedded: document.documentElement.dataset.ascEmbedded === 'true'
           };
         })()`,
         true
@@ -547,8 +547,8 @@ export class DshWebSurfaceController {
         nodeIntegration: false,
         sandbox: false,
         backgroundThrottling: false,
-        partition: 'persist:gbc-dsh-surface',
-        additionalArguments: [`--gbc-dsh-locale=${locale}`]
+        partition: 'persist:asc-dsh-surface',
+        additionalArguments: [`--asc-dsh-locale=${locale}`]
       }
     })
     this.view = view
@@ -652,7 +652,7 @@ export class DshWebSurfaceController {
     await this.requireView().webContents.executeJavaScript(
       `(async () => {
         const target = ${encoded};
-        const state = globalThis.__GBC_DSH_EMBED__;
+        const state = globalThis.__ASC_DSH_EMBED__;
         const sessions = state?.ctx?.get?.('sessions');
         if (!sessions) throw new Error('official DSH sessions service is unavailable');
         const deadline = Date.now() + ${SESSION_READY_TIMEOUT_MS};
@@ -677,7 +677,7 @@ export class DshWebSurfaceController {
   private async clearSession(): Promise<void> {
     await this.requireView().webContents.executeJavaScript(
       `(async () => {
-        const state = globalThis.__GBC_DSH_EMBED__;
+        const state = globalThis.__ASC_DSH_EMBED__;
         const sessions = state?.ctx?.get?.('sessions');
         if (!sessions || typeof sessions.clear !== 'function') {
           throw new Error('official DSH sessions.clear is unavailable');
@@ -752,8 +752,8 @@ export class DshWebSurfaceController {
       for (let attempt = 1; attempt <= SIDEBAR_COLLAPSE_MAX_ATTEMPTS; attempt++) {
         const invocation = ++this.sidebarCollapseInvocationCount
         const forceTransientFailure =
-          process.env['GBC_E2E'] === '1' &&
-          process.env['GBC_E2E_DSH_COLLAPSE_FAIL_ONCE'] === '1' &&
+          process.env['ASC_E2E'] === '1' &&
+          process.env['ASC_E2E_DSH_COLLAPSE_FAIL_ONCE'] === '1' &&
           invocation === 1
         try {
           await view.webContents.executeJavaScript(

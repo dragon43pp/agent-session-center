@@ -50,8 +50,8 @@ export default function FloatingApp({
       setSnapshot(next)
     }
 
-    const unsubscribe = window.gbcFloating.onSnapshot(applySnapshot)
-    void window.gbcFloating.getSnapshot().then(applySnapshot)
+    const unsubscribe = window.ascFloating.onSnapshot(applySnapshot)
+    void window.ascFloating.getSnapshot().then(applySnapshot)
     return () => {
       cancelled = true
       window.cancelAnimationFrame(pulseFrame)
@@ -71,7 +71,7 @@ export default function FloatingApp({
         const height = Math.ceil(root.scrollHeight)
         if (height === lastHeight) return
         lastHeight = height
-        void window.gbcFloating.resizeToContent(height)
+        void window.ascFloating.resizeToContent(height)
       })
     })
     observer.observe(root)
@@ -118,7 +118,7 @@ export default function FloatingApp({
       >
         <header className="app-drag-region flex h-8 shrink-0 items-center gap-2 px-2.5">
           <span className="font-brand text-[13px] leading-none text-brand-logo-muted">
-            gbc
+            asc
           </span>
           {attentionCount > 0 && (
             <span className="font-pingfang text-[9px] text-status-needs-you">
@@ -132,7 +132,7 @@ export default function FloatingApp({
             type="button"
             data-testid="floating-close"
             aria-label={strings.common.close}
-            onClick={() => void window.gbcFloating.disable()}
+            onClick={() => void window.ascFloating.disable()}
             className="app-no-drag ml-auto flex size-5 items-center justify-center rounded-md text-text-faint transition-colors hover:bg-surface-hover hover:text-text-secondary"
           >
             <X className="size-3" strokeWidth={1.75} />
@@ -157,7 +157,7 @@ export default function FloatingApp({
                     data-testid="floating-session-item"
                     data-session-id={session.sessionId}
                     onClick={() =>
-                      void window.gbcFloating.focusSession(
+                      void window.ascFloating.focusSession(
                         session.sessionId
                       )
                     }

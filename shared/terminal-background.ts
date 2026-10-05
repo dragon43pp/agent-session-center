@@ -1,4 +1,4 @@
-export const TERMINAL_BACKGROUND_SCHEME = 'gbc-terminal-bg'
+export const TERMINAL_BACKGROUND_SCHEME = 'asc-terminal-bg'
 export const TERMINAL_BACKGROUND_MAX_BYTES = 16 * 1024 * 1024
 export const TERMINAL_BACKGROUND_EXTENSIONS = [
   'png',

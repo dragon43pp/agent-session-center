@@ -13,19 +13,19 @@ async function main() {
     executablePath,
     env: {
       ...process.env,
-      GBC_E2E: '1',
-      GBC_USER_DATA_DIR: mkdtempSync(join(tmpdir(), 'gbc-release-tray-'))
+      ASC_E2E: '1',
+      ASC_USER_DATA_DIR: mkdtempSync(join(tmpdir(), 'asc-release-tray-'))
     }
   })
   try {
     await app.firstWindow({ timeout: 30_000 })
     const result = await app.evaluate(({ nativeImage }) => {
       const separator = process.platform === 'win32' ? '\\' : '/'
-      const iconPath = [process.resourcesPath, 'tray', 'gbc-16.png'].join(
+      const iconPath = [process.resourcesPath, 'tray', 'asc-16.png'].join(
         separator
       )
       const image = nativeImage.createFromPath(iconPath)
-      const debug = globalThis.__gbcMainDebug
+      const debug = globalThis.__ascMainDebug
       return {
         iconPath,
         iconEmpty: image.isEmpty(),

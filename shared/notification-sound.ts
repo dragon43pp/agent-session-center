@@ -6,7 +6,7 @@
  * renderer 试听与事件触发。
  */
 
-export const NOTIFICATION_SOUND_SCHEME = 'gbc-notification'
+export const NOTIFICATION_SOUND_SCHEME = 'asc-notification'
 export const NOTIFICATION_SOUND_MAX_BYTES = 10 * 1024 * 1024
 export const DEFAULT_NOTIFICATION_SOUND_NAME = 'done.mp3'
 

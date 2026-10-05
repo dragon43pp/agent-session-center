@@ -2,7 +2,7 @@
 
 任务背景：「幽灵启动」排查中，kill 阶段会刷出几万行
 `Render frame was disposed before WebFrameMain could be accessed`，
-把真正有用的两类信号（renderer 的 [gbc-diag] 追踪行、main 的 spawn ptyId 行）
+把真正有用的两类信号（renderer 的 [asc-diag] 追踪行、main 的 spawn ptyId 行）
 埋在 20 万行里。本脚本只做过滤与按时间排序，不写任何东西。
 
 用法：
@@ -19,7 +19,7 @@ NOISE = (
     'WebFrameMain',
 )
 
-KEYS = ('[gbc-diag]', 'spawn ptyId', 'session.load_session', 'autoResume')
+KEYS = ('[asc-diag]', 'spawn ptyId', 'session.load_session', 'autoResume')
 
 
 def row_time(row: dict) -> str:

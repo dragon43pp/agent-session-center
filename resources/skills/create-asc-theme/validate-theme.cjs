@@ -1,4 +1,4 @@
-/* Bundled with the create-gbc-theme Skill — plain Node, zero dependencies.
+/* Bundled with the create-asc-theme Skill — plain Node, zero dependencies.
  * Mirrors shared/theme-schema.ts (UI_COLOR_TOKENS + color literal rules) and
  * prints WCAG contrast for the canonical fg/bg pairs.
  * MIRROR ONLY: if shared/theme-schema.ts changes, update the lists below.

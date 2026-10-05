@@ -341,7 +341,7 @@ test('DSH projector listens to mux tool calls and marks a finished turn as done'
   }
 })
 
-test('a DSH session created outside GBC is adopted into the desktop list', async () => {
+test('a DSH session created outside ASC is adopted into the desktop list', async () => {
   const existing = {
     sessionId: 'session-a',
     running: false,
@@ -461,7 +461,7 @@ test('DSH projector treats a watched running→idle flip as turn completion', as
   }
 })
 
-test('pausing the projector keeps GBC slots across a host restart', async () => {
+test('pausing the projector keeps ASC slots across a host restart', async () => {
   const { bridge, projector, restore } = await startLiveProjector([
     {
       sessionId: 'session-a',

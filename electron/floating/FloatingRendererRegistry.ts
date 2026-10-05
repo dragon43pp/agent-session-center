@@ -143,7 +143,7 @@ export class FloatingRendererRegistry {
     if (this.disposed) return this.snapshot()
     const builtin: FloatingRendererDefinition = {
       id: BUILTIN_FLOATING_RENDERER_ID,
-      name: 'GBC Default',
+      name: 'ASC Default',
       version: null,
       source: 'builtin',
       root: this.options.builtinRoot,

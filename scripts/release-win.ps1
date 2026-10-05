@@ -4,7 +4,7 @@ $workspace = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
 $packagePath = Join-Path $workspace 'package.json'
 $package = Get-Content -LiteralPath $packagePath -Raw | ConvertFrom-Json
 $version = [string]$package.version
-$releaseDir = Join-Path $env:TEMP ("gbc-release-$version-" + [guid]::NewGuid().ToString('N'))
+$releaseDir = Join-Path $env:TEMP ("asc-release-$version-" + [guid]::NewGuid().ToString('N'))
 $artifactDir = Join-Path $workspace 'artifacts'
 $installerName = "AgentSessionCenter-Setup-$version.exe"
 $installerPath = Join-Path $releaseDir $installerName
@@ -168,7 +168,7 @@ try {
   if ($succeeded -and (Test-Path -LiteralPath $releaseDir -PathType Container)) {
     $resolvedRelease = [System.IO.Path]::GetFullPath($releaseDir)
     $resolvedTemp = [System.IO.Path]::GetFullPath($env:TEMP).TrimEnd('\') + '\'
-    if ($resolvedRelease.StartsWith($resolvedTemp) -and (Split-Path $resolvedRelease -Leaf) -like 'gbc-release-*') {
+    if ($resolvedRelease.StartsWith($resolvedTemp) -and (Split-Path $resolvedRelease -Leaf) -like 'asc-release-*') {
       Remove-Item -LiteralPath $resolvedRelease -Recurse -Force
     }
   }

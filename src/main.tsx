@@ -28,9 +28,9 @@ async function bootstrap(): Promise<void> {
     ? 'floating'
     : 'main'
   if (floatingSurface) {
-    const initialSnapshot = await window.gbcFloating.getSnapshot()
+    const initialSnapshot = await window.ascFloating.getSnapshot()
     applyFloatingAppearance(initialSnapshot.appearance)
-    createRoot(document.getElementById('gbc-root')!).render(
+    createRoot(document.getElementById('asc-root')!).render(
       <FloatingApp initialSnapshot={initialSnapshot} />
     )
     return
@@ -128,7 +128,7 @@ async function bootstrap(): Promise<void> {
 
   // 注意：不使用 <React.StrictMode>。StrictMode 会在 dev 下双触发 effect，
   // 导致 xterm 被 mount→dispose→mount 且 pty 重复 spawn，违背 SPEC §5.1「只挂载一次」。
-  createRoot(document.getElementById('gbc-root')!).render(
+  createRoot(document.getElementById('asc-root')!).render(
     <App />
   )
 }

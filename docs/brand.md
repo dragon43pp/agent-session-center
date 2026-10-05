@@ -26,10 +26,10 @@
 
 ### 改名的教训（记下来免得再犯）
 
-这项目叫过 `hrack`（原型来自第三方 Apache-2.0 项目 UniRound-Tec/hrack），
-再之前叫过 `grok-build-pager`，最早叫过 `SessionDeck`。改名后叫过 `grok-build-center`，
+这项目的原型来自第三方 Apache-2.0 上游项目（署名见根目录 `NOTICE`），
+再之前叫过 `grok-build-pager`，最早叫过 `SessionDeck`，随后叫过 `grok-build-center`，
 现在叫 `agent-session-center`。完整沿革：**SessionDeck → grok-build-pager →
-Grok Build Center → Agent Session Center**。几次改名换来三条规矩：
+grok-build-center → agent-session-center**。几次改名换来三条规矩：
 
 1. **名字不能是比喻。** pager（传呼机）这个比喻其实很准 —— 但用户遇到问题时
    搜的是 `grok build session manager`，**没人会去搜一个比喻**。

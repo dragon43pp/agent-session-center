@@ -10,7 +10,7 @@ import { useSettingsStore } from './settingsStore'
 export type SessionKind = 'pty' | 'dsh'
 
 export interface SessionEntry {
-  /** GBC-owned stable identity used by navigation and presentation. */
+  /** ASC-owned stable identity used by navigation and presentation. */
   sessionId: string
   /** Adapter-owned session identity, e.g. the official DSH session id. */
   adapterSessionId?: string

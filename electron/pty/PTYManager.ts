@@ -81,7 +81,7 @@ function looksLikePath(shell: string): boolean {
 
 /**
  * PTY child capabilities are independent from the renderer's visual theme.
- * Codex Desktop launches GBC with TERM=dumb, which is correct for its own
+ * Codex Desktop launches ASC with TERM=dumb, which is correct for its own
  * non-interactive command runner but not for the ConPTY/xterm surface we create.
  */
 export function ptyEnvironment(
@@ -230,7 +230,7 @@ export class PTYManager {
     const cols = opts.cols ?? 80
     const rows = opts.rows ?? 24
     console.log(
-      `[gbc] spawn ptyId=${ptyId} shell=${opts.shell ?? '(default)'}`
+      `[asc] spawn ptyId=${ptyId} shell=${opts.shell ?? '(default)'}`
     )
 
     // Windows：裸命令名先解析成绝对路径，避免 CreateProcess 找不到可执行文件。
@@ -336,7 +336,7 @@ export class PTYManager {
         const accepted = dataQueue.push(displayBytes)
         if (!accepted) {
           console.error(
-            `[gbc] ptyId=${ptyId} output exceeded the bounded delivery buffer; terminating PTY`
+            `[asc] ptyId=${ptyId} output exceeded the bounded delivery buffer; terminating PTY`
           )
           try {
             spawnedPty.kill()
@@ -541,7 +541,7 @@ export class PTYManager {
       // ConPTY 可以在最后一次存活检查与 native resize 调用之间退出。
       // resize 是窗口同步的 best-effort 操作，迟到失败不能成为主进程未捕获异常。
       console.warn(
-        `[gbc] ignored stale PTY resize ${cols}x${rows}: ${String(error)}`
+        `[asc] ignored stale PTY resize ${cols}x${rows}: ${String(error)}`
       )
     }
   }

@@ -14,15 +14,15 @@ import {
 import { launchApp } from './helpers'
 
 const execFileAsync = promisify(execFile)
-const joinUrl = process.env.GBC_REMOTE_DSH_D4_JOIN_URL
-const dshOrigin = process.env.GBC_REMOTE_DSH_D4_ORIGIN
-const dshExecutable = process.env.GBC_E2E_REAL_DSH
-const adbExecutable = process.env.GBC_ANDROID_ADB
-const androidSerial = process.env.GBC_ANDROID_SERIAL
-const requirePhysicalAndroid = process.env.GBC_DSH_REQUIRE_PHYSICAL === '1'
+const joinUrl = process.env.ASC_REMOTE_DSH_D4_JOIN_URL
+const dshOrigin = process.env.ASC_REMOTE_DSH_D4_ORIGIN
+const dshExecutable = process.env.ASC_E2E_REAL_DSH
+const adbExecutable = process.env.ASC_ANDROID_ADB
+const androidSerial = process.env.ASC_ANDROID_SERIAL
+const requirePhysicalAndroid = process.env.ASC_DSH_REQUIRE_PHYSICAL === '1'
 const appPackage =
-  process.env.GBC_ANDROID_APP_PACKAGE ?? 'app.modplex.gbc.remote'
-const uiDumpPath = '/sdcard/gbc-dsh-d4-window.xml'
+  process.env.ASC_ANDROID_APP_PACKAGE ?? 'app.modplex.asc.remote'
+const uiDumpPath = '/sdcard/asc-dsh-d4-window.xml'
 
 class NodeSocketAdapter implements RemoteSocket {
   onopen: (() => void) | null = null
@@ -184,7 +184,7 @@ function quoteRegex(value: string): string {
 }
 
 async function adb(...args: string[]): Promise<string> {
-  if (!adbExecutable) throw new Error('GBC_ANDROID_ADB is not configured')
+  if (!adbExecutable) throw new Error('ASC_ANDROID_ADB is not configured')
   const result = await execFileAsync(adbExecutable, [
     ...(androidSerial ? ['-s', androidSerial] : []),
     ...args
@@ -344,7 +344,7 @@ async function startAndroid(): Promise<void> {
   )
 }
 
-async function connectGbc(page: Page, targetJoinUrl: string): Promise<void> {
+async function connectAsc(page: Page, targetJoinUrl: string): Promise<void> {
   await page.evaluate(
     async ({ url }) => {
       await window.remoteApi.setDshEnabled(true)
@@ -364,7 +364,7 @@ async function launchFixtureSession(page: Page, name: string): Promise<{
   sessionId: string
   ptyId: string
 }> {
-  await page.evaluate(() => window.__gbcDebugShell?.navigate('home'))
+  await page.evaluate(() => window.__ascDebugShell?.navigate('home'))
   await expect(page.getByTestId('home-quick-codex')).toBeVisible({ timeout: 45_000 })
   await page.getByTestId('home-quick-codex').click()
   await page.getByTestId('cli-session-name').fill(name)
@@ -494,7 +494,7 @@ test.describe('remote DSH D4 Android public relay', () => {
         `${hardware}\n${characteristics}\n${model}`
       )
     if (requirePhysicalAndroid) {
-      expect(androidSerial, 'physical gate requires GBC_ANDROID_SERIAL').toBeTruthy()
+      expect(androidSerial, 'physical gate requires ASC_ANDROID_SERIAL').toBeTruthy()
       expect(emulatorDetected, 'physical gate rejected an emulator').toBe(false)
     }
 
@@ -506,10 +506,10 @@ test.describe('remote DSH D4 Android public relay', () => {
         createDefaultTerminal: false,
         localDsh: true,
         env: {
-          GBC_E2E_DSH_INSTALLATION: dshExecutable,
-          GBC_FIXTURE_OBSERVER: '1',
-          GBC_FIXTURE_OBSERVER_HOLD: '1',
-          GBC_E2E_CLI_EXECUTABLE: resolve(
+          ASC_E2E_DSH_INSTALLATION: dshExecutable,
+          ASC_FIXTURE_OBSERVER: '1',
+          ASC_FIXTURE_OBSERVER_HOLD: '1',
+          ASC_E2E_CLI_EXECUTABLE: resolve(
             __dirname,
             'fixtures/remote/interactive-cli.cmd'
           )
@@ -519,7 +519,7 @@ test.describe('remote DSH D4 Android public relay', () => {
       const workspace = resolve(launched.userDataDir, 'd4-real-workspace')
       mkdirSync(workspace, { recursive: true })
       const fixtureSession = await launchFixtureSession(launched.window, 'D4 PTY parallel')
-      await connectGbc(launched.window, joinUrl)
+      await connectAsc(launched.window, joinUrl)
 
       await expect
         .poll(() => launched.window.evaluate(() => window.dshApi.getStatus()), {

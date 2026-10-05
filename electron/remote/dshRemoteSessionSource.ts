@@ -7,7 +7,7 @@ import type {
 } from './RemoteDesktopClient'
 
 /**
- * The phone mirrors GBC's followed DSH projections. DSH session.list is only
+ * The phone mirrors ASC's followed DSH projections. DSH session.list is only
  * bootstrap state for those projections and must never become a phone-side
  * history directory.
  */

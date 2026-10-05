@@ -44,12 +44,12 @@ async function createAgent(page: Page): Promise<{
   })
 }
 
-const targetUrl = process.env.GBC_REMOTE_DEMO_URL
+const targetUrl = process.env.ASC_REMOTE_DEMO_URL
 
 test.describe('remote browser controller live relay', () => {
   test.skip(
     !targetUrl,
-    'set GBC_REMOTE_DEMO_URL to a real relay generate page to run this gate'
+    'set ASC_REMOTE_DEMO_URL to a real relay generate page to run this gate'
   )
 
   test('browser page drives and releases a real Electron PTY', async ({
@@ -76,21 +76,21 @@ test.describe('remote browser controller live relay', () => {
       const launched = await launchApp({
         createDefaultTerminal: false,
         env: {
-          GBC_FIXTURE_OBSERVER: '1',
-          GBC_FIXTURE_OBSERVER_HOLD: '1'
+          ASC_FIXTURE_OBSERVER: '1',
+          ASC_FIXTURE_OBSERVER_HOLD: '1'
         }
       })
       app = launched.app
-      const gbcPage = launched.window
-      const agent = await createAgent(gbcPage)
+      const ascPage = launched.window
+      const agent = await createAgent(ascPage)
       const joinUrl = await relayPage.getByTestId('join-url').innerText()
 
-      await gbcPage.evaluate(() => window.__gbcDebugShell?.navigate('settings'))
-      await gbcPage.getByTestId('settings-category-remote').click()
-      await gbcPage.getByTestId('settings-remote-url').fill(joinUrl)
-      await gbcPage.getByTestId('settings-remote-connect').click()
-      await gbcPage.getByTestId('settings-remote-confirm-accept').click()
-      await expect(gbcPage.getByTestId('settings-remote-status')).toHaveAttribute(
+      await ascPage.evaluate(() => window.__ascDebugShell?.navigate('settings'))
+      await ascPage.getByTestId('settings-category-remote').click()
+      await ascPage.getByTestId('settings-remote-url').fill(joinUrl)
+      await ascPage.getByTestId('settings-remote-connect').click()
+      await ascPage.getByTestId('settings-remote-confirm-accept').click()
+      await expect(ascPage.getByTestId('settings-remote-status')).toHaveAttribute(
         'data-remote-phase',
         'waiting-phone'
       )
@@ -113,12 +113,12 @@ test.describe('remote browser controller live relay', () => {
         'driving'
       )
 
-      await gbcPage.evaluate((terminalId) => {
-        window.__gbcDebugShell?.navigate(`terminal:${terminalId}`)
+      await ascPage.evaluate((terminalId) => {
+        window.__ascDebugShell?.navigate(`terminal:${terminalId}`)
       }, agent.terminalId)
-      await expect(gbcPage.getByTestId('terminal-remote-overlay')).toBeVisible()
+      await expect(ascPage.getByTestId('terminal-remote-overlay')).toBeVisible()
 
-      const marker = `GBC_BROWSER_DEMO_${Date.now()}`
+      const marker = `ASC_BROWSER_DEMO_${Date.now()}`
       const renderedBytesBefore = Number(
         (await demoPage.locator('.terminal-host').getAttribute('data-rendered-pty-bytes')) ??
           '0'
@@ -128,7 +128,7 @@ test.describe('remote browser controller live relay', () => {
       await demoPage.keyboard.press('Enter')
       await expect
         .poll(() =>
-          gbcPage.evaluate(async (ptyId) => {
+          ascPage.evaluate(async (ptyId) => {
             const history = await window.ptyApi.getHistory(ptyId)
             return history?.events
               .filter((event) => event.kind === 'output')
@@ -149,7 +149,7 @@ test.describe('remote browser controller live relay', () => {
 
       await demoPage.getByTestId('demo-return').click()
       await expect(demoPage.getByTestId('demo-session-list')).toBeVisible()
-      await expect(gbcPage.getByTestId('terminal-remote-overlay')).toHaveCount(0)
+      await expect(ascPage.getByTestId('terminal-remote-overlay')).toHaveCount(0)
 
       await relayPage.getByTestId('revoke-room').click()
       await expect(relayPage.getByTestId('status')).toHaveText('Room revoked.')

@@ -33,7 +33,7 @@ function check(name: string, ok: boolean, extra = ''): void {
   }
 }
 
-const dir = mkdtempSync(join(tmpdir(), 'gbc-diag-loop-'))
+const dir = mkdtempSync(join(tmpdir(), 'asc-diag-loop-'))
 const log = new DiagnosticLog(join(dir, 'diag.jsonl'))
 
 // 复刻回路：监听者收到任何变更，就再 append 一条「广播失败」——

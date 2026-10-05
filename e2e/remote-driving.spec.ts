@@ -38,7 +38,7 @@ async function createRealAgent(page: Page, name: string): Promise<{
   terminalId: string
   ptyId: string
 }> {
-  await page.evaluate(() => window.__gbcDebugShell?.navigate('home'))
+  await page.evaluate(() => window.__ascDebugShell?.navigate('home'))
   await page.getByTestId('home-quick-codex').click()
   await page.getByTestId('cli-session-name').fill(name)
   await page.getByTestId('cli-workspace').fill(process.cwd())
@@ -85,8 +85,8 @@ test.describe('remote driving with real Electron PTY', () => {
     ;({ app, window: page } = await launchApp({
       createDefaultTerminal: false,
       env: {
-        GBC_FIXTURE_OBSERVER: '1',
-        GBC_FIXTURE_OBSERVER_HOLD: '1'
+        ASC_FIXTURE_OBSERVER: '1',
+        ASC_FIXTURE_OBSERVER_HOLD: '1'
       }
     }))
   })
@@ -109,7 +109,7 @@ test.describe('remote driving with real Electron PTY', () => {
         : null
     }, other.ptyId)
 
-    await page.evaluate(() => window.__gbcDebugShell?.navigate('settings'))
+    await page.evaluate(() => window.__ascDebugShell?.navigate('settings'))
     await page.getByTestId('settings-category-remote').click()
     await page
       .getByTestId('settings-remote-url')
@@ -177,7 +177,7 @@ test.describe('remote driving with real Electron PTY', () => {
         v: 1,
         type: 'pty-in',
         sessionId: agent.sessionId,
-        data: 'echo GBC_P4_PHONE_INPUT\r'
+        data: 'echo ASC_P4_PHONE_INPUT\r'
       })
     )
     await expect
@@ -195,7 +195,7 @@ test.describe('remote driving with real Electron PTY', () => {
           )
           .join('')
       )
-      .toContain('GBC_P4_PHONE_INPUT')
+      .toContain('ASC_P4_PHONE_INPUT')
 
     for (const message of phone.messages) {
       if (message.type !== 'pty-out') continue
@@ -243,7 +243,7 @@ test.describe('remote driving with real Electron PTY', () => {
     ).toEqual(otherSizeBefore)
 
     await page.evaluate((terminalId) => {
-      window.__gbcDebugShell?.navigate(`terminal:${terminalId}`)
+      window.__ascDebugShell?.navigate(`terminal:${terminalId}`)
     }, agent.terminalId)
     await expect(page.getByTestId('terminal-remote-overlay')).toBeVisible()
     await expect(
@@ -252,7 +252,7 @@ test.describe('remote driving with real Electron PTY', () => {
         .filter({ hasText: 'Remote P4 drive fixture' })
     ).toHaveAttribute('data-remote-driven', 'true')
 
-    const blockedMarker = `GBC_P4_LOCAL_BLOCKED_${Date.now()}`
+    const blockedMarker = `ASC_P4_LOCAL_BLOCKED_${Date.now()}`
     await page.locator('.xterm-helper-textarea:visible').focus()
     await page.keyboard.type(`echo ${blockedMarker}`)
     await page.keyboard.press('Enter')
@@ -288,7 +288,7 @@ test.describe('remote driving with real Electron PTY', () => {
       )
       .not.toBe('52x20')
 
-    const reclaimedMarker = `GBC_P4_LOCAL_RECLAIMED_${Date.now()}`
+    const reclaimedMarker = `ASC_P4_LOCAL_RECLAIMED_${Date.now()}`
     await typeInTerminal(page, `echo ${reclaimedMarker}`)
     await page.keyboard.press('Enter')
     await expect
@@ -353,7 +353,7 @@ test.describe('remote driving with real Electron PTY', () => {
   test('releases a real PTY after the 15 second phone grace expires', async () => {
     test.setTimeout(45_000)
     const agent = await createRealAgent(page, 'Remote P4 timeout fixture')
-    await page.evaluate(() => window.__gbcDebugShell?.navigate('settings'))
+    await page.evaluate(() => window.__ascDebugShell?.navigate('settings'))
     await page.getByTestId('settings-category-remote').click()
     await page.getByTestId('settings-remote-url').fill(relay.joinUrl('p4-room'))
     await page.getByTestId('settings-remote-connect').click()

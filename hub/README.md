@@ -594,7 +594,7 @@ Windows 的图形界面和命令行是两套子系统（GUI / CUI），**一个 
 
 ```cmd
 AgentSessionCenter-Setup.exe --silent                        :: 默认目录，不问任何问题
-AgentSessionCenter-Setup.exe --silent --dir D:\tools\gbc      :: 指定目录
+AgentSessionCenter-Setup.exe --silent --dir D:\tools\asc      :: 指定目录
 AgentSessionCenter-Setup.exe --silent --no-shortcuts         :: 不建快捷方式
 ```
 

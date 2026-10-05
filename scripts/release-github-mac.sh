@@ -7,8 +7,9 @@ tag_name="${1:-${GITHUB_REF_NAME:-}}"
 version="$(node -p "require('$workspace/package.json').version")"
 expected_tag="v$version"
 
-# 与 release-mac.sh 保持一致的环境变量名（含历史 HRACK_ 前缀，见 CONTRIBUTING）。
-arch="${HRACK_MAC_ARCH:-arm64}"
+# 环境变量名必须与 release-mac.sh 完全一致，默认值也必须相同，
+# 否则这里会去找不存在的产物。
+arch="${ASC_MAC_ARCH:-arm64}"
 
 if [[ -z "$tag_name" ]]; then
   echo 'A release tag is required. Pass vX.Y.Z or set GITHUB_REF_NAME.' >&2

@@ -1,6 +1,6 @@
 import type { ObserverCapabilities } from '../../../../shared/agent-events'
 
-export const GROK_HOOK_FILE_NAME = 'gbc-observer.json'
+export const GROK_HOOK_FILE_NAME = 'asc-observer.json'
 export const GROK_HOOK_SCHEMA = '1'
 
 export type GrokHookEventName =

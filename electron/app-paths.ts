@@ -5,8 +5,12 @@ export function resolveAppUserDataDir(
   appDataDir: string,
   isPackaged: boolean
 ): string {
-  // userData 目录名沿用历史产品名，避免迁移用户本地配置（飞书 token、LLM key）；如需改名必须附带迁移逻辑
-  return join(appDataDir, isPackaged ? 'Grok Build Center' : 'Grok Build Center Dev')
+  // userData 目录名必须与正式产品名保持一致；一旦改动这里，务必同步更新
+  // main.ts 里的 migrateLegacyUserDataDir（旧目录的整体迁移逻辑在那边）。
+  return join(
+    appDataDir,
+    isPackaged ? 'Agent Session Center' : 'Agent Session Center Dev'
+  )
 }
 
 export function resolveNativeDshHome(
@@ -24,5 +28,5 @@ export function resolveWslDshHome(
   const root = userHome === '/' ? '' : userHome.replace(/\/+$/, '')
   return mode === 'shared'
     ? `${root}/.dsh`
-    : `${root}/.local/share/gbc/dsh-home`
+    : `${root}/.local/share/asc/dsh-home`
 }

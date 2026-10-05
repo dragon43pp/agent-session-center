@@ -54,20 +54,20 @@ async function openPhone(joinUrl: string): Promise<PhoneFixture> {
 }
 
 async function openRemoteSettings(page: Page): Promise<void> {
-  await page.evaluate(() => window.__gbcDebugShell?.navigate('settings'))
+  await page.evaluate(() => window.__ascDebugShell?.navigate('settings'))
   await page.getByTestId('settings-category-remote').click()
   await expect(page.getByTestId('settings-remote')).toBeVisible()
 }
 
-const targetUrl = process.env.GBC_REMOTE_P3_URL
+const targetUrl = process.env.ASC_REMOTE_P3_URL
 
 test.describe('remote P3 live relay', () => {
   test.skip(
     !targetUrl,
-    'set GBC_REMOTE_P3_URL to a real relay generate page to run this gate'
+    'set ASC_REMOTE_P3_URL to a real relay generate page to run this gate'
   )
 
-  test('generated room carries a real Electron session snapshot and exact GBC QR', async ({
+  test('generated room carries a real Electron session snapshot and exact ASC QR', async ({
     page: relayPage
   }) => {
     test.skip(process.platform !== 'win32', 'interactive CLI fixture uses cmd.exe')
@@ -93,21 +93,21 @@ test.describe('remote P3 live relay', () => {
       const launched = await launchApp({
         createDefaultTerminal: false,
         env: {
-          GBC_FIXTURE_OBSERVER: '1',
-          GBC_FIXTURE_OBSERVER_HOLD: '1'
+          ASC_FIXTURE_OBSERVER: '1',
+          ASC_FIXTURE_OBSERVER_HOLD: '1'
         }
       })
       app = launched.app
-      const gbcPage = launched.window
+      const ascPage = launched.window
 
-      await gbcPage.getByTestId('home-quick-codex').click()
-      await gbcPage.getByTestId('cli-session-name').fill('Remote P3 live fixture')
-      await gbcPage.getByTestId('cli-workspace').fill(process.cwd())
-      await gbcPage.getByTestId('cli-launch').click()
+      await ascPage.getByTestId('home-quick-codex').click()
+      await ascPage.getByTestId('cli-session-name').fill('Remote P3 live fixture')
+      await ascPage.getByTestId('cli-workspace').fill(process.cwd())
+      await ascPage.getByTestId('cli-launch').click()
       await expect
         .poll(
           () =>
-            gbcPage.evaluate(async () => {
+            ascPage.evaluate(async () => {
               const session = (await window.agentApi.listActive()).find(
                 (item) => item.name === 'Remote P3 live fixture'
               )
@@ -116,7 +116,7 @@ test.describe('remote P3 live relay', () => {
           { timeout: 30_000 }
         )
         .not.toBeNull()
-      const sessionId = await gbcPage.evaluate(async () => {
+      const sessionId = await ascPage.evaluate(async () => {
         const session = (await window.agentApi.listActive()).find(
           (item) => item.name === 'Remote P3 live fixture'
         )
@@ -124,9 +124,9 @@ test.describe('remote P3 live relay', () => {
         return session.sessionId
       })
 
-      await openRemoteSettings(gbcPage)
-      await gbcPage.getByTestId('settings-remote-url').fill(joinUrl)
-      const qrScreenshot = await gbcPage
+      await openRemoteSettings(ascPage)
+      await ascPage.getByTestId('settings-remote-url').fill(joinUrl)
+      const qrScreenshot = await ascPage
         .getByTestId('settings-remote-qr')
         .screenshot()
       const qrImage = PNG.sync.read(qrScreenshot)
@@ -136,15 +136,15 @@ test.describe('remote P3 live relay', () => {
         qrImage.height
       )
       if (decodedQr?.data !== joinUrl) {
-        throw new Error('GBC QR did not decode to the exact generated join URL')
+        throw new Error('ASC QR did not decode to the exact generated join URL')
       }
 
-      await gbcPage.getByTestId('settings-remote-connect').click()
-      await expect(gbcPage.getByTestId('settings-remote-confirm')).toBeVisible()
-      await gbcPage.getByTestId('settings-remote-confirm-accept').click()
+      await ascPage.getByTestId('settings-remote-connect').click()
+      await expect(ascPage.getByTestId('settings-remote-confirm')).toBeVisible()
+      await ascPage.getByTestId('settings-remote-confirm-accept').click()
       await expect
         .poll(() =>
-          gbcPage
+          ascPage
             .getByTestId('settings-remote-status')
             .getAttribute('data-remote-phase')
         )
@@ -168,7 +168,7 @@ test.describe('remote P3 live relay', () => {
           )
         )
         .toBeTruthy()
-      await expect(gbcPage.getByTestId('settings-remote-status')).toHaveAttribute(
+      await expect(ascPage.getByTestId('settings-remote-status')).toHaveAttribute(
         'data-remote-phase',
         'peer-online'
       )

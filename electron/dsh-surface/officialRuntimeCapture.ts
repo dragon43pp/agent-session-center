@@ -6,10 +6,10 @@
  * DSH 0.1.0-rc.6 writes the module table to `__DSH_MODULES__` before creating
  * the Cordis root. 0.1.0-rc.7+ installs `window.__ModuleLoader__` and seeds
  * Cordis through `create({ staticModules })`. Both paths patch
- * `Context.prototype.extend` once so GBC can drive sessions/layout.
+ * `Context.prototype.extend` once so ASC can drive sessions/layout.
  */
 
-export interface GbcDshEmbedState {
+export interface AscDshEmbedState {
   ctx?: { get(name: string): unknown }
   captureError?: string
   sidebarDefaultApplied: boolean
@@ -22,11 +22,11 @@ export interface GbcDshEmbedState {
 /** Installed in the official DSH page world at document-start. */
 export function installOfficialRuntimeCapture(
   requested: 'zh' | 'en'
-): GbcDshEmbedState {
-  const state: GbcDshEmbedState = {
+): AscDshEmbedState {
+  const state: AscDshEmbedState = {
     sidebarDefaultApplied: false
   }
-  Object.defineProperty(globalThis, '__GBC_DSH_EMBED__', {
+  Object.defineProperty(globalThis, '__ASC_DSH_EMBED__', {
     configurable: false,
     enumerable: false,
     value: state
@@ -56,8 +56,8 @@ export function installOfficialRuntimeCapture(
       throw new Error('Cordis Context.extend is unavailable')
     }
     if (
-      (original as unknown as { __gbcDshCapture?: boolean })
-        .__gbcDshCapture === true
+      (original as unknown as { __ascDshCapture?: boolean })
+        .__ascDshCapture === true
     ) {
       return
     }
@@ -68,7 +68,7 @@ export function installOfficialRuntimeCapture(
       state.ctx ??= this
       return original.apply(this, args)
     }
-    Object.defineProperty(capture, '__gbcDshCapture', { value: true })
+    Object.defineProperty(capture, '__ascDshCapture', { value: true })
     proto!['extend'] = capture
   }
 
@@ -119,8 +119,8 @@ export function installOfficialRuntimeCapture(
           throw new Error('window.__ModuleLoader__.create is unavailable')
         }
         if (
-          (originalCreate as unknown as { __gbcDshCapture?: boolean })
-            .__gbcDshCapture === true
+          (originalCreate as unknown as { __ascDshCapture?: boolean })
+            .__ascDshCapture === true
         ) {
           return
         }
@@ -140,7 +140,7 @@ export function installOfficialRuntimeCapture(
           }
           return originalCreate.apply(this, [options, ...rest])
         }
-        Object.defineProperty(captureCreate, '__gbcDshCapture', {
+        Object.defineProperty(captureCreate, '__ascDshCapture', {
           value: true
         })
         loader.create = captureCreate

@@ -9,7 +9,7 @@ import { e2eDshExecutable } from './helpers'
  * P1 验收：Home 新建 DSH 跟踪位后，官方页面能启动 host 并通过 wire 连通。
  */
 
-const userDataDir = mkdtempSync(resolve(tmpdir(), 'gbc-dsh-p0-'))
+const userDataDir = mkdtempSync(resolve(tmpdir(), 'asc-dsh-p0-'))
 
 test('dsh surface boots end to end', async () => {
   test.setTimeout(180_000)
@@ -18,10 +18,10 @@ test('dsh surface boots end to end', async () => {
     args: [main],
     env: {
       ...process.env,
-      GBC_E2E: '1',
-      GBC_E2E_CLI_FIXTURE: '1',
-      GBC_E2E_DSH_INSTALLATION: e2eDshExecutable(),
-      GBC_USER_DATA_DIR: userDataDir
+      ASC_E2E: '1',
+      ASC_E2E_CLI_FIXTURE: '1',
+      ASC_E2E_DSH_INSTALLATION: e2eDshExecutable(),
+      ASC_USER_DATA_DIR: userDataDir
     }
   })
   try {

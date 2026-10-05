@@ -1,11 +1,11 @@
 ---
-name: gbc-opencode-bridge
-description: Drive a visible OpenCode tab through Agent Session Center's local Bridge CLI. Use when another local harness must list models, create an OpenCode session, send, watch, approve, deny, answer questions, or close via `gbc`. Use when the user mentions Agent Session Center Bridge, gbc session, opencode create, watch/wait blocked, or collaborating with OpenCode through Agent Session Center.
+name: asc-opencode-bridge
+description: Drive a visible OpenCode tab through Agent Session Center's local Bridge CLI. Use when another local harness must list models, create an OpenCode session, send, watch, approve, deny, answer questions, or close via `asc`. Use when the user mentions Agent Session Center Bridge, asc session, opencode create, watch/wait blocked, or collaborating with OpenCode through Agent Session Center.
 ---
 
 # Agent Session Center OpenCode Bridge
 
-通过本机 `gbc` CLI 控制 **Agent Session Center 已经打开的那条可见 OpenCode tab**。人和 TUI 看见的是同一条会话。不要另起 `opencode serve`，不要抓 PTY，不要在 Agent Session Center 未运行时自己拉 GUI。
+通过本机 `asc` CLI 控制 **Agent Session Center 已经打开的那条可见 OpenCode tab**。人和 TUI 看见的是同一条会话。不要另起 `opencode serve`，不要抓 PTY，不要在 Agent Session Center 未运行时自己拉 GUI。
 
 ## 前提
 
@@ -18,13 +18,13 @@ description: Drive a visible OpenCode tab through Agent Session Center's local B
 已安装的产品：
 
 ```text
-gbc <subcommand>
+asc <subcommand>
 ```
 
 开发仓库（Agent Session Center 已在跑）：
 
 ```text
-npm run gbc -- --gbc-cli <subcommand>
+npm run asc -- --asc-cli <subcommand>
 ```
 
 PowerShell 里带空格或 JSON 的参数要加引号。`answer` 的 `--json` 建议整段单引号包住，或先写到文件再读进参数。
@@ -34,23 +34,23 @@ PowerShell 里带空格或 JSON 的参数要加引号。`answer` 的 `--json` �
 ## 命令
 
 ```text
-gbc opencode models [--installation <id>]
-gbc opencode create --workspace <绝对路径> --model <provider/model>
+asc opencode models [--installation <id>]
+asc opencode create --workspace <绝对路径> --model <provider/model>
                        [--agent plan|build] [--name <标题>]
                        [--installation <id>]
-gbc sessions
-gbc session send <sessionId> <text>
-gbc session turn <sessionId>
-gbc session watch <sessionId>
-gbc session wait <sessionId> --until blocked|turn|exited
-gbc session rename <sessionId> <name>
-gbc session mode <sessionId> plan|build
-gbc session approve <sessionId> <requestId> [--remember]
-gbc session deny <sessionId> <requestId>
-gbc session questions <sessionId>
-gbc session answer <sessionId> <requestId> --json '<OpenCode 答案 JSON>'
-gbc session reject-question <sessionId> <requestId>
-gbc session close <sessionId>
+asc sessions
+asc session send <sessionId> <text>
+asc session turn <sessionId>
+asc session watch <sessionId>
+asc session wait <sessionId> --until blocked|turn|exited
+asc session rename <sessionId> <name>
+asc session mode <sessionId> plan|build
+asc session approve <sessionId> <requestId> [--remember]
+asc session deny <sessionId> <requestId>
+asc session questions <sessionId>
+asc session answer <sessionId> <requestId> --json '<OpenCode 答案 JSON>'
+asc session reject-question <sessionId> <requestId>
+asc session close <sessionId>
 ```
 
 - `create` 会打开真实可见 tab，立刻返回 `sessionId` / `installationId` / `runtime`。默认 `--agent build`。
@@ -71,21 +71,21 @@ gbc session close <sessionId>
 同一条 `sessionId` 只挂一个 `watch`（或用 `wait` 代替不会读流的步骤）：
 
 ```text
-gbc opencode models --installation <id>
-gbc opencode create --workspace <dir> --model <provider/model> --installation <id> --name "补测试"
-gbc session watch <sessionId>
+asc opencode models --installation <id>
+asc opencode create --workspace <dir> --model <provider/model> --installation <id> --name "补测试"
+asc session watch <sessionId>
         │
         │  静默：thinking / tools / working
         ▼
   blocked + delta
-        │  kind=permission → gbc session approve <id> <requestId>
-        │  kind=question   → gbc session questions <id>
-        │                    gbc session answer <id> <requestId> --json '{"answers":[["标签"]]}'
+        │  kind=permission → asc session approve <id> <requestId>
+        │  kind=question   → asc session questions <id>
+        │                    asc session answer <id> <requestId> --json '{"answers":[["标签"]]}'
         │  或 deny / reject-question
         ▼
   turn + delta          → 读正文和 tools
         │
-gbc session send <id> "按这个继续"
+asc session send <id> "按这个继续"
         ▼
   blocked / turn / failed / exited
 ```

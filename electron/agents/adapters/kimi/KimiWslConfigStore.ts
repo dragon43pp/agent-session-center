@@ -100,7 +100,7 @@ async function ensureWslKimiManagedHooksUnlocked(
     wslShellArgs(
       distro,
       'printf "HOME=%s\\000KIMI_CODE_HOME=%s\\000" "${HOME:-}" "${KIMI_CODE_HOME:-}"',
-      'gbc-kimi-config-home'
+      'asc-kimi-config-home'
     )
   )
   const configuredHome = loginEnvironmentValue(
@@ -155,7 +155,7 @@ async function ensureWslKimiManagedHooksUnlocked(
         'chmod 600 "$p/owner"',
         'trap - EXIT HUP INT TERM'
       ].join('\n'),
-      'gbc-kimi-config-lock',
+      'asc-kimi-config-lock',
       [lockPath, lockToken, '40', '30']
     )
   )
@@ -181,7 +181,7 @@ async function ensureWslKimiManagedHooksUnlocked(
           wslShellArgs(
             distro,
             'p="$1"; if [ -f "$p" ]; then cat -- "$p"; elif [ ! -e "$p" ]; then exit 3; else exit 4; fi',
-            'gbc-kimi-config-read',
+            'asc-kimi-config-read',
             [configPath]
           )
         )
@@ -202,7 +202,7 @@ async function ensureWslKimiManagedHooksUnlocked(
         const doctor = wslRuntimeCommand(
           context,
           ['doctor', 'config', runtimeCandidate],
-          'gbc-kimi-config-doctor'
+          'asc-kimi-config-doctor'
         )
         const validated = await runCommand(doctor.file, doctor.args)
         if (validated.code !== 0) {
@@ -223,14 +223,14 @@ async function ensureWslKimiManagedHooksUnlocked(
               'dir="$(dirname "$config")"',
               'mkdir -p "$dir"',
               'if [ "$existed" = 1 ]; then cmp -s "$config" "$expected" || exit 42; else [ ! -e "$config" ] || exit 42; fi',
-              'tmp="$dir/.config.toml.gbc.$nonce.tmp"',
+              'tmp="$dir/.config.toml.asc.$nonce.tmp"',
               'trap \'rm -f "$tmp"\' EXIT HUP INT TERM',
               'cp -- "$candidate" "$tmp"',
               'chmod 600 "$tmp"',
               'mv -f -- "$tmp" "$config"',
               'trap - EXIT HUP INT TERM'
             ].join('; '),
-            'gbc-kimi-config-install',
+            'asc-kimi-config-install',
             [
               configPath,
               runtimeCandidate,
@@ -263,7 +263,7 @@ async function ensureWslKimiManagedHooksUnlocked(
       wslShellArgs(
         distro,
         'p="$1"; token="$2"; if [ -f "$p/owner" ]; then read -r owner _created < "$p/owner" || exit 0; [ "$owner" = "$token" ] || exit 0; rm -f -- "$p/owner"; rmdir -- "$p" 2>/dev/null || true; fi',
-        'gbc-kimi-config-unlock',
+        'asc-kimi-config-unlock',
         [lockPath, lockToken]
       )
     ).catch(() => {})

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import {
   installOfficialRuntimeCapture,
-  type GbcDshEmbedState
+  type AscDshEmbedState
 } from '../electron/dsh-surface/officialRuntimeCapture'
 
 class FakeContext {
@@ -14,10 +14,10 @@ class FakeContext {
   }
 }
 
-function embedState(): GbcDshEmbedState {
+function embedState(): AscDshEmbedState {
   return (
-    globalThis as unknown as { __GBC_DSH_EMBED__: GbcDshEmbedState }
-  ).__GBC_DSH_EMBED__
+    globalThis as unknown as { __ASC_DSH_EMBED__: AscDshEmbedState }
+  ).__ASC_DSH_EMBED__
 }
 
 test.describe('official DSH runtime capture', () => {

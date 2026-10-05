@@ -25,7 +25,7 @@ export interface TerminalSnapshot {
   lastNonEmptyLine: number
 }
 
-export interface GBCDebugApi {
+export interface ASCDebugApi {
   snapshot(): TerminalSnapshot | null
   dumpBuffer(): string[]
   dumpLogicalBuffer(): string[]
@@ -63,9 +63,9 @@ export interface GBCDebugApi {
   }
 }
 
-export interface GBCDebugTabsApi {
+export interface ASCDebugTabsApi {
   list(): string[]
-  forTab(tabId: string): GBCDebugApi
+  forTab(tabId: string): ASCDebugApi
 }
 
 export interface ClearSeqLog {
@@ -132,7 +132,7 @@ function scrollImmediately(term: Terminal, action: () => void): void {
 
 function createApi(
   getRegistration: () => TerminalRegistration | undefined
-): GBCDebugApi {
+): ASCDebugApi {
   return {
     snapshot() {
       const registration = getRegistration()
@@ -289,7 +289,7 @@ const activeApi = createApi(() =>
   activeTabId ? registrations.get(activeTabId) : undefined
 )
 
-const tabsApi: GBCDebugTabsApi = {
+const tabsApi: ASCDebugTabsApi = {
   list: () => [...registrations.keys()],
   forTab: (tabId) => {
     const registration = registrations.get(tabId)
@@ -302,7 +302,7 @@ function shouldEnable(): boolean {
     return (
       Boolean(import.meta.env?.DEV) ||
       Boolean(
-        (globalThis as Record<string, unknown>)['__GBC_E2E__']
+        (globalThis as Record<string, unknown>)['__ASC_E2E__']
       )
     )
   } catch {
@@ -312,14 +312,14 @@ function shouldEnable(): boolean {
 
 function exposeDebugApis(): void {
   const debugWindow = window as unknown as Record<string, unknown>
-  debugWindow['__gbcDebug'] = activeApi
-  debugWindow['__gbcDebugTabs'] = tabsApi
+  debugWindow['__ascDebug'] = activeApi
+  debugWindow['__ascDebugTabs'] = tabsApi
 }
 
 function hideDebugApis(): void {
   const debugWindow = window as unknown as Record<string, unknown>
-  delete debugWindow['__gbcDebug']
-  delete debugWindow['__gbcDebugTabs']
+  delete debugWindow['__ascDebug']
+  delete debugWindow['__ascDebugTabs']
 }
 
 export function recordPtyData(tabId: string, data: Uint8Array): void {

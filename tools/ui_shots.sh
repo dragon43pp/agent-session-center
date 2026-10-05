@@ -16,17 +16,17 @@ APP="/d/agent-session-center"
 NODE="C:/Users/admin/.workbuddy/binaries/node/versions/22.22.2-3/node.exe"
 PY="C:/Users/admin/.workbuddy/binaries/python/versions/3.13.12/python.exe"
 PORT=9347
-PROFILE="$TEMP/gbc-ui-test-$$"
-LOG="$TEMP/gbc-ui-shots.log"
-export GBC_USER_DATA_DIR="$PROFILE"
-export HRACK_DISABLE_UPDATES=1
+PROFILE="$TEMP/asc-ui-test-$$"
+LOG="$TEMP/asc-ui-shots.log"
+export ASC_USER_DATA_DIR="$PROFILE"
+export ASC_DISABLE_UPDATES=1
 unset ELECTRON_RUN_AS_NODE NODE_OPTIONS
 
 cd "$APP" || exit 1
 : > "$LOG"
 
 # 先把上一轮可能残留的测试实例收掉。上一次被 `head` 打断时留下的孤儿进程会
-# 一直占着 `\\.\pipe\gbc-bridge-<user>`，新实例于是「bridge listen failed」——
+# 一直占着 `\\.\pipe\asc-bridge-<user>`，新实例于是「bridge listen failed」——
 # 截图还能拍，但桥接功能是假的，而且进程越攒越多。只杀路径属于本仓库的。
 "$PY" - <<'PYEOF' 2>/dev/null || true
 import glob, json, os, shutil, subprocess
@@ -50,7 +50,7 @@ if raw:
             print("killed orphan", row["ProcessId"])
 
 # 只保留最近两份测试 profile，否则 TEMP 里会攒一堆。
-dirs = sorted(glob.glob(os.path.join(os.environ["TEMP"], "gbc-ui-test-*")), key=os.path.getmtime)
+dirs = sorted(glob.glob(os.path.join(os.environ["TEMP"], "asc-ui-test-*")), key=os.path.getmtime)
 for stale in dirs[:-2]:
     shutil.rmtree(stale, ignore_errors=True)
 PYEOF
@@ -93,7 +93,7 @@ shoot() {
 # `session.spawn_and_register` + `session.load_session`（就是会话列表第一行那场），
 # 而 `grok --version` 探测不该产生那个。分阶段单测跑下来（onboard / sessions / focus /
 # click）一次都没复现，所以必须把「哪一步」用时间戳钉死，而不是靠推理。
-GROK_TRACE="$TEMP/gbc-grok-trace.log"
+GROK_TRACE="$TEMP/asc-grok-trace.log"
 : > "$GROK_TRACE"
 (
   while true; do
@@ -303,6 +303,6 @@ wait $TRACER_PID 2>/dev/null
 echo "== grok 进程轨迹（只打变化点） ==" | tee -a "$LOG"
 awk '{ if ($2 != prev) { print; prev = $2 } }' "$GROK_TRACE" | tee -a "$LOG"
 echo "== 主进程日志（关键行） ==" | tee -a "$LOG"
-grep -E "\[gbc\]" "$LOG" | head -5 | tee -a "$LOG" || true
+grep -E "\[asc\]" "$LOG" | head -5 | tee -a "$LOG" || true
 echo "== 截图产物（应为刚刚） ==" | tee -a "$LOG"
 ls -la --time-style=+%H:%M docs/shots/ | tee -a "$LOG"

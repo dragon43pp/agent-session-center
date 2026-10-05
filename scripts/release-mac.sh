@@ -5,15 +5,15 @@ set -euo pipefail
 workspace="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 package_path="$workspace/package.json"
 version="$(node -p "require('$package_path').version")"
-# HRACK_MAC_ARCH 是历史遗留的环境变量名（早期工作名 HRack），保留以兼容既有
-# CI/本地配置。默认值 arm64 与 package.json 的 mac.target arch 一致。
-arch="${HRACK_MAC_ARCH:-arm64}"
+# ASC_MAC_ARCH 用于覆盖待校验/打包的架构；默认值 arm64 与 package.json 的
+# mac.target arch 一致。
+arch="${ASC_MAC_ARCH:-arm64}"
 artifact_dir="$workspace/artifacts"
 image_name="AgentSessionCenter-${version}-macos-${arch}.dmg"
 archive_name="AgentSessionCenter-${version}-macos-${arch}.zip"
 release_root="${TMPDIR:-/tmp}"
 release_root="${release_root%/}"
-release_dir="$(mktemp -d "$release_root/gbc-release-mac.XXXXXX")"
+release_dir="$(mktemp -d "$release_root/asc-release-mac.XXXXXX")"
 mount_dir="$release_dir/mount"
 mounted=false
 
@@ -21,7 +21,7 @@ cleanup() {
   if [[ "$mounted" == true ]]; then
     hdiutil detach "$mount_dir" -quiet || true
   fi
-  if [[ -d "$release_dir" && "$release_dir" == "$release_root"/gbc-release-mac.* ]]; then
+  if [[ -d "$release_dir" && "$release_dir" == "$release_root"/asc-release-mac.* ]]; then
     rm -rf -- "$release_dir"
   fi
 }

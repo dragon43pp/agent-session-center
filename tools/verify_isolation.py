@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-"""验证我们的改版构建和用户在用的 HRack 完全隔离。
+"""验证「隔离 userData 启动」确实不会碰到用户在用的真实 profile。
 
 做三件事：
-  1. 启动前给 %APPDATA%\\HRack 拍快照（路径+大小+mtime）
-  2. 用独立的 GBC_USER_DATA_DIR 启动我们的构建，等它起来再关掉
+  1. 启动前给真实 userData（%APPDATA%\Agent Session Center）拍快照（路径+大小+mtime）
+  2. 用独立的 ASC_USER_DATA_DIR 启动我们的构建，等它起来再关掉
   3. 启动后重新拍快照，比对 —— 一处都不许变
 
-这是「改版不许动我在用的会话」这条要求的可执行证明。
+这是「调试/排查时的独立启动也不能动我在用的配置」这条要求的可执行证明。
 """
 from __future__ import annotations
 
@@ -20,8 +20,8 @@ sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 APP = r"D:\agent-session-center"
 ELECTRON = os.path.join(APP, "node_modules", "electron", "dist", "electron.exe")
 MAIN = os.path.join(APP, "out", "main", "index.js")
-USER_HRACK = os.path.join(os.environ["APPDATA"], "HRack")
-ISOLATED = os.path.join(os.environ["TEMP"], "gbc-isolation-test")
+USER_PROFILE = os.path.join(os.environ["APPDATA"], "Agent Session Center")
+ISOLATED = os.path.join(os.environ["TEMP"], "asc-isolation-test")
 NODE = r"C:\Users\admin\.workbuddy\binaries\node\versions\22.22.2-3\node.exe"
 SHOT = os.path.join(APP, "tools", "shot.mjs")
 
@@ -52,8 +52,8 @@ def main() -> int:
         shot_path = args[args.index("--shot") + 1]
 
     print("=" * 72)
-    print("第 1 步：启动前快照 %s" % USER_HRACK)
-    before = snapshot(USER_HRACK)
+    print("第 1 步：启动前快照 %s" % USER_PROFILE)
+    before = snapshot(USER_PROFILE)
     print("      文件数 %d" % len(before))
 
     import shutil
@@ -64,8 +64,8 @@ def main() -> int:
     env = dict(os.environ)
     env.pop("ELECTRON_RUN_AS_NODE", None)
     env.pop("NODE_OPTIONS", None)
-    env["GBC_USER_DATA_DIR"] = ISOLATED
-    env["HRACK_DISABLE_UPDATES"] = "1"
+    env["ASC_USER_DATA_DIR"] = ISOLATED
+    env["ASC_DISABLE_UPDATES"] = "1"
 
     cmd = [ELECTRON, MAIN]
     if cdp_port:
@@ -73,7 +73,7 @@ def main() -> int:
 
     print()
     print("第 2 步：以独立 userData 启动我们的构建")
-    print("      GBC_USER_DATA_DIR = %s" % ISOLATED)
+    print("      ASC_USER_DATA_DIR = %s" % ISOLATED)
     proc = subprocess.Popen(
         cmd,
         cwd=APP,
@@ -104,15 +104,15 @@ def main() -> int:
     except subprocess.TimeoutExpired:
         proc.kill()
     text = out.decode("utf-8", "replace")
-    key = [ln for ln in text.splitlines() if "[gbc]" in ln or "[hrack]" in ln or "Error" in ln or "error" in ln]
+    key = [ln for ln in text.splitlines() if "[asc]" in ln or "Error" in ln or "error" in ln]
     print("      ---- 主进程日志（关键行）----")
     for ln in key[:14]:
         print("        " + ln.strip()[:150])
 
     print()
     print("第 3 步：检查隔离结果")
-    after = snapshot(USER_HRACK)
-    print("      %s 文件数 %d -> %d" % (USER_HRACK, len(before), len(after)))
+    after = snapshot(USER_PROFILE)
+    print("      %s 文件数 %d -> %d" % (USER_PROFILE, len(before), len(after)))
 
     changed = []
     for k, v in after.items():
@@ -139,7 +139,7 @@ def main() -> int:
 
     ok = (not changed) and len(iso) > 0
     print()
-    print("结论：%s" % ("✓ 隔离成立，改版可以安全运行" if ok else "✗ 隔离失败，需要排查"))
+    print("结论：%s" % ("✓ 隔离成立，独立启动不会污染用户数据" if ok else "✗ 隔离失败，需要排查"))
     return 0 if ok else 1
 
 

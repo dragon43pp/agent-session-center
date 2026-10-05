@@ -36,8 +36,8 @@ import {
   type ControlPlaneRuntime
 } from '../electron/bridge/OpenCodeControlPlane'
 import { BridgeStateStore } from '../electron/bridge/state'
-import { runGbcCli } from '../electron/cli/gbcCli'
-import { parseGbcCli } from '../electron/cli/parseGbcCli'
+import { runAscCli } from '../electron/cli/ascCli'
+import { parseAscCli } from '../electron/cli/parseAscCli'
 import type { AgentSessionProjection } from '../shared/agent-events'
 import type {
   BridgeLaunchRequest,
@@ -280,7 +280,7 @@ function planeHarness(options: {
 }) {
   const runtime = options.runtime ?? new FakeRuntime()
   const launched: BridgeLaunchRequest[] = []
-  const dir = mkdtempSync(join(tmpdir(), 'gbc-bridge-'))
+  const dir = mkdtempSync(join(tmpdir(), 'asc-bridge-'))
   const plane = new OpenCodeControlPlane({
     discovery: discovery({
       installations: options.installations ?? [hostInstall('opencode:win')],
@@ -324,13 +324,13 @@ function planeHarness(options: {
 
 test.describe('OpenCode bridge P1', () => {
   test('parses the P1 CLI surface', () => {
-    expect(parseGbcCli(['opencode', 'models', '--installation', 'oc:win'])).toEqual({
+    expect(parseAscCli(['opencode', 'models', '--installation', 'oc:win'])).toEqual({
       kind: 'request',
       method: 'opencode.models',
       params: { installationId: 'oc:win' }
     })
     expect(
-      parseGbcCli([
+      parseAscCli([
         'opencode',
         'create',
         '--workspace',
@@ -352,61 +352,61 @@ test.describe('OpenCode bridge P1', () => {
         name: '补测试'
       }
     })
-    expect(parseGbcCli(['sessions'])).toEqual({
+    expect(parseAscCli(['sessions'])).toEqual({
       kind: 'request',
       method: 'sessions.list',
       params: {}
     })
-    expect(parseGbcCli(['session', 'send', 'sess-1', 'keep', 'going'])).toEqual({
+    expect(parseAscCli(['session', 'send', 'sess-1', 'keep', 'going'])).toEqual({
       kind: 'request',
       method: 'session.send',
       params: { sessionId: 'sess-1', text: 'keep going' }
     })
-    expect(parseGbcCli(['session', 'watch', 'sess-1'])).toEqual({
+    expect(parseAscCli(['session', 'watch', 'sess-1'])).toEqual({
       kind: 'request',
       method: 'session.watch',
       params: { sessionId: 'sess-1' },
       watch: true
     })
-    expect(parseGbcCli(['session', 'close', 'sess-1'])).toEqual({
+    expect(parseAscCli(['session', 'close', 'sess-1'])).toEqual({
       kind: 'request',
       method: 'session.close',
       params: { sessionId: 'sess-1' }
     })
-    expect(parseGbcCli(['session', 'delete', 'sess-1'])).toEqual({
+    expect(parseAscCli(['session', 'delete', 'sess-1'])).toEqual({
       kind: 'request',
       method: 'session.close',
       params: { sessionId: 'sess-1' }
     })
-    expect(parseGbcCli(['session', 'rename', 'sess-1', 'New', 'title'])).toEqual({
+    expect(parseAscCli(['session', 'rename', 'sess-1', 'New', 'title'])).toEqual({
       kind: 'request',
       method: 'session.rename',
       params: { sessionId: 'sess-1', name: 'New title' }
     })
-    expect(parseGbcCli(['session', 'mode', 'sess-1', 'plan'])).toEqual({
+    expect(parseAscCli(['session', 'mode', 'sess-1', 'plan'])).toEqual({
       kind: 'request',
       method: 'session.mode',
       params: { sessionId: 'sess-1', agent: 'plan' }
     })
     expect(
-      parseGbcCli(['session', 'approve', 'sess-1', 'req-1', '--remember'])
+      parseAscCli(['session', 'approve', 'sess-1', 'req-1', '--remember'])
     ).toEqual({
       kind: 'request',
       method: 'session.approve',
       params: { sessionId: 'sess-1', requestId: 'req-1', remember: true }
     })
-    expect(parseGbcCli(['session', 'deny', 'sess-1', 'req-1'])).toEqual({
+    expect(parseAscCli(['session', 'deny', 'sess-1', 'req-1'])).toEqual({
       kind: 'request',
       method: 'session.deny',
       params: { sessionId: 'sess-1', requestId: 'req-1' }
     })
-    expect(parseGbcCli(['session', 'questions', 'sess-1'])).toEqual({
+    expect(parseAscCli(['session', 'questions', 'sess-1'])).toEqual({
       kind: 'request',
       method: 'session.questions',
       params: { sessionId: 'sess-1' }
     })
     expect(
-      parseGbcCli([
+      parseAscCli([
         'session',
         'answer',
         'sess-1',
@@ -424,14 +424,14 @@ test.describe('OpenCode bridge P1', () => {
       }
     })
     expect(
-      parseGbcCli(['session', 'reject-question', 'sess-1', 'req-1'])
+      parseAscCli(['session', 'reject-question', 'sess-1', 'req-1'])
     ).toEqual({
       kind: 'request',
       method: 'session.reject-question',
       params: { sessionId: 'sess-1', requestId: 'req-1' }
     })
     expect(
-      parseGbcCli(['session', 'wait', 'sess-1', '--until', 'turn'])
+      parseAscCli(['session', 'wait', 'sess-1', '--until', 'turn'])
     ).toEqual({
       kind: 'request',
       method: 'session.wait',
@@ -470,7 +470,7 @@ test.describe('OpenCode bridge P1', () => {
         timedOut: true
       }),
       runtime: new FakeRuntime(),
-      state: new BridgeStateStore(join(mkdtempSync(join(tmpdir(), 'gbc-bridge-')), 's.json')),
+      state: new BridgeStateStore(join(mkdtempSync(join(tmpdir(), 'asc-bridge-')), 's.json')),
       requireForegroundWindow: () => {},
       launchVisible: async () => 'unused'
     })
@@ -787,7 +787,7 @@ test.describe('OpenCode bridge P1', () => {
     dispose()
   })
 
-  test('rename updates the sidebar and OpenCode title, and keeps GBC name on title failure', async () => {
+  test('rename updates the sidebar and OpenCode title, and keeps ASC name on title failure', async () => {
     const runtime = new FakeRuntime()
     const titles: string[] = []
     runtime.control = {
@@ -820,21 +820,21 @@ test.describe('OpenCode bridge P1', () => {
       throw new Error('OpenCode HTTP 500')
     }
     await expect(
-      plane.handle('session.rename', { sessionId: 'sess-1', name: 'Still GBC' })
+      plane.handle('session.rename', { sessionId: 'sess-1', name: 'Still ASC' })
     ).resolves.toEqual({
       kind: 'json',
       value: {
         sessionId: 'sess-1',
-        name: 'Still GBC',
+        name: 'Still ASC',
         titleUpdated: false,
         error: { message: 'OpenCode HTTP 500' }
       }
     })
-    expect(runtime.getRecord('sess-1')?.name).toBe('Still GBC')
+    expect(runtime.getRecord('sess-1')?.name).toBe('Still ASC')
     dispose()
   })
 
-  test('mode writes the OpenCode agent and refuses to keep only a GBC shadow', async () => {
+  test('mode writes the OpenCode agent and refuses to keep only a ASC shadow', async () => {
     const runtime = new FakeRuntime()
     const seen: string[] = []
     runtime.control = {
@@ -1299,19 +1299,19 @@ test.describe('OpenCode bridge P1', () => {
     dispose()
   })
 
-  test('CLI prints JSON and fails closed without GBC or token', async () => {
+  test('CLI prints JSON and fails closed without ASC or token', async () => {
     const stdout: string[] = []
     const stderr: string[] = []
-    const missing = await runGbcCli(['sessions'], {
+    const missing = await runAscCli(['sessions'], {
       stdout: { write: (chunk) => stdout.push(chunk) },
       stderr: { write: (chunk) => stderr.push(chunk) },
-      socketPath: join(tmpdir(), `gbc-missing-${Date.now()}.sock`),
-      userDataDir: mkdtempSync(join(tmpdir(), 'gbc-empty-'))
+      socketPath: join(tmpdir(), `asc-missing-${Date.now()}.sock`),
+      userDataDir: mkdtempSync(join(tmpdir(), 'asc-empty-'))
     })
     expect(missing).toBe(2)
     expect(stderr.join('')).toMatch(/Agent Session Center is not running/)
 
-    const dir = mkdtempSync(join(tmpdir(), 'gbc-token-'))
+    const dir = mkdtempSync(join(tmpdir(), 'asc-token-'))
     writeFileSync(join(dir, 'bridge.token'), `${'ab'.repeat(32)}\n`)
     const { plane, runtime } = planeHarness({})
     runtime.upsert(
@@ -1326,13 +1326,13 @@ test.describe('OpenCode bridge P1', () => {
       plane,
       socketPath:
         process.platform === 'win32'
-          ? `\\\\.\\pipe\\gbc-bridge-test-${Date.now()}`
+          ? `\\\\.\\pipe\\asc-bridge-test-${Date.now()}`
           : join(dir, 'bridge.sock')
     })
     const socketPath = await server.start()
     stdout.length = 0
     stderr.length = 0
-    const denied = await runGbcCli(['sessions'], {
+    const denied = await runAscCli(['sessions'], {
       stdout: { write: (chunk) => stdout.push(chunk) },
       stderr: { write: (chunk) => stderr.push(chunk) },
       socketPath,
@@ -1343,7 +1343,7 @@ test.describe('OpenCode bridge P1', () => {
     expect(stdout.join('')).toMatch(/unauthorized|Invalid bridge token/)
 
     stdout.length = 0
-    const renamed = await runGbcCli(['session', 'rename', 'sess-1', 'x'], {
+    const renamed = await runAscCli(['session', 'rename', 'sess-1', 'x'], {
       stdout: { write: (chunk) => stdout.push(chunk) },
       stderr: { write: (chunk) => stderr.push(chunk) },
       socketPath,

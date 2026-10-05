@@ -58,7 +58,7 @@ test('edits, saves, and applies the custom theme JSON from settings', async () =
     await expect.poll(
       () => window.evaluate(() =>
         getComputedStyle(document.documentElement)
-          .getPropertyValue('--gbc-bg-app')
+          .getPropertyValue('--asc-bg-app')
           .trim()
       )
     ).toBe(customTheme.colors['bg.app'])
@@ -75,7 +75,7 @@ test('edits, saves, and applies the custom theme JSON from settings', async () =
     await expect.poll(
       () => window.evaluate(() =>
         getComputedStyle(document.documentElement)
-          .getPropertyValue('--gbc-bg-app')
+          .getPropertyValue('--asc-bg-app')
           .trim()
       )
     ).toBe(editedTheme.colors['bg.app'])
@@ -90,14 +90,14 @@ test('protects the custom theme file and copies the theme creation Skill', async
     await app.evaluate(({ ipcMain }) => {
       ipcMain.removeHandler('clipboard:write-text')
       ipcMain.handle('clipboard:write-text', (_event, text: unknown) => {
-        ;(globalThis as Record<string, unknown>).__gbcCopiedThemeSkill = text
+        ;(globalThis as Record<string, unknown>).__ascCopiedThemeSkill = text
       })
     })
     await window.getByTestId('titlebar-settings').click()
     const settings = window.getByTestId('settings-page')
     const copy = window.getByTestId('settings-theme-copy-skill')
     await expect(copy).toBeVisible()
-    await expect(settings).not.toContainText('name: create-gbc-theme')
+    await expect(settings).not.toContainText('name: create-asc-theme')
 
     await expect(
       window.evaluate(() => window.themeApi.saveCustom(
@@ -113,9 +113,9 @@ test('protects the custom theme file and copies the theme creation Skill', async
 
     await copy.click()
     const copied = await app.evaluate(() => String(
-      (globalThis as Record<string, unknown>).__gbcCopiedThemeSkill ?? ''
+      (globalThis as Record<string, unknown>).__ascCopiedThemeSkill ?? ''
     ))
-    expect(copied).toContain('name: create-gbc-theme')
+    expect(copied).toContain('name: create-asc-theme')
     expect(copied).toContain('UI_COLOR_TOKENS')
     expect(copied).toContain('Settings -> Appearance -> Theme JSON')
     await expect(copy).toContainText(/已复制|Copied|コピー済み|복사됨|已複製/)

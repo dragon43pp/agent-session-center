@@ -120,9 +120,9 @@ export default function FirstRunOnboarding({
         >
           <header className="text-center">
             <ShinyText
-              text="gbc"
-              color="var(--gbc-brand-logo)"
-              shineColor="var(--gbc-brand-logoShine)"
+              text="asc"
+              color="var(--asc-brand-logo)"
+              shineColor="var(--asc-brand-logoShine)"
               speed={3.2}
               spread={100}
               className="font-brand text-[52px] leading-none tracking-[0.08em]"
@@ -248,8 +248,8 @@ export default function FirstRunOnboarding({
           spinDuration={2}
           parallaxOn
           hoverDuration={0.2}
-          cursorColor="var(--gbc-accent-cursor)"
-          cursorColorOnTarget="var(--gbc-accent-target)"
+          cursorColor="var(--asc-accent-cursor)"
+          cursorColorOnTarget="var(--asc-accent-target)"
         />
       )}
     </div>

@@ -15,9 +15,9 @@ import type {
 
 /**
  * 启动打包后的 Electron 应用（需先 npm run build 产出 out/main/index.js）。
- * 设置 GBC_E2E=1 让 preload 注入 __GBC_E2E__ 标记，激活 window.__gbcDebug 调试桥。
+ * 设置 ASC_E2E=1 让 preload 注入 __ASC_E2E__ 标记，激活 window.__ascDebug 调试桥。
  *
- * M5.c：默认每次 launch 使用独立 userData 临时目录（GBC_USER_DATA_DIR），
+ * M5.c：默认每次 launch 使用独立 userData 临时目录（ASC_USER_DATA_DIR），
  * 保证 stats / 主题热重载 / 重启持久化等断言从干净状态出发。
  * 传入 userDataDir 可复用同一目录（重启持久化验证）。
  */
@@ -42,15 +42,15 @@ export async function launchApp(options: {
 }> {
   const main = resolve(__dirname, '../out/main/index.js')
   const userDataDir =
-    options.userDataDir ?? mkdtempSync(resolve(tmpdir(), 'gbc-e2e-'))
+    options.userDataDir ?? mkdtempSync(resolve(tmpdir(), 'asc-e2e-'))
   const env = {
     ...process.env,
-    GBC_E2E: '1',
-    GBC_E2E_CLI_FIXTURE: options.cliFixture === false ? '0' : '1',
-    GBC_USER_DATA_DIR: userDataDir,
-    GBC_DSH_HOME: resolve(userDataDir, 'dsh-home'),
+    ASC_E2E: '1',
+    ASC_E2E_CLI_FIXTURE: options.cliFixture === false ? '0' : '1',
+    ASC_USER_DATA_DIR: userDataDir,
+    ASC_DSH_HOME: resolve(userDataDir, 'dsh-home'),
     ...(options.localDsh
-      ? { GBC_E2E_DSH_INSTALLATION: e2eDshExecutable() }
+      ? { ASC_E2E_DSH_INSTALLATION: e2eDshExecutable() }
       : {}),
     ...options.env
   }
@@ -62,7 +62,7 @@ export async function launchApp(options: {
         Boolean(document.querySelector('[data-testid="first-run-onboarding"]')) ||
         Boolean(
           (window as unknown as Record<string, unknown>)[
-            '__gbcDebugShell'
+            '__ascDebugShell'
           ]
         ),
       null,
@@ -80,7 +80,7 @@ export async function launchApp(options: {
       () =>
         Boolean(
           (window as unknown as Record<string, unknown>)[
-            '__gbcDebugShell'
+            '__ascDebugShell'
           ]
         ),
       null,
@@ -88,13 +88,13 @@ export async function launchApp(options: {
     )
     await window.evaluate(() => {
       const debugWindow = window as unknown as {
-        __gbcDebugShell: {
+        __ascDebugShell: {
           navigate(pageId: 'home'): void
           setNavMode(mode: 'sidebar'): void
         }
       }
-      debugWindow.__gbcDebugShell.setNavMode('sidebar')
-      debugWindow.__gbcDebugShell.navigate('home')
+      debugWindow.__ascDebugShell.setNavMode('sidebar')
+      debugWindow.__ascDebugShell.navigate('home')
     })
 
     if (options.localDsh) {
@@ -125,11 +125,11 @@ export async function launchApp(options: {
     await window.waitForFunction(
       () =>
         Boolean(
-          (window as unknown as Record<string, unknown>)['__gbcDebug']
+          (window as unknown as Record<string, unknown>)['__ascDebug']
         ) &&
         Boolean(
           (window as unknown as Record<string, unknown>)[
-            '__gbcDebugTabs'
+            '__ascDebugTabs'
           ]
         ),
       null,
@@ -137,14 +137,14 @@ export async function launchApp(options: {
     )
     await window.evaluate(() => {
       const debugWindow = window as unknown as {
-        __gbcDebugTabs: { list(): string[] }
-        __gbcDebugShell: {
+        __ascDebugTabs: { list(): string[] }
+        __ascDebugShell: {
           navigate(pageId: `terminal:${string}`): void
         }
       }
-      const [terminalId] = debugWindow.__gbcDebugTabs.list()
+      const [terminalId] = debugWindow.__ascDebugTabs.list()
       if (terminalId) {
-        debugWindow.__gbcDebugShell.navigate(`terminal:${terminalId}`)
+        debugWindow.__ascDebugShell.navigate(`terminal:${terminalId}`)
       }
     })
     // 调试桥早于 PTY 首帧注册。等待权威 PTY 流完成首轮输出与尺寸重绘，
@@ -191,13 +191,13 @@ export async function closeTerminalAt(window: Page, index: number): Promise<void
 
 /** 通过调试桥读 buffer 快照 */
 export async function snapshot(window: Page) {
-  return window.evaluate(() => (window as unknown as { __gbcDebug: { snapshot(): unknown } }).__gbcDebug.snapshot())
+  return window.evaluate(() => (window as unknown as { __ascDebug: { snapshot(): unknown } }).__ascDebug.snapshot())
 }
 
 /** 通过调试桥 dump 整个 buffer 文本行 */
 export async function dumpBuffer(window: Page): Promise<string[]> {
   return window.evaluate(() =>
-    (window as unknown as { __gbcDebug: { dumpBuffer(): string[] } }).__gbcDebug.dumpBuffer()
+    (window as unknown as { __ascDebug: { dumpBuffer(): string[] } }).__ascDebug.dumpBuffer()
   )
 }
 
@@ -205,8 +205,8 @@ export async function dumpBuffer(window: Page): Promise<string[]> {
 export async function dumpLogicalBuffer(window: Page): Promise<string[]> {
   return window.evaluate(() =>
     (window as unknown as {
-      __gbcDebug: { dumpLogicalBuffer(): string[] }
-    }).__gbcDebug.dumpLogicalBuffer()
+      __ascDebug: { dumpLogicalBuffer(): string[] }
+    }).__ascDebug.dumpLogicalBuffer()
   )
 }
 
@@ -298,15 +298,15 @@ export async function waitForShellRoundTrip(
 export async function terminalSelection(window: Page): Promise<string> {
   return window.evaluate(() =>
     (window as unknown as {
-      __gbcDebug: { selectionText(): string }
-    }).__gbcDebug.selectionText()
+      __ascDebug: { selectionText(): string }
+    }).__ascDebug.selectionText()
   )
 }
 
 /** 通过调试桥 dump 当前视口文本行。 */
 export async function dumpViewport(window: Page): Promise<string[]> {
   return window.evaluate(() =>
-    (window as unknown as { __gbcDebug: { dumpViewport(): string[] } }).__gbcDebug.dumpViewport()
+    (window as unknown as { __ascDebug: { dumpViewport(): string[] } }).__ascDebug.dumpViewport()
   )
 }
 
@@ -315,21 +315,21 @@ export async function scrollLines(window: Page, amount: number): Promise<void> {
   await window.evaluate(
     (value) =>
       (window as unknown as {
-        __gbcDebug: { scrollLines(amount: number): void }
-      }).__gbcDebug.scrollLines(value),
+        __ascDebug: { scrollLines(amount: number): void }
+      }).__ascDebug.scrollLines(value),
     amount
   )
 }
 
 export async function scrollToTop(window: Page): Promise<void> {
   await window.evaluate(() =>
-    (window as unknown as { __gbcDebug: { scrollToTop(): void } }).__gbcDebug.scrollToTop()
+    (window as unknown as { __ascDebug: { scrollToTop(): void } }).__ascDebug.scrollToTop()
   )
 }
 
 export async function scrollToBottom(window: Page): Promise<void> {
   await window.evaluate(() =>
-    (window as unknown as { __gbcDebug: { scrollToBottom(): void } }).__gbcDebug.scrollToBottom()
+    (window as unknown as { __ascDebug: { scrollToBottom(): void } }).__ascDebug.scrollToBottom()
   )
 }
 
@@ -337,8 +337,8 @@ export async function scrollToBottom(window: Page): Promise<void> {
 export async function selectTerminalText(window: Page, text: string): Promise<boolean> {
   return window.evaluate((value) =>
     (window as unknown as {
-      __gbcDebug: { selectText(text: string): boolean }
-    }).__gbcDebug.selectText(value),
+      __ascDebug: { selectText(text: string): boolean }
+    }).__ascDebug.selectText(value),
     text
   )
 }
@@ -347,10 +347,10 @@ export async function selectTerminalText(window: Page, text: string): Promise<bo
 export async function dumpAuthoritativeHistory(window: Page): Promise<PtyHistorySnapshot | null> {
   return window.evaluate(() =>
     (window as unknown as {
-      __gbcDebug: {
+      __ascDebug: {
         dumpAuthoritativeHistory(): Promise<PtyHistorySnapshot | null>
       }
-    }).__gbcDebug.dumpAuthoritativeHistory()
+    }).__ascDebug.dumpAuthoritativeHistory()
   )
 }
 
@@ -358,10 +358,10 @@ export async function dumpAuthoritativeHistory(window: Page): Promise<PtyHistory
 export async function flowControl(window: Page): Promise<PtyFlowControlSnapshot | null> {
   return window.evaluate(() =>
     (window as unknown as {
-      __gbcDebug: {
+      __ascDebug: {
         flowControl(): Promise<PtyFlowControlSnapshot | null>
       }
-    }).__gbcDebug.flowControl()
+    }).__ascDebug.flowControl()
   )
 }
 
@@ -410,8 +410,8 @@ export async function setPtyAckDelay(window: Page, milliseconds: number): Promis
   await window.evaluate(
     (value) =>
       (window as unknown as {
-        __gbcDebug: { setPtyAckDelay(milliseconds: number): void }
-      }).__gbcDebug.setPtyAckDelay(value),
+        __ascDebug: { setPtyAckDelay(milliseconds: number): void }
+      }).__ascDebug.setPtyAckDelay(value),
     milliseconds
   )
 }
@@ -419,7 +419,7 @@ export async function setPtyAckDelay(window: Page, milliseconds: number): Promis
 /** 主动触发一次 fit + pty resize（绕过 debounce） */
 export async function forceResize(window: Page): Promise<void> {
   await window.evaluate(() =>
-    (window as unknown as { __gbcDebug: { forceResize(): void } }).__gbcDebug.forceResize()
+    (window as unknown as { __ascDebug: { forceResize(): void } }).__ascDebug.forceResize()
   )
 }
 
@@ -427,7 +427,7 @@ export async function forceResize(window: Page): Promise<void> {
 export async function setSize(window: Page, cols: number, rows: number): Promise<void> {
   await window.evaluate(
     ({ cols, rows }) =>
-      (window as unknown as { __gbcDebug: { setSize(c: number, r: number): void } }).__gbcDebug.setSize(cols, rows),
+      (window as unknown as { __ascDebug: { setSize(c: number, r: number): void } }).__ascDebug.setSize(cols, rows),
     { cols, rows }
   )
 }
@@ -435,13 +435,13 @@ export async function setSize(window: Page, cols: number, rows: number): Promise
 /** 读清屏序列日志（pty 是否在 resize 时发 ED2/ED3） */
 export async function clearSeqLog(window: Page): Promise<{ ed2: number; ed3: number; events: Array<{ at: number; kind: string; chunkLen: number }> }> {
   return window.evaluate(() =>
-    (window as unknown as { __gbcDebug: { clearSeqLog(): { ed2: number; ed3: number; events: Array<{ at: number; kind: string; chunkLen: number }> } } }).__gbcDebug.clearSeqLog()
+    (window as unknown as { __ascDebug: { clearSeqLog(): { ed2: number; ed3: number; events: Array<{ at: number; kind: string; chunkLen: number }> } } }).__ascDebug.clearSeqLog()
   )
 }
 
 export async function resetClearSeqLog(window: Page): Promise<void> {
   await window.evaluate(() =>
-    (window as unknown as { __gbcDebug: { resetClearSeqLog(): void } }).__gbcDebug.resetClearSeqLog()
+    (window as unknown as { __ascDebug: { resetClearSeqLog(): void } }).__ascDebug.resetClearSeqLog()
   )
 }
 

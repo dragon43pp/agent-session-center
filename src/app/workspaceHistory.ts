@@ -1,6 +1,6 @@
 export const WORKSPACE_HISTORY_LIMIT = 5
-export const WORKSPACE_HISTORY_KEY = 'gbc.workspaceHistory'
-export const LAST_WORKSPACE_KEY = 'gbc.lastWorkspace'
+export const WORKSPACE_HISTORY_KEY = 'asc.workspaceHistory'
+export const LAST_WORKSPACE_KEY = 'asc.lastWorkspace'
 export const LEGACY_LAST_WORKSPACE_KEY = 'vibing.lastWorkspace'
 
 export interface WorkspaceHistoryStorage {

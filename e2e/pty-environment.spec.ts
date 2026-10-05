@@ -7,11 +7,11 @@ test.describe('PTY environment', () => {
     expect(
       ptyEnvironment({
         TERM: 'dumb',
-        GBC_CODEX_HOOK_DROP: 'C:\\gbc\\drop'
+        ASC_CODEX_HOOK_DROP: 'C:\\asc\\drop'
       })
     ).toMatchObject({
       TERM: 'xterm-256color',
-      GBC_CODEX_HOOK_DROP: 'C:\\gbc\\drop'
+      ASC_CODEX_HOOK_DROP: 'C:\\asc\\drop'
     })
   })
 
@@ -38,15 +38,15 @@ test.describe('PTY environment', () => {
     ).toBe(homedir())
     expect(
       resolvePtyCwd({
-        cwd: '/mnt/c/Users/Jesse/Documents/gbc',
+        cwd: '/mnt/c/Users/Jesse/Documents/asc',
         terminal: { cwd: '/home/jesse/project' }
       })
     ).toBe(homedir())
     expect(
       resolvePtyCwd({
-        cwd: 'C:\\Users\\Jesse\\Documents\\gbc',
+        cwd: 'C:\\Users\\Jesse\\Documents\\asc',
         terminal: { cwd: '/home/jesse/project' }
       })
-    ).toBe('C:\\Users\\Jesse\\Documents\\gbc')
+    ).toBe('C:\\Users\\Jesse\\Documents\\asc')
   })
 })

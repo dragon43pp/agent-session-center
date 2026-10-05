@@ -1,7 +1,7 @@
 /**
  * Session-history contract — shared by the main process and the renderer.
  *
- * GBC's existing adapters (electron/agents/adapters/*) observe a *live* CLI
+ * ASC's existing adapters (electron/agents/adapters/*) observe a *live* CLI
  * through its hook file, so they can tell you a session is working or blocked.
  * They cannot tell you what ran last week. This module is the other half: it
  * describes the transcripts each CLI leaves on disk, so the app can list,

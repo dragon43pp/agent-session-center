@@ -1,4 +1,4 @@
-/* Self-contained checker for personal GBC themes — plain Node, no build step.
+/* Self-contained checker for personal ASC themes — plain Node, no build step.
  * Mirrors shared/theme-schema.ts (UI_COLOR_TOKENS + color literal rules).
  * Usage: node .theme-check/validate.cjs <theme.json>
  * NOTE: mirror only — if shared/theme-schema.ts changes, update the lists below. */

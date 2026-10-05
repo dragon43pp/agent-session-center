@@ -1,4 +1,4 @@
-export type ParsedGbcCli =
+export type ParsedAscCli =
   | { kind: 'help' }
   | {
       kind: 'request'
@@ -14,20 +14,20 @@ const CLI_HEADS = new Set([
   'help',
   '-h',
   '--help',
-  '--gbc-cli'
+  '--asc-cli'
 ])
 
-export function extractGbcCliArgv(argv: readonly string[]): string[] | null {
-  const gbcFlag = argv.indexOf('--gbc-cli')
-  if (gbcFlag >= 0) return argv.slice(gbcFlag + 1).map(String)
+export function extractAscCliArgv(argv: readonly string[]): string[] | null {
+  const ascFlag = argv.indexOf('--asc-cli')
+  if (ascFlag >= 0) return argv.slice(ascFlag + 1).map(String)
   for (let index = 0; index < argv.length; index++) {
     if (CLI_HEADS.has(argv[index])) return argv.slice(index).map(String)
   }
   return null
 }
 
-export function isGbcCliInvocation(argv: readonly string[]): boolean {
-  const extracted = extractGbcCliArgv(argv)
+export function isAscCliInvocation(argv: readonly string[]): boolean {
+  const extracted = extractAscCliArgv(argv)
   return extracted !== null && extracted[0] !== undefined
 }
 
@@ -55,26 +55,26 @@ function takeFlag(
 function usage(): string {
   return [
     'Usage:',
-    '  gbc opencode models [--installation <id>]',
-    '  gbc opencode create --workspace <path> --model <provider/model>',
+    '  asc opencode models [--installation <id>]',
+    '  asc opencode create --workspace <path> --model <provider/model>',
     '                       [--agent plan|build] [--name <title>]',
     '                       [--installation <id>]',
-    '  gbc sessions',
-    '  gbc sessions history [--agent <grok|codex|claude|...>] [--query <text>]',
+    '  asc sessions',
+    '  asc sessions history [--agent <grok|codex|claude|...>] [--query <text>]',
     '                        [--limit <n>] [--include-hidden] [--refresh]',
-    '  gbc session resume <sessionId> [--agent <id>] [--dry-run]',
-    '  gbc session send <sessionId> <text>',
-    '  gbc session turn <sessionId>',
-    '  gbc session watch <sessionId>',
-    '  gbc session close <sessionId>',
-    '  gbc session rename <sessionId> <name>',
-    '  gbc session mode <sessionId> plan|build',
-    '  gbc session approve <sessionId> <requestId> [--remember]',
-    '  gbc session deny <sessionId> <requestId>',
-    '  gbc session questions <sessionId>',
-    '  gbc session answer <sessionId> <requestId> --json <payload>',
-    '  gbc session reject-question <sessionId> <requestId>',
-    '  gbc session wait <sessionId> --until blocked|turn|exited'
+    '  asc session resume <sessionId> [--agent <id>] [--dry-run]',
+    '  asc session send <sessionId> <text>',
+    '  asc session turn <sessionId>',
+    '  asc session watch <sessionId>',
+    '  asc session close <sessionId>',
+    '  asc session rename <sessionId> <name>',
+    '  asc session mode <sessionId> plan|build',
+    '  asc session approve <sessionId> <requestId> [--remember]',
+    '  asc session deny <sessionId> <requestId>',
+    '  asc session questions <sessionId>',
+    '  asc session answer <sessionId> <requestId> --json <payload>',
+    '  asc session reject-question <sessionId> <requestId>',
+    '  asc session wait <sessionId> --until blocked|turn|exited'
   ].join('\n')
 }
 
@@ -89,9 +89,9 @@ function takeBoolFlag(args: string[], names: readonly string[]): boolean {
   return false
 }
 
-export function parseGbcCli(argv: readonly string[]): ParsedGbcCli {
+export function parseAscCli(argv: readonly string[]): ParsedAscCli {
   const args = [...argv]
-  if (args[0] === '--gbc-cli') args.shift()
+  if (args[0] === '--asc-cli') args.shift()
   const head = args.shift()
   if (!head || head === 'help' || head === '-h' || head === '--help') {
     return { kind: 'help' }

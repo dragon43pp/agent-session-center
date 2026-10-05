@@ -1,5 +1,5 @@
 /**
- * 把 dsh host 的 session 状态投影进 gbc 既有 AgentSessionProjection 管道。
+ * 把 dsh host 的 session 状态投影进 asc 既有 AgentSessionProjection 管道。
  * 悬浮窗 / 侧边栏 / Home 注意力列表都只订阅这条通道，DSH 不能另起一套。
  */
 
@@ -47,7 +47,7 @@ export class DshProjectionBridge {
 
   /**
    * Subscribe to the same followed-session projection stream consumed by the
-   * GBC renderer. This deliberately does not expose DSH session.list.
+   * ASC renderer. This deliberately does not expose DSH session.list.
    */
   subscribe(
     listener: (projection: AgentSessionProjection) => void

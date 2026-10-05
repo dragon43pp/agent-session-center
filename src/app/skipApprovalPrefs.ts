@@ -1,4 +1,4 @@
-export const SKIP_APPROVAL_PREFS_KEY = 'gbc.skipApproval'
+export const SKIP_APPROVAL_PREFS_KEY = 'asc.skipApproval'
 
 export interface SkipApprovalPrefsStorage {
   getItem(key: string): string | null

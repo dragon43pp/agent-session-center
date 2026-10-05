@@ -7,14 +7,14 @@
 产物分两类 —— 这个区分很容易搞错，所以写在这里：
 
   单色托盘图标（黑 / 白），文件名必须严格匹配 `electron/icon-theme.ts` 的
-  `${basename}-16.png` 规则，basename ∈ {gbc, gbc-white, gbcTemplate}：
-      gbc-{16,32,256}.png            黑，浅色任务栏用
-      gbc-white-{16,32,256}.png      白，深色任务栏用
-      gbcTemplate-{16,32}.png        黑 + alpha，macOS 菜单栏模板图
-      gbc.ico / gbc-white.ico        上面两组各自打包
+  `${basename}-16.png` 规则，basename ∈ {asc, asc-white, ascTemplate}：
+      asc-{16,32,256}.png            黑，浅色任务栏用
+      asc-white-{16,32,256}.png      白，深色任务栏用
+      ascTemplate-{16,32}.png        黑 + alpha，macOS 菜单栏模板图
+      asc.ico / asc-white.ico        上面两组各自打包
 
   彩色应用图标（方板 + 珊瑚灯），直接取品牌源图 `brand/icon/`：
-      gbc-app-16.png / gbc-app-32.png / gbc-app.ico
+      asc-app-16.png / asc-app-32.png / asc-app.ico
 
   托盘里显示的是**彩色应用图标**（Windows/Linux 走 createCenterAppIcon），
   单色那套只有 macOS 的 createThemedCenterIcon 会读 —— 但构建门禁要求全在，
@@ -137,19 +137,19 @@ def ico_from(level):
 
 
 APP_COPIES = {
-    "gbc-app-16.png": "center-16.png",
-    "gbc-app-32.png": "center-32.png",
-    "gbc-app.ico": "center.ico",
+    "asc-app-16.png": "center-16.png",
+    "asc-app-32.png": "center-32.png",
+    "asc-app.ico": "center.ico",
 }
 
 
 def expected_names():
     names = []
     for s in MONO_SIZES:
-        names.append("gbc-%d.png" % s)
-        names.append("gbc-white-%d.png" % s)
-    names += ["gbcTemplate-16.png", "gbcTemplate-32.png"]
-    names += ["gbc.ico", "gbc-white.ico"]
+        names.append("asc-%d.png" % s)
+        names.append("asc-white-%d.png" % s)
+    names += ["ascTemplate-16.png", "ascTemplate-32.png"]
+    names += ["asc.ico", "asc-white.ico"]
     names += sorted(APP_COPIES)
     return names
 
@@ -161,19 +161,19 @@ def build():
     black = mono_pngs(0)
     white = mono_pngs(255)
     for size, blob in black.items():
-        open(os.path.join(TRAY, "gbc-%s.png" % size), "wb").write(blob)
-        print("  gbc-%-9s %6d bytes" % (size + ".png", len(blob)))
+        open(os.path.join(TRAY, "asc-%s.png" % size), "wb").write(blob)
+        print("  asc-%-9s %6d bytes" % (size + ".png", len(blob)))
     for size, blob in white.items():
-        open(os.path.join(TRAY, "gbc-white-%s.png" % size), "wb").write(blob)
-        print("  gbc-white-%-9s %6d bytes" % (size + ".png", len(blob)))
+        open(os.path.join(TRAY, "asc-white-%s.png" % size), "wb").write(blob)
+        print("  asc-white-%-9s %6d bytes" % (size + ".png", len(blob)))
 
     # macOS template image：黑色 + alpha，系统按菜单栏明暗自动反色
     for size in (16, 32):
-        shutil.copyfile(os.path.join(TRAY, "gbc-%d.png" % size),
-                        os.path.join(TRAY, "gbcTemplate-%d.png" % size))
-        print("  gbcTemplate-%-4s （取 gbc-%d.png）" % ("%d.png" % size, size))
+        shutil.copyfile(os.path.join(TRAY, "asc-%d.png" % size),
+                        os.path.join(TRAY, "ascTemplate-%d.png" % size))
+        print("  ascTemplate-%-4s （取 asc-%d.png）" % ("%d.png" % size, size))
 
-    for name, blob in (("gbc.ico", ico_from(0)), ("gbc-white.ico", ico_from(255))):
+    for name, blob in (("asc.ico", ico_from(0)), ("asc-white.ico", ico_from(255))):
         open(os.path.join(TRAY, name), "wb").write(blob)
         print("  %-16s %6d bytes  (%d 个尺寸)" % (name, len(blob), len(ICO_SIZES)))
 
@@ -195,7 +195,7 @@ def verify():
         if not os.path.exists(path):
             print("  FAIL 缺 %s" % name)
             ok = False
-    for name in ("gbc.ico", "gbc-white.ico", "gbc-app.ico"):
+    for name in ("asc.ico", "asc-white.ico", "asc-app.ico"):
         path = os.path.join(TRAY, name)
         if not os.path.exists(path):
             continue
@@ -213,12 +213,12 @@ def verify():
                 ok = False
         print("  %-16s %d 个尺寸，全部为 32bpp PNG" % (name, count))
 
-    # 上游遗留的 hrack-* 图标必须清掉：extraResources 会整目录打进安装包，
+    # 非本品牌的图标必须清掉：extraResources 会整目录打进安装包，
     # 留着就等于把别人的 logo 装进我们的产品里。
     stale = sorted(n for n in os.listdir(TRAY)
-                   if n.lower().startswith("hrack"))
+                   if not n.lower().startswith("asc"))
     if stale:
-        print("  FAIL 仍有上游图标残留：%s" % ", ".join(stale))
+        print("  FAIL 仍有非本品牌图标残留：%s" % ", ".join(stale))
         ok = False
 
     print("OK" if ok else "FAIL")

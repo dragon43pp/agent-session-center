@@ -6,10 +6,10 @@ import { join, resolve } from 'node:path'
 import { parseUpdateInfo } from 'electron-updater/out/providers/Provider'
 
 test('embeds raw changelog Markdown in updater metadata', () => {
-  const directory = mkdtempSync(join(tmpdir(), 'gbc-release-notes-test-'))
+  const directory = mkdtempSync(join(tmpdir(), 'asc-release-notes-test-'))
   const metadataPath = join(directory, 'latest.yml')
   const changelogPath = join(directory, 'CHANGELOG.md')
-  const artifactPath = join(directory, 'GBC-Setup-0.4.1.exe')
+  const artifactPath = join(directory, 'ASC-Setup-0.4.1.exe')
 
   try {
     writeFileSync(
@@ -17,9 +17,9 @@ test('embeds raw changelog Markdown in updater metadata', () => {
       [
         'version: 0.4.1',
         'files:',
-        '  - url: GBC-Setup-0.4.1.exe',
+        '  - url: ASC-Setup-0.4.1.exe',
         '    sha512: test-sha512',
-        'path: GBC-Setup-0.4.1.exe',
+        'path: ASC-Setup-0.4.1.exe',
         'sha512: test-sha512',
         "releaseDate: '2026-08-25T00:00:00.000Z'",
         ''
@@ -62,7 +62,7 @@ test('embeds raw changelog Markdown in updater metadata', () => {
         metadataPath,
         directory,
         '0.4.1',
-        'GBC-Setup-0.4.1.exe'
+        'ASC-Setup-0.4.1.exe'
       ],
       { stdio: 'pipe' }
     )
@@ -70,7 +70,7 @@ test('embeds raw changelog Markdown in updater metadata', () => {
     const updateInfo = parseUpdateInfo(
       readFileSync(metadataPath, 'utf8'),
       'latest.yml',
-      new URL('https://github.com/UniRound-Tec/gbc/releases/download/v0.4.1/latest.yml')
+      new URL('https://github.com/dragon43pp/agent-session-center/releases/download/v1.0.0/latest.yml')
     )
 
     expect(updateInfo.releaseNotes).toBe(

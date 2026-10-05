@@ -57,4 +57,4 @@ const api: FloatingRendererApi = {
   }
 }
 
-contextBridge.exposeInMainWorld('gbcFloating', api)
+contextBridge.exposeInMainWorld('ascFloating', api)

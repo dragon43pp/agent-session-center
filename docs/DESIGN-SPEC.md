@@ -37,17 +37,17 @@ Agent Session Center 的「多 CLI 终端管理器」骨架。具体五处：
 
 ## 二、设计令牌（已就位，实现者只许引用、不许另造）
 
-主题系统由 `shared/theme-schema.ts` 一处生成，前缀 `--gbc-`。核心值：
+主题系统由 `shared/theme-schema.ts` 一处生成，前缀 `--asc-`。核心值：
 
 | 变量 | 深色（默认） | 浅色 |
 | --- | --- | --- |
-| `--gbc-bg` | `#0B0E13` | `#F5F7FA` |
-| `--gbc-plate` | `#141922` | `#EDF0F5` |
-| `--gbc-screen` | `#0E1218` | `#E7EBF2` |
-| `--gbc-hair` | `#242C38` | `#DFE4EC` |
-| `--gbc-ink` | `#E8EBF0` | `#0F1420` |
-| `--gbc-dim` | `#8A93A3` | `#626C7D` |
-| `--gbc-faint` | `#5E6675` | `#98A1B0` |
+| `--asc-bg` | `#0B0E13` | `#F5F7FA` |
+| `--asc-plate` | `#141922` | `#EDF0F5` |
+| `--asc-screen` | `#0E1218` | `#E7EBF2` |
+| `--asc-hair` | `#242C38` | `#DFE4EC` |
+| `--asc-ink` | `#E8EBF0` | `#0F1420` |
+| `--asc-dim` | `#8A93A3` | `#626C7D` |
+| `--asc-faint` | `#5E6675` | `#98A1B0` |
 | 珊瑚（品牌/needs-you） | `#FF6B4A`，唯一带光晕 | 同 |
 | 琥珀 working / 薄荷 done / 绛红 error / 石板 idle / 天蓝 exited | 见 brand.md 第三节，实心圆点、**不带光晕** | 同 |
 
@@ -55,7 +55,7 @@ Agent Session Center 的「多 CLI 终端管理器」骨架。具体五处：
 
 - **间距**：4px 网格。页边距 24，卡片内边距 16，元件间隙 8/12 两档。
 - **圆角两档**：小元件（灯、徽标、按钮）2–10px；大容器（卡片、面板）14–22px。**禁止中间档**。
-- **发丝线**：所有分块用 `1px solid var(--gbc-hair)`；**不用背景色差分块**，不用阴影。
+- **发丝线**：所有分块用 `1px solid var(--asc-hair)`；**不用背景色差分块**，不用阴影。
 - **动效**：`150ms ease-out`（hover/按压）、`250ms ease-out`（页面切换、抽屉）；
   唯一的循环动画 = needs-you 灯的呼吸光晕（2s 循环，透明度 0.6→1）。
   除光晕外**不做任何位移动画**超过 8px。
@@ -91,28 +91,28 @@ Agent Session Center 的「多 CLI 终端管理器」骨架。具体五处：
 ### 4.2 铭牌 lockup（首启页 / 首页空态 / 标题栏）
 
 ```
-AGENT SESSION        ← 11px 等宽 · letter-spacing: 3.4px · --gbc-dim
-center            ← 字标 Ammonite「center」· 34px · 压紧 -1.6px · --gbc-ink
+AGENT SESSION        ← 11px 等宽 · letter-spacing: 3.4px · --asc-dim
+center            ← 字标 Ammonite「center」· 34px · 压紧 -1.6px · --asc-ink
 ──────────────    ← 1px 发丝线，宽度 = 文本宽
-一场不漏，卡住的那场会主动找你。   ← 13px · --gbc-dim
+一场不漏，卡住的那场会主动找你。   ← 13px · --asc-dim
 ```
 
 ### 4.3 会话行（左栏 / 历史页 / 总览页复用同一组件）
 
 ```
 [●] [grok]  造书成剧 · 首页改版          ← 灯 10px · CLI 徽标等宽 10px · 标题 13px
-              D:/wx/造书成剧 · 3m        ← 11px 等宽 · --gbc-faint
+              D:/wx/造书成剧 · 3m        ← 11px 等宽 · --asc-faint
 ```
 
 - 悬停：背景从透明 → `rgba(255,255,255,.03)`；**禁止**整行变色高亮。
 - 选中：左侧 2px 珊瑚边条（仅当前打开的会话）；运行中那场用琥珀边条。
-- 不可恢复的会话（如 WorkBuddy）：灯位换 `--gbc-faint` 空心圈，行尾「查看」二字，**不写「恢复」**。
+- 不可恢复的会话（如 WorkBuddy）：灯位换 `--asc-faint` 空心圈，行尾「查看」二字，**不写「恢复」**。
 
 ### 4.4 终端页
 
-- 终端容器 `--gbc-screen` 内嵌于 `--gbc-plate` 面板，四周 12px 呼吸，1px 发丝线包边。
+- 终端容器 `--asc-screen` 内嵌于 `--asc-plate` 面板，四周 12px 呼吸，1px 发丝线包边。
 - 终端上方一条 32px 会话信息条：状态灯 + 模型名 + cwd + 本次耗时（全部等宽）。
-- xterm 主题色板须从 `--gbc-*` 派生，**禁止**上游默认配色残留。
+- xterm 主题色板须从 `--asc-*` 派生，**禁止**上游默认配色残留。
 
 ### 4.5 设置页
 
@@ -131,7 +131,7 @@ center            ← 字标 Ammonite「center」· 34px · 压紧 -1.6px · --g
 
 | 页面 | 文件 | 指令 |
 | --- | --- | --- |
-| 首启 | `FirstRunOnboarding.tsx` | 铭牌 lockup 居中；下方三个等宽小字步骤；扫描二维码卡用 `--gbc-plate` |
+| 首启 | `FirstRunOnboarding.tsx` | 铭牌 lockup 居中；下方三个等宽小字步骤；扫描二维码卡用 `--asc-plate` |
 | 首页总览 | `HomePage.tsx` | 顶部一行汇总（`3 working · 1 needs-you · 2 done`，数字大号、标签小号）；下方按状态分组的会话行列表；needs-you 组永远在最上 |
 | 终端 | `TerminalPage.tsx` | 见 4.4 |
 | 历史 | `SessionHistoryPage.tsx` | 会话行组件复用；筛选条（CLI 徽标当筛选项，等宽小字）；行内时间/消息数等宽 |
@@ -148,6 +148,6 @@ center            ← 字标 Ammonite「center」· 34px · 压紧 -1.6px · --g
 3. **禁区**：
    - 不引入新 UI 依赖（无组件库、无图标包；图标走 `src/app/adapterIcons.ts` 既有 lucide 引入方式）；
    - 不动 `shared/theme-schema.ts` 的变量名（只许加，不许改名）；
-   - 不碰 `tools/rebrand.mjs` 审计白名单（不许让 gbc 字样回流）；
+   - 不碰 `tools/rebrand.mjs` 审计白名单（不许让 asc 字样回流）；
    - 不做超过 8px 的位移动画、不加第二种光晕。
 4. **完成的定义**：typecheck / build / 三个判卷脚本全绿 + 深浅截图各一张 + 三条判据逐条通过。

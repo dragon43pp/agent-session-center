@@ -19,7 +19,7 @@ Protocol (newline-delimited JSON, both directions):
     <- {"kind": "result", "id": "...", "ok": false, "error": {"code": ..., "message": ...}}
     <- {"kind": "event", "id": "...", "event": {...}}      # only for session.watch
 
-Transport is a Windows named pipe, `\\\\.\\pipe\\gbc-bridge-<username>`. On
+Transport is a Windows named pipe, `\\\\.\\pipe\\asc-bridge-<username>`. On
 POSIX it is a unix socket, `$XDG_RUNTIME_DIR/agent-session-center/bridge.sock`.
 The pipe only exists while the app is running; a missing pipe is the
 "app is not open" signal, not an error to retry in a loop.
@@ -27,8 +27,8 @@ The pipe only exists while the app is running; a missing pipe is the
 Pitfalls this file exists to encode:
 
 * The token lives in `<userData>/bridge.token` and is regenerated per
-  userData dir. Dev builds use `Grok Build Center Dev`, packaged builds
-  `Grok Build Center` - so a token found in one is rejected by the other.
+  userData dir. Dev builds use `Agent Session Center Dev`, packaged builds
+  `Agent Session Center` - so a token found in one is rejected by the other.
 * Responses are newline-delimited but a single `os.read` can return half a
   line or three lines. Everything must go through a buffer.
 * **One thread must own the pipe handle.** Measured on this machine: once a
@@ -66,22 +66,22 @@ TOKEN_RE = re.compile(r"^[a-f0-9]{64}$")
 # Where a token may live. Dev first: if you are running `npm run dev` the app
 # writes to the Dev dir, and finding the packaged token instead would produce a
 # confusing "unauthorized" rather than "app not running".
-USER_DATA_CANDIDATES = ("Grok Build Center Dev", "Grok Build Center")
+USER_DATA_CANDIDATES = ("Agent Session Center Dev", "Agent Session Center")
 
 
 def socket_path() -> str:
     if os.name == "nt":
         user = re.sub(r"[^A-Za-z0-9._-]+", "_", getpass.getuser())[:64] or "user"
-        return rf"\\.\pipe\gbc-bridge-{user}"
+        return rf"\\.\pipe\asc-bridge-{user}"
     runtime = os.environ.get("XDG_RUNTIME_DIR", "").strip()
     if runtime:
         return str(Path(runtime) / "agent-session-center" / "bridge.sock")
-    return str(Path.home() / ".gbc" / "bridge.sock")
+    return str(Path.home() / ".asc" / "bridge.sock")
 
 
 def token_paths() -> list[Path]:
     """Every place we will look for a token, in the order we will look."""
-    override = os.environ.get("GBC_USER_DATA_DIR") or os.environ.get("HRACK_USER_DATA_DIR")
+    override = os.environ.get("ASC_USER_DATA_DIR")
     if override:
         return [Path(override) / "bridge.token"]
     appdata = os.environ.get("APPDATA") or os.environ.get("XDG_CONFIG_HOME")
@@ -92,8 +92,8 @@ def token_paths() -> list[Path]:
 def read_token(explicit: str | None) -> tuple[str, Path]:
     if explicit:
         return explicit, Path("<argv>")
-    if os.environ.get("GBC_BRIDGE_TOKEN"):
-        return os.environ["GBC_BRIDGE_TOKEN"].strip(), Path("<env>")
+    if os.environ.get("ASC_BRIDGE_TOKEN"):
+        return os.environ["ASC_BRIDGE_TOKEN"].strip(), Path("<env>")
     seen: list[str] = []
     for path in token_paths():
         seen.append(str(path))

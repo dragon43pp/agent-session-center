@@ -21,11 +21,11 @@ async function forceUpdateAvailable(
     (_electron, args) =>
       (
         globalThis as unknown as {
-          __gbcMainDebug: {
+          __ascMainDebug: {
             forceUpdateAvailable(version: string, notes: string): boolean
           }
         }
-      ).__gbcMainDebug.forceUpdateAvailable(args.version, args.notes),
+      ).__ascMainDebug.forceUpdateAvailable(args.version, args.notes),
     { version, notes: releaseNotes }
   )
   expect(ok).toBe(true)

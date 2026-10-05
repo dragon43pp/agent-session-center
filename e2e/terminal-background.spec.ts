@@ -32,7 +32,7 @@ test('maps fit modes to CSS background values', () => {
 })
 
 test('copies a picked image into userData and can clear it', async () => {
-  const directory = await mkdtemp(join(tmpdir(), 'gbc-bg-'))
+  const directory = await mkdtemp(join(tmpdir(), 'asc-bg-'))
   const source = join(directory, 'wallpaper.png')
   await writeFile(source, PNG_1X1)
   const store = new TerminalBackgroundStore(join(directory, 'store'))
@@ -49,7 +49,7 @@ test('copies a picked image into userData and can clear it', async () => {
 })
 
 test('rejects unsupported files and oversized images', async () => {
-  const directory = await mkdtemp(join(tmpdir(), 'gbc-bg-'))
+  const directory = await mkdtemp(join(tmpdir(), 'asc-bg-'))
   const store = new TerminalBackgroundStore(join(directory, 'store'))
   const textFile = join(directory, 'notes.txt')
   await writeFile(textFile, 'not an image')

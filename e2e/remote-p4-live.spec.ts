@@ -82,12 +82,12 @@ async function createAgent(page: Page): Promise<{
   })
 }
 
-const targetUrl = process.env.GBC_REMOTE_P4_URL
+const targetUrl = process.env.ASC_REMOTE_P4_URL
 
 test.describe('remote P4 live relay', () => {
   test.skip(
     !targetUrl,
-    'set GBC_REMOTE_P4_URL to a real relay generate page to run this gate'
+    'set ASC_REMOTE_P4_URL to a real relay generate page to run this gate'
   )
 
   test('drives and reclaims a real Electron PTY through the deployed relay', async ({
@@ -112,20 +112,20 @@ test.describe('remote P4 live relay', () => {
       const launched = await launchApp({
         createDefaultTerminal: false,
         env: {
-          GBC_FIXTURE_OBSERVER: '1',
-          GBC_FIXTURE_OBSERVER_HOLD: '1'
+          ASC_FIXTURE_OBSERVER: '1',
+          ASC_FIXTURE_OBSERVER_HOLD: '1'
         }
       })
       app = launched.app
-      const gbcPage = launched.window
-      const agent = await createAgent(gbcPage)
+      const ascPage = launched.window
+      const agent = await createAgent(ascPage)
 
-      await gbcPage.evaluate(() => window.__gbcDebugShell?.navigate('settings'))
-      await gbcPage.getByTestId('settings-category-remote').click()
-      await gbcPage.getByTestId('settings-remote-url').fill(joinUrl)
-      await gbcPage.getByTestId('settings-remote-connect').click()
-      await gbcPage.getByTestId('settings-remote-confirm-accept').click()
-      await expect(gbcPage.getByTestId('settings-remote-status')).toHaveAttribute(
+      await ascPage.evaluate(() => window.__ascDebugShell?.navigate('settings'))
+      await ascPage.getByTestId('settings-category-remote').click()
+      await ascPage.getByTestId('settings-remote-url').fill(joinUrl)
+      await ascPage.getByTestId('settings-remote-connect').click()
+      await ascPage.getByTestId('settings-remote-confirm-accept').click()
+      await expect(ascPage.getByTestId('settings-remote-status')).toHaveAttribute(
         'data-remote-phase',
         'waiting-phone'
       )
@@ -159,7 +159,7 @@ test.describe('remote P4 live relay', () => {
           rows: 19
         })
 
-      const marker = `GBC_P4_LIVE_${Date.now()}`
+      const marker = `ASC_P4_LIVE_${Date.now()}`
       phone.ws.send(
         JSON.stringify({
           v: 1,
@@ -197,7 +197,7 @@ test.describe('remote P4 live relay', () => {
       }
       await expect
         .poll(() =>
-          gbcPage.evaluate(async (ptyId) => {
+          ascPage.evaluate(async (ptyId) => {
             const resize = (await window.ptyApi.getHistory(ptyId))?.events
               .filter((event) => event.kind === 'resize')
               .at(-1)
@@ -208,11 +208,11 @@ test.describe('remote P4 live relay', () => {
         )
         .toEqual({ cols: 44, rows: 19 })
 
-      await gbcPage.evaluate((terminalId) => {
-        window.__gbcDebugShell?.navigate(`terminal:${terminalId}`)
+      await ascPage.evaluate((terminalId) => {
+        window.__ascDebugShell?.navigate(`terminal:${terminalId}`)
       }, agent.terminalId)
-      await expect(gbcPage.getByTestId('terminal-remote-overlay')).toBeVisible()
-      await gbcPage.getByTestId('terminal-remote-reclaim').click()
+      await expect(ascPage.getByTestId('terminal-remote-overlay')).toBeVisible()
+      await ascPage.getByTestId('terminal-remote-reclaim').click()
       await expect
         .poll(() =>
           phone?.messages.find(

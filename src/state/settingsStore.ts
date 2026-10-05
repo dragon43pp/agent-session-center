@@ -442,11 +442,11 @@ export const createSettingsState: StateCreator<SettingsState> = (set) => ({
   reset: () => set(defaultSettings)
 })
 
-migrateLegacyStorageKey('gbc-terminal-settings', 'vibing-terminal-settings')
+migrateLegacyStorageKey('asc-terminal-settings', 'vibing-terminal-settings')
 
 export const useSettingsStore = create<SettingsState>()(
   persist(createSettingsState, {
-    name: 'gbc-terminal-settings',
+    name: 'asc-terminal-settings',
     version: 16,
     migrate: migrateSettings,
     partialize: ({

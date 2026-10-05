@@ -1,5 +1,5 @@
 (() => {
-  const api = window.gbcFloating
+  const api = window.ascFloating
   const buddy = document.querySelector('#buddy')
   const mascot = document.querySelector('#mascot')
   const headline = document.querySelector('#headline')
@@ -249,7 +249,7 @@
     buddy.dataset.mood = mood
     buddy.dataset.effects = snapshot.attentionEffectEnabled ? 'on' : 'off'
     headline.textContent = strings.headlines[mood] || strings.headlines.idle
-    moodLabel.textContent = sessions.length ? strings.sessions(sessions.length) : 'GBC'
+    moodLabel.textContent = sessions.length ? strings.sessions(sessions.length) : 'ASC'
     summary.textContent = primary
       ? `${primary.name || primary.adapterId} · ${primary.detail || primary.status}`
       : strings.empty
@@ -285,7 +285,7 @@
 
   if (!api) {
     headline.textContent = 'Sunny Buddy'
-    summary.textContent = 'This renderer must run inside GBC.'
+    summary.textContent = 'This renderer must run inside ASC.'
     return
   }
 

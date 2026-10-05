@@ -416,7 +416,7 @@ export default function SessionHistoryPage({ clis, onResumeSession }: SessionHis
               data-testid="session-history-subagents"
               checked={showSubagents}
               onChange={(event) => setShowSubagents(event.target.checked)}
-              className="size-3 accent-[var(--gbc-brand,#FF6B4A)]"
+              className="size-3 accent-[var(--asc-brand,#FF6B4A)]"
             />
             {t.showSubagents}
           </label>

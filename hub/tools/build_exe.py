@@ -51,7 +51,7 @@ BUILD = os.path.join(ROOT, "build")
 APP_NAME = "AgentSessionCenter"
 CLI_NAME = APP_NAME + "-cli"
 ICON = os.path.join(ROOT, "assets", "icon", "center.ico")
-SPEC = os.path.join(BUILD, "gbc.spec")
+SPEC = os.path.join(BUILD, "asc.spec")
 
 
 def venv_python() -> str:

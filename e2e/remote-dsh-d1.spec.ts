@@ -119,8 +119,8 @@ async function waitForControl(
 }
 
 test('D1 Desktop carries real DSH HTTP through a fixed public-authority tunnel', async () => {
-  const executable = process.env['GBC_E2E_REAL_DSH']
-  test.skip(!executable, 'Set GBC_E2E_REAL_DSH to a real installed dsh executable')
+  const executable = process.env['ASC_E2E_REAL_DSH']
+  test.skip(!executable, 'Set ASC_E2E_REAL_DSH to a real installed dsh executable')
   test.setTimeout(240_000)
 
   const relay = await RemoteTestRelay.listen()
@@ -130,7 +130,7 @@ test('D1 Desktop carries real DSH HTTP through a fixed public-authority tunnel',
   const appState = await launchApp({
     createDefaultTerminal: false,
     localDsh: true,
-    env: { GBC_E2E_DSH_INSTALLATION: executable! }
+    env: { ASC_E2E_DSH_INSTALLATION: executable! }
   })
   try {
     await appState.window.evaluate(async ({ joinUrl }) => {

@@ -248,7 +248,7 @@ async function ensureWhileLocked(
 
       const candidatePath = join(
         configDir,
-        `.${basename(options.configPath)}.gbc-${randomBytes(8).toString('hex')}.tmp`
+        `.${basename(options.configPath)}.asc-${randomBytes(8).toString('hex')}.tmp`
       )
       try {
         try {

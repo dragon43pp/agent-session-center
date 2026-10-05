@@ -469,7 +469,7 @@ export function useXterm(
         }, 600)
       : null
 
-    // 调试桥：E2E/dev 下暴露 window.__gbcDebug，可读 buffer、可主动 forceResize。
+    // 调试桥：E2E/dev 下暴露 window.__ascDebug，可读 buffer、可主动 forceResize。
     const unregisterDebug = registerTerminalForDebug(
       tabId,
       term,

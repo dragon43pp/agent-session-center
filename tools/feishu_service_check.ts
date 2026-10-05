@@ -91,7 +91,7 @@ function makeFakeFetch(pollScript: unknown[]): {
 async function main(): Promise<void> {
   console.log('飞书渠道 · 服务层判卷')
 
-  const root = mkdtempSync(join(tmpdir(), 'gbc-feishu-'))
+  const root = mkdtempSync(join(tmpdir(), 'asc-feishu-'))
   const storePath = join(root, 'feishu.json')
   const store = new FeishuStore(storePath)
 

@@ -40,7 +40,6 @@ ROOTS = [
     os.path.join(HOME, ".pi", "agent"),
     os.path.join(HOME, ".gemini", "antigravity"),
     os.path.join(HOME, ".gemini", "antigravity-cli"),
-    os.path.join(APPDATA, "HRack"),
 ]
 
 # 这些子路径下面**新增任何文件**都视为「真的把 CLI 跑起来了」，直接算失败。

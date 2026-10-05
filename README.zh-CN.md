@@ -158,7 +158,7 @@ Agent Session Center 还可以扫描并启动 Devin CLI、Cline、Qwen Code、Am
 3. 选择运行环境和工作区。
 4. 创建会话。原生 TUI 会显示在主区域，Agent Session Center 负责在外围同步状态。
 
-如果 Codex 提示需要审核 Hooks，请打开 `/hooks`，检查并信任 Agent Session Center 的 Hook 定义。对于 Kimi Code，Agent Session Center 会在当前生效的用户 `config.toml` 中维护一个带版本的托管块，并保留托管块之外的内容。Grok Build 会在 `~/.grok/hooks/`（或 `$GROK_HOME/hooks` / 对应 WSL 家目录）写入专用的 `gbc-observer.json`，属于 Grok 始终信任的用户级 Hook。
+如果 Codex 提示需要审核 Hooks，请打开 `/hooks`，检查并信任 Agent Session Center 的 Hook 定义。对于 Kimi Code，Agent Session Center 会在当前生效的用户 `config.toml` 中维护一个带版本的托管块，并保留托管块之外的内容。Grok Build 会在 `~/.grok/hooks/`（或 `$GROK_HOME/hooks` / 对应 WSL 家目录）写入专用的 `asc-observer.json`，属于 Grok 始终信任的用户级 Hook。
 
 ## 本地开发
 

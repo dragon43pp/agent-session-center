@@ -232,8 +232,8 @@ test.describe('new session flow', () => {
   test.beforeEach(async () => {
     ;({ app, window: page } = await launchApp())
     await page.evaluate(() => {
-      window.__gbcDebugShell?.setNavMode('sidebar')
-      window.__gbcDebugShell?.navigate('home')
+      window.__ascDebugShell?.setNavMode('sidebar')
+      window.__ascDebugShell?.navigate('home')
     })
   })
 
@@ -319,9 +319,9 @@ test.describe('new session flow', () => {
 
   test('restores the last workspace and lists recent folders in the themed dropdown', async () => {
     await page.evaluate(() => {
-      localStorage.setItem('gbc.lastWorkspace', 'C:\\last-repo')
+      localStorage.setItem('asc.lastWorkspace', 'C:\\last-repo')
       localStorage.setItem(
-        'gbc.workspaceHistory',
+        'asc.workspaceHistory',
         JSON.stringify([
           'C:\\last-repo',
           'C:\\older-repo',
@@ -353,7 +353,7 @@ test.describe('new session flow', () => {
   test('caps remembered workspaces at five and puts the latest first', async () => {
     await page.evaluate(() => {
       localStorage.setItem(
-        'gbc.workspaceHistory',
+        'asc.workspaceHistory',
         JSON.stringify([
           'C:\\one',
           'C:\\two',
@@ -362,7 +362,7 @@ test.describe('new session flow', () => {
           'C:\\five'
         ])
       )
-      localStorage.setItem('gbc.lastWorkspace', 'C:\\one')
+      localStorage.setItem('asc.lastWorkspace', 'C:\\one')
     })
 
     await page.getByTestId('home-quick-codex').click()

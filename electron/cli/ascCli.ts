@@ -10,14 +10,14 @@ import { BridgeError } from '../bridge/errors'
 import { bridgeSocketPath, readBridgeTokenFile } from '../bridge/paths'
 import {
   cliUsage,
-  extractGbcCliArgv,
-  isGbcCliInvocation,
-  parseGbcCli
-} from './parseGbcCli'
+  extractAscCliArgv,
+  isAscCliInvocation,
+  parseAscCli
+} from './parseAscCli'
 
-export { extractGbcCliArgv, isGbcCliInvocation, parseGbcCli, cliUsage }
+export { extractAscCliArgv, isAscCliInvocation, parseAscCli, cliUsage }
 
-export interface GbcCliIo {
+export interface AscCliIo {
   stdout: { write(chunk: string): void }
   stderr: { write(chunk: string): void }
   connect?: (path: string) => Promise<Socket>
@@ -26,30 +26,31 @@ export interface GbcCliIo {
   userDataDir?: string
 }
 
-const GBC_NOT_RUNNING =
+const ASC_NOT_RUNNING =
   'Agent Session Center is not running. Open Agent Session Center first, then retry this command.'
 
 function defaultUserDataCandidates(): string[] {
-  if (process.env.GBC_USER_DATA_DIR) return [process.env.GBC_USER_DATA_DIR]
-  // HRACK_ 前缀是历史遗留（早期工作名 HRack），保留以兼容既有配置。
-  if (process.env.HRACK_USER_DATA_DIR) return [process.env.HRACK_USER_DATA_DIR]
+  if (process.env.ASC_USER_DATA_DIR) return [process.env.ASC_USER_DATA_DIR]
   const appData =
     process.env.APPDATA ||
     process.env.XDG_CONFIG_HOME ||
     join(homedir(), process.platform === 'darwin' ? 'Library/Application Support' : '.config')
-  // userData 目录名沿用历史产品名，避免迁移用户本地配置（飞书 token、LLM key）；如需改名必须附带迁移逻辑
-  return [join(appData, 'Grok Build Center Dev'), join(appData, 'Grok Build Center')]
+  // 目录名与正式产品名保持一致；旧品牌名的目录已由 main.ts 迁移到这里。
+  return [
+    join(appData, 'Agent Session Center Dev'),
+    join(appData, 'Agent Session Center')
+  ]
 }
 
-async function resolveToken(io: GbcCliIo): Promise<string> {
+async function resolveToken(io: AscCliIo): Promise<string> {
   if (io.token) return io.token
-  if (process.env.GBC_BRIDGE_TOKEN) return process.env.GBC_BRIDGE_TOKEN
+  if (process.env.ASC_BRIDGE_TOKEN) return process.env.ASC_BRIDGE_TOKEN
   const dirs = io.userDataDir ? [io.userDataDir] : defaultUserDataCandidates()
   for (const dir of dirs) {
     const token = await readBridgeTokenFile(dir)
     if (token) return token
   }
-  throw BridgeError.disconnected(GBC_NOT_RUNNING)
+  throw BridgeError.disconnected(ASC_NOT_RUNNING)
 }
 
 function connectSocket(path: string): Promise<Socket> {
@@ -68,15 +69,15 @@ function connectSocket(path: string): Promise<Socket> {
   })
 }
 
-async function openBridge(io: GbcCliIo): Promise<{ socket: Socket; token: string }> {
+async function openBridge(io: AscCliIo): Promise<{ socket: Socket; token: string }> {
   const token = await resolveToken(io)
-  const path = io.socketPath ?? process.env.GBC_BRIDGE_SOCKET ?? bridgeSocketPath()
+  const path = io.socketPath ?? process.env.ASC_BRIDGE_SOCKET ?? bridgeSocketPath()
   try {
     const socket = await (io.connect ? io.connect(path) : connectSocket(path))
     socket.setEncoding('utf8')
     return { socket, token }
   } catch {
-    throw BridgeError.disconnected(GBC_NOT_RUNNING)
+    throw BridgeError.disconnected(ASC_NOT_RUNNING)
   }
 }
 
@@ -138,23 +139,23 @@ function readMessages(
   })()
 }
 
-function printJson(io: GbcCliIo, value: unknown): void {
+function printJson(io: AscCliIo, value: unknown): void {
   io.stdout.write(`${JSON.stringify(value, null, 2)}\n`)
 }
 
-export async function runGbcCli(
+export async function runAscCli(
   argv: readonly string[],
-  io: GbcCliIo
+  io: AscCliIo
 ): Promise<number> {
   const extracted =
-    extractGbcCliArgv(argv) ?? extractGbcCliArgv(['node', ...argv])
+    extractAscCliArgv(argv) ?? extractAscCliArgv(['node', ...argv])
   if (!extracted) {
     io.stderr.write(`${cliUsage()}\n`)
     return 1
   }
   let parsed
   try {
-    parsed = parseGbcCli(extracted)
+    parsed = parseAscCli(extracted)
   } catch (error) {
     io.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`)
     return 1
@@ -174,7 +175,7 @@ export async function runGbcCli(
     const bridged =
       error instanceof BridgeError
         ? error
-        : BridgeError.disconnected(GBC_NOT_RUNNING)
+        : BridgeError.disconnected(ASC_NOT_RUNNING)
     io.stderr.write(`${bridged.message}\n`)
     return bridged.exitCode
   }

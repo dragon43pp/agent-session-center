@@ -2,16 +2,15 @@ import { createConnection } from 'node:net'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-// HRACK_USER_DATA_DIR 的 HRACK_ 前缀是历史遗留（早期工作名 HRack），保留以兼容既有配置。
-const userData = process.env.GBC_USER_DATA_DIR || process.env.HRACK_USER_DATA_DIR
-  ?? join(process.env.APPDATA ?? '', 'GBC Dev')
-const token = (process.env.GBC_BRIDGE_TOKEN
+const userData = process.env.ASC_USER_DATA_DIR
+  ?? join(process.env.APPDATA ?? '', 'Agent Session Center Dev')
+const token = (process.env.ASC_BRIDGE_TOKEN
   ?? readFileSync(join(userData, 'bridge.token'), 'utf8')).trim()
-const socketPath = process.env.GBC_BRIDGE_SOCKET
-  ?? `\\\\.\\pipe\\gbc-bridge-${process.env.USERNAME ?? 'user'}`
+const socketPath = process.env.ASC_BRIDGE_SOCKET
+  ?? `\\\\.\\pipe\\asc-bridge-${process.env.USERNAME ?? 'user'}`
 const method = process.argv[2]
 if (!method) {
-  console.error('usage: node scripts/gbc-bridge-client.mjs <method> [json-params]')
+  console.error('usage: node scripts/asc-bridge-client.mjs <method> [json-params]')
   process.exit(1)
 }
 const rawParams = process.argv[3]
@@ -47,4 +46,4 @@ socket.on('close', () => process.exit(0))
 setTimeout(() => {
   console.error('client timeout')
   process.exit(3)
-}, Number(process.env.GBC_CLIENT_TIMEOUT_MS ?? 60_000))
+}, Number(process.env.ASC_CLIENT_TIMEOUT_MS ?? 60_000))

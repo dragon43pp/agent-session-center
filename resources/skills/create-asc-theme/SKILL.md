@@ -1,5 +1,5 @@
 ---
-name: create-gbc-theme
+name: create-asc-theme
 description: Create, modify, validate, or package Agent Session Center UI themes as JSON. Use when designing a new Agent Session Center color theme, editing semantic UI colors, converting a palette into Agent Session Center tokens, or contributing a built-in theme.
 ---
 
@@ -20,7 +20,7 @@ Never overwrite a built-in id or silently change the selected theme.
 
 The bundled checker is the only sanctioned contrast oracle. Find it in this order:
 
-1. This skill's own folder in the repo checkout: `resources/skills/create-gbc-theme/validate-theme.cjs`.
+1. This skill's own folder in the repo checkout: `resources/skills/create-asc-theme/validate-theme.cjs`.
 2. The session workspace (glob `**/validate-theme.cjs`).
 3. Ask the user once for the Agent Session Center checkout path. Do not guess paths and do not silently skip validation.
 
@@ -97,7 +97,7 @@ Blend the two backgrounds for the surface family, then fill borders, scrollbars,
 
 **Personal theme — fast path:**
 
-1. Run `node resources/skills/create-gbc-theme/validate-theme.cjs <theme.json>` (or the embedded appendix copy — see "Locate the validator before any color work"). It is zero-dependency, mirrors `validateUiTheme()`/`resolveUiTheme()` rules, and prints WCAG ratios for the canonical fg/bg pairs.
+1. Run `node resources/skills/create-asc-theme/validate-theme.cjs <theme.json>` (or the embedded appendix copy — see "Locate the validator before any color work"). It is zero-dependency, mirrors `validateUiTheme()`/`resolveUiTheme()` rules, and prints WCAG ratios for the canonical fg/bg pairs.
 2. Do not compile the TS schema ad hoc (`tsc`/`node` toolchain startup has hung in this environment). The bundled script is the sanctioned checker; only `validateUiTheme()` itself is authoritative.
 3. Deliver the JSON, a short mapping summary, and any intentionally sub-threshold pairs.
 
@@ -112,10 +112,10 @@ Report the theme id, type, changed files, validation performed, and any remainin
 
 ## Appendix: embedded `validate-theme.cjs`
 
-Byte-mirror of `resources/skills/create-gbc-theme/validate-theme.cjs`. When either copy changes, update both in the same commit. To validate without the repo, save everything between the fences below as a `.cjs` file and run `node <file> <theme.json>`.
+Byte-mirror of `resources/skills/create-asc-theme/validate-theme.cjs`. When either copy changes, update both in the same commit. To validate without the repo, save everything between the fences below as a `.cjs` file and run `node <file> <theme.json>`.
 
 ````js
-/* Bundled with the create-gbc-theme Skill — plain Node, zero dependencies.
+/* Bundled with the create-asc-theme Skill — plain Node, zero dependencies.
  * Mirrors shared/theme-schema.ts (UI_COLOR_TOKENS + color literal rules) and
  * prints WCAG contrast for the canonical fg/bg pairs.
  * MIRROR ONLY: if shared/theme-schema.ts changes, update the lists below.

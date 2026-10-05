@@ -146,7 +146,7 @@ export const ko = {
     homeLabel: 'DSH_HOME',
     homeIsolated: '격리(권장)',
     homeShared: '공유 ~/.dsh',
-    homeEnvOverride: 'GBC_DSH_HOME 이 경로를 덮어씁니다.',
+    homeEnvOverride: 'ASC_DSH_HOME 이 경로를 덮어씁니다.',
     homeSwitchConfirm:
       'DSH_HOME 을 바꾸면 host 가 재시작되고 창이 새로고침됩니다. 기존 세션은 이전되지 않습니다. 계속할까요?',
     retentionLabel: '세션 보관',

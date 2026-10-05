@@ -36,15 +36,15 @@ import FeishuSettingsSection from './FeishuSettingsSection'
 import AssistantSettingsSection from './AssistantSettingsSection'
 import ClickSpark from './effects/ClickSpark'
 import Dropdown, { type DropdownOption } from './Dropdown'
-import floatingRendererSkill from '../../resources/skills/create-gbc-floating-renderer/SKILL.md?raw'
-import themeSkill from '../../resources/skills/create-gbc-theme/SKILL.md?raw'
-import bridgeSkill from '../../resources/skills/gbc-opencode-bridge/SKILL.md?raw'
+import floatingRendererSkill from '../../resources/skills/create-asc-floating-renderer/SKILL.md?raw'
+import themeSkill from '../../resources/skills/create-asc-theme/SKILL.md?raw'
+import bridgeSkill from '../../resources/skills/asc-opencode-bridge/SKILL.md?raw'
 
 const defaultFontFamily = defaultSettings.fontFamily
 
 const defaultCustomThemeSource = JSON.stringify({
   id: CUSTOM_UI_THEME_ID,
-  name: 'GBC Custom',
+  name: 'ASC Custom',
   type: 'dark',
   colors: {},
   terminal: null
@@ -632,7 +632,7 @@ export default function SettingsPage({
   )
 
   return (
-    <ClickSpark sparkColor="var(--gbc-accent-spark)" sparkSize={8} sparkRadius={18} sparkCount={10} duration={450}>
+    <ClickSpark sparkColor="var(--asc-accent-spark)" sparkSize={8} sparkRadius={18} sparkCount={10} duration={450}>
       <section
         data-testid="settings-page"
         data-settings-category={category}
@@ -1036,7 +1036,7 @@ export default function SettingsPage({
                       Number(event.target.value) / 100
                     )
                   }
-                  className="h-1 w-36 cursor-target accent-[var(--gbc-button-primary-bg)]"
+                  className="h-1 w-36 cursor-target accent-[var(--asc-button-primary-bg)]"
                 />
                 <span
                   data-testid="settings-terminal-background-opacity-value"

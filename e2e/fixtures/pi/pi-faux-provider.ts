@@ -8,15 +8,15 @@ import {
 import type { ExtensionAPI } from '@earendil-works/pi-coding-agent'
 
 /** Deterministic, offline provider used only by the opt-in real Pi E2E. */
-export default function registerGBCPiE2eProvider(pi: ExtensionAPI): void {
+export default function registerASCPiE2eProvider(pi: ExtensionAPI): void {
   const faux = createFauxCore({
-    provider: 'gbc-e2e',
-    api: 'gbc-e2e',
+    provider: 'asc-e2e',
+    api: 'asc-e2e',
     tokensPerSecond: 24,
     models: [
       {
         id: 'trace',
-        name: 'GBC E2E Trace',
+        name: 'ASC E2E Trace',
         reasoning: true,
         input: ['text'],
         contextWindow: 16_384,
@@ -58,8 +58,8 @@ export default function registerGBCPiE2eProvider(pi: ExtensionAPI): void {
     ])
   ])
   // Pi 0.80 cannot consume the newer Provider object from fauxProvider().
-  pi.registerProvider('gbc-e2e', {
-    name: 'GBC E2E',
+  pi.registerProvider('asc-e2e', {
+    name: 'ASC E2E',
     baseUrl: 'http://127.0.0.1:1',
     apiKey: 'offline-e2e',
     api: faux.api,

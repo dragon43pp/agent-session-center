@@ -36,11 +36,11 @@ function applyFollowed(
   })
 }
 
-test('DSH remote snapshot contains only sessions followed by GBC', () => {
+test('DSH remote snapshot contains only sessions followed by ASC', () => {
   const bridge = createBridge()
   const source = dshRemoteSessionSource(bridge)
 
-  // DSH may have arbitrary history, but without an GBC projection the phone
+  // DSH may have arbitrary history, but without an ASC projection the phone
   // receives no DSH row.
   expect(source.list()).toEqual([])
 
@@ -91,7 +91,7 @@ test('DSH remote source streams followed status and removal', () => {
   ])
 })
 
-test('rebinding an GBC slot replaces the official session on the phone', () => {
+test('rebinding an ASC slot replaces the official session on the phone', () => {
   const bridge = createBridge()
   applyFollowed(bridge, {
     slotId: 'home-slot',

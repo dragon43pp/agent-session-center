@@ -88,11 +88,11 @@ export function createSessionNavigationStore(
   const stateCreator = createSessionNavigationState()
   if (options.persist === false) return create<SessionNavigationState>()(stateCreator)
 
-  migrateLegacyStorageKey('gbc-session-navigation', 'vibing-session-navigation')
+  migrateLegacyStorageKey('asc-session-navigation', 'vibing-session-navigation')
 
   return create<SessionNavigationState>()(
     persist(stateCreator, {
-      name: 'gbc-session-navigation',
+      name: 'asc-session-navigation',
       version: 1,
       partialize: (state) => ({ snapshot: state.snapshot }),
       merge: (persisted, current) => ({

@@ -16,21 +16,21 @@ import {
 } from '../shared/remote-protocol'
 
 const execFileAsync = promisify(execFile)
-const targetUrl = process.env.GBC_REMOTE_P6_URL
-const adbExecutable = process.env.GBC_ANDROID_ADB
-const providedJoinUrl = process.env.GBC_REMOTE_P6_JOIN_URL
-const providedRevokeToken = process.env.GBC_REMOTE_P6_REVOKE_TOKEN
-const useCameraQr = process.env.GBC_ANDROID_CAMERA_QR === '1'
+const targetUrl = process.env.ASC_REMOTE_P6_URL
+const adbExecutable = process.env.ASC_ANDROID_ADB
+const providedJoinUrl = process.env.ASC_REMOTE_P6_JOIN_URL
+const providedRevokeToken = process.env.ASC_REMOTE_P6_REVOKE_TOKEN
+const useCameraQr = process.env.ASC_ANDROID_CAMERA_QR === '1'
 const appPackage =
-  process.env.GBC_ANDROID_APP_PACKAGE ?? 'app.modplex.gbc.remote'
-const uiDumpPath = '/sdcard/gbc-p6-window.xml'
+  process.env.ASC_ANDROID_APP_PACKAGE ?? 'app.modplex.asc.remote'
+const uiDumpPath = '/sdcard/asc-p6-window.xml'
 
 function quoteRegex(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 async function adb(...args: string[]): Promise<string> {
-  if (!adbExecutable) throw new Error('GBC_ANDROID_ADB is not configured')
+  if (!adbExecutable) throw new Error('ASC_ANDROID_ADB is not configured')
   const result = await execFileAsync(adbExecutable, args, {
     encoding: 'utf8',
     maxBuffer: 4 * 1024 * 1024,
@@ -162,7 +162,7 @@ async function launchSession(
   page: Page,
   name: string
 ): Promise<{ sessionId: string; terminalId: string }> {
-  await page.evaluate(() => window.__gbcDebugShell?.navigate('home'))
+  await page.evaluate(() => window.__ascDebugShell?.navigate('home'))
   await page.getByTestId('home-quick-codex').click()
   await page.getByTestId('cli-session-name').fill(name)
   await page.getByTestId('cli-workspace').fill(process.cwd())
@@ -190,8 +190,8 @@ async function launchSession(
   }, name)
 }
 
-async function connectGbc(page: Page, joinUrl: string): Promise<void> {
-  await page.evaluate(() => window.__gbcDebugShell?.navigate('settings'))
+async function connectAsc(page: Page, joinUrl: string): Promise<void> {
+  await page.evaluate(() => window.__ascDebugShell?.navigate('settings'))
   await page.getByTestId('settings-category-remote').click()
   await page.getByTestId('settings-remote-url').fill(joinUrl)
   await page.getByTestId('settings-remote-connect').click()
@@ -245,7 +245,7 @@ async function openPhoneSeat(joinUrl: string): Promise<WebSocket> {
 test.describe('remote P6 Android live relay', () => {
   test.skip(
     !targetUrl || !adbExecutable,
-    'set GBC_REMOTE_P6_URL and GBC_ANDROID_ADB for the installed App gate'
+    'set ASC_REMOTE_P6_URL and ASC_ANDROID_ADB for the installed App gate'
   )
 
   test('pairs the installed App with real Electron sessions over public WSS', async ({
@@ -289,7 +289,7 @@ test.describe('remote P6 Android live relay', () => {
       if (useCameraQr) await pairAndroidByCamera()
       else await pairAndroid(joinUrl)
       await waitForUi(
-        (xml) => xml.includes('等待 GBC 桌面端'),
+        (xml) => xml.includes('等待 ASC 桌面端'),
         useCameraQr
           ? 'phone waiting for desktop after a real camera QR scan'
           : 'phone waiting for desktop after manual pairing',
@@ -300,23 +300,23 @@ test.describe('remote P6 Android live relay', () => {
       const launched = await launchApp({
         createDefaultTerminal: false,
         env: {
-          GBC_FIXTURE_OBSERVER: '1',
+          ASC_FIXTURE_OBSERVER: '1',
           // 给 UIAutomator 读取语义树和 adb 截图留出稳定窗口，避免状态在两步之间推进。
-          GBC_FIXTURE_OBSERVER_INTERVAL_MS: '5000'
+          ASC_FIXTURE_OBSERVER_INTERVAL_MS: '5000'
         }
       })
       app = launched.app
-      const gbcPage = launched.window
+      const ascPage = launched.window
       const firstName = 'P6 Android snapshot'
       const secondName = 'P6 Android upsert'
-      await launchSession(gbcPage, firstName)
-      await connectGbc(gbcPage, joinUrl)
+      await launchSession(ascPage, firstName)
+      await connectAsc(ascPage, joinUrl)
 
       await waitForUi(
         (xml) => xml.includes(firstName) && xml.includes('工作中'),
         'first real session snapshot'
       )
-      await launchSession(gbcPage, secondName)
+      await launchSession(ascPage, secondName)
       await waitForUi(
         (xml) =>
           xml.includes(firstName) &&
@@ -354,10 +354,10 @@ test.describe('remote P6 Android live relay', () => {
         'sessions after occupied retry'
       )
 
-      await gbcPage.evaluate(() => window.remoteApi.disconnect())
+      await ascPage.evaluate(() => window.remoteApi.disconnect())
       await waitForUi(
         (xml) =>
-          xml.includes('等待 GBC 桌面端') &&
+          xml.includes('等待 ASC 桌面端') &&
           !xml.includes(firstName) &&
           !xml.includes(secondName),
         'desktop leave clears sessions'

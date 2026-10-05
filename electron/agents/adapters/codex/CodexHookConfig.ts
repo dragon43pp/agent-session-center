@@ -15,9 +15,9 @@ const EVENTS = [
 ] as const
 
 const POSIX_COMMAND =
-  'if [ -n "${GBC_CODEX_HOOK_BRIDGE:-}" ] && [ -f "$GBC_CODEX_HOOK_BRIDGE" ]; then /bin/sh "$GBC_CODEX_HOOK_BRIDGE" >/dev/null 2>&1 || :; fi'
+  'if [ -n "${ASC_CODEX_HOOK_BRIDGE:-}" ] && [ -f "$ASC_CODEX_HOOK_BRIDGE" ]; then /bin/sh "$ASC_CODEX_HOOK_BRIDGE" >/dev/null 2>&1 || :; fi'
 const WINDOWS_SCRIPT =
-  "$p=[Environment]::GetEnvironmentVariable('GBC_CODEX_HOOK_BRIDGE_WINDOWS'); if ($p -and (Test-Path -LiteralPath $p -PathType Leaf)) { & $p }; exit 0"
+  "$p=[Environment]::GetEnvironmentVariable('ASC_CODEX_HOOK_BRIDGE_WINDOWS'); if ($p -and (Test-Path -LiteralPath $p -PathType Leaf)) { & $p }; exit 0"
 const WINDOWS_COMMAND = `powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -EncodedCommand ${Buffer.from(WINDOWS_SCRIPT, 'utf16le').toString('base64')}`
 
 function tomlString(value: string): string {
@@ -40,9 +40,9 @@ export function codexPosixBridgeScript(): string {
   return `#!/bin/sh
 set -eu
 umask 077
-drop="\${GBC_CODEX_HOOK_DROP:-}"
+drop="\${ASC_CODEX_HOOK_DROP:-}"
 [ -n "$drop" ] && [ -d "$drop" ] || exit 0
-tmp="$(mktemp "$drop/.gbc-codex.XXXXXX.partial")" || exit 0
+tmp="$(mktemp "$drop/.asc-codex.XXXXXX.partial")" || exit 0
 trap 'rm -f "$tmp"' EXIT HUP INT TERM
 dd bs=1048577 count=1 of="$tmp" 2>/dev/null || true
 size="$(wc -c < "$tmp" | tr -d ' ')"
@@ -57,7 +57,7 @@ trap - EXIT HUP INT TERM
 export function codexWindowsBridgeScript(): string {
   return `$ErrorActionPreference = 'Stop'
 try {
-  $drop = $env:GBC_CODEX_HOOK_DROP
+  $drop = $env:ASC_CODEX_HOOK_DROP
   if ([string]::IsNullOrWhiteSpace($drop) -or -not [IO.Directory]::Exists($drop)) { exit 0 }
   $inputStream = [Console]::OpenStandardInput()
   $memory = [IO.MemoryStream]::new()

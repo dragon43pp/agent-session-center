@@ -147,7 +147,7 @@ export const zhCN = {
     homeLabel: 'DSH_HOME',
     homeIsolated: '隔离（推荐）',
     homeShared: '共享 ~/.dsh',
-    homeEnvOverride: '当前由 GBC_DSH_HOME 覆盖，设置不会改路径。',
+    homeEnvOverride: '当前由 ASC_DSH_HOME 覆盖，设置不会改路径。',
     homeSwitchConfirm:
       '切换 DSH_HOME 会重启 host 并刷新窗口，不会迁移已有会话。确定继续？',
     retentionLabel: '会话保留',

@@ -41,13 +41,13 @@ test('renders platform-appropriate title-bar controls and applies every GUI toke
       missing: tokens.filter(
         (token) =>
           styles
-            .getPropertyValue(`--gbc-${token.replaceAll('.', '-')}`)
+            .getPropertyValue(`--asc-${token.replaceAll('.', '-')}`)
             .trim().length === 0
       )
     }
   }, UI_COLOR_TOKENS)
   expect(themeState).toEqual({ id: 'light', missing: [] })
-  expect(uiTokenToCssVariable('bg.app')).toBe('--gbc-bg-app')
+  expect(uiTokenToCssVariable('bg.app')).toBe('--asc-bg-app')
 })
 
 test('keeps the italic brand ink inside the shiny text paint box', async () => {
@@ -241,8 +241,8 @@ test('minimizes and hides to tray through the narrowed window API', async () => 
   await expect
     .poll(() =>
       page.evaluate(() =>
-        (window as unknown as { __gbcDebug: { snapshot(): unknown } })
-          .__gbcDebug.snapshot()
+        (window as unknown as { __ascDebug: { snapshot(): unknown } })
+          .__ascDebug.snapshot()
       )
     )
     .not.toBeNull()
@@ -269,9 +269,9 @@ test('reopens the hidden primary window instead of starting another instance', a
     {
       env: {
         ...process.env,
-        GBC_E2E: '1',
-        GBC_E2E_CLI_FIXTURE: '1',
-        GBC_USER_DATA_DIR: userDataDir
+        ASC_E2E: '1',
+        ASC_E2E_CLI_FIXTURE: '1',
+        ASC_USER_DATA_DIR: userDataDir
       },
       stdio: 'ignore'
     }
@@ -295,12 +295,12 @@ test('reopens the hidden primary window instead of starting another instance', a
 
 test('registers and unregisters the global shortcut with the settings toggle', async () => {
   // 默认 E2E 使用内存注册器，避免 Ctrl+Alt+V 被宿主机其他应用占用；
-  // GBC_E2E_REAL_GLOBAL_SHORTCUT=1 可切换到真实 OS smoke。
+  // ASC_E2E_REAL_GLOBAL_SHORTCUT=1 可切换到真实 OS smoke。
   const shortcut = () =>
     app.evaluate(() =>
       (globalThis as unknown as {
-        __gbcMainDebug: { isShortcutRegistered(): boolean }
-      }).__gbcMainDebug.isShortcutRegistered()
+        __ascMainDebug: { isShortcutRegistered(): boolean }
+      }).__ascMainDebug.isShortcutRegistered()
     )
   await expect.poll(shortcut).toBe(true)
 
@@ -333,7 +333,7 @@ test('settings expose notification sound controls', async () => {
   const sound = await page.evaluate(
     () =>
       new Promise<{ ok: boolean; error?: string }>((resolve) => {
-        const audio = new Audio('gbc-notification://local/current')
+        const audio = new Audio('asc-notification://local/current')
         audio.oncanplaythrough = () => resolve({ ok: true })
         audio.onerror = () =>
           resolve({ ok: false, error: audio.error?.message ?? 'audio error' })
@@ -381,14 +381,14 @@ test('tray menu items drive hide-toggle, new session, and quit callbacks', async
   const clickTrayItem = (index: number) =>
     app.evaluate((_electron, value) => {
       return (globalThis as unknown as {
-        __gbcMainDebug: {
+        __ascMainDebug: {
           clickTrayItem(index: number): {
             invoked: boolean
             visible: boolean
             focused: boolean
           }
         }
-      }).__gbcMainDebug.clickTrayItem(value)
+      }).__ascMainDebug.clickTrayItem(value)
     }, index)
 
   // 显示/隐藏：菜单项 0 在可见且聚焦时隐藏窗口（quake 语义）。
@@ -456,7 +456,7 @@ test('hot-reloads the theme registry and CSS variables when themes change on dis
     .poll(() =>
       page.evaluate(() =>
         getComputedStyle(document.documentElement)
-          .getPropertyValue('--gbc-bg-app')
+          .getPropertyValue('--asc-bg-app')
           .trim()
       )
     )
@@ -476,7 +476,7 @@ test('hot-reloads the theme registry and CSS variables when themes change on dis
     .poll(() =>
       page.evaluate(() =>
         getComputedStyle(document.documentElement)
-          .getPropertyValue('--gbc-bg-app')
+          .getPropertyValue('--asc-bg-app')
           .trim()
       )
     )

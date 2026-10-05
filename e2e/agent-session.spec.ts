@@ -1154,7 +1154,7 @@ function createRuntimeHarness(options: {
   const scripted = options.scripted ?? new ScriptedAdapter()
   registry.register(scripted)
 
-  const runDirRoot = mkdtempSync(join(tmpdir(), 'gbc-agent-run-'))
+  const runDirRoot = mkdtempSync(join(tmpdir(), 'asc-agent-run-'))
   const runtime = new AgentSessionRuntime({
     pty,
     discovery,
@@ -1215,7 +1215,7 @@ class ScriptedAdapter implements AgentObserverAdapter {
     this.prepared = true
     return {
       launch: {
-        env: { GBC_FIXTURE: '1' },
+        env: { ASC_FIXTURE: '1' },
         prependArgs: ['--non-interactive']
       },
       capabilities: this.capabilities,
@@ -1307,7 +1307,7 @@ test.describe('AgentSessionRuntime (interface gates)', () => {
       shell: 'codex.exe',
       cols: 100,
       rows: 30,
-      env: { GBC_FIXTURE: '1' },
+      env: { ASC_FIXTURE: '1' },
       args: ['--non-interactive']
     })
     expect(harness.scripted.prepared).toBe(true)

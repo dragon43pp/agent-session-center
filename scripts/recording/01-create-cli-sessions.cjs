@@ -3,8 +3,8 @@
  *
  * Examples:
  *   npm run record:cli-demo
- *   $env:GBC_RECORDING_CLIS='codex,claude,opencode'; npm run record:cli-demo
- *   $env:GBC_RECORDING_PAUSE_MS=3000; npm run record:cli-demo
+ *   $env:ASC_RECORDING_CLIS='codex,claude,opencode'; npm run record:cli-demo
+ *   $env:ASC_RECORDING_PAUSE_MS=3000; npm run record:cli-demo
  *
  * The script launches the already-built Electron app visibly. It scans actual
  * host/WSL installations by default; --fixture is only for automated checks.
@@ -25,15 +25,15 @@ const parseList = (value) => value
   .filter(Boolean)
 
 const cliOrder = parseList(
-  process.env.GBC_RECORDING_CLIS ?? 'codex,claude,opencode,kimi,pi,grok'
+  process.env.ASC_RECORDING_CLIS ?? 'codex,claude,opencode,kimi,pi,grok'
 )
-const pauseMs = Number.parseInt(process.env.GBC_RECORDING_PAUSE_MS ?? '2200', 10)
-const holdMs = Number.parseInt(process.env.GBC_RECORDING_HOLD_MS ?? '12000', 10)
-const initialPauseMs = Number.parseInt(process.env.GBC_RECORDING_INITIAL_PAUSE_MS ?? '0', 10)
-const recordingTitle = process.env.GBC_RECORDING_WINDOW_TITLE ?? 'GBC · CLI session demo'
-const workspace = resolve(process.env.GBC_RECORDING_WORKSPACE ?? root)
-const userDataDir = process.env.GBC_RECORDING_USER_DATA_DIR ?? mkdtempSync(
-  join(tmpdir(), 'gbc-recording-')
+const pauseMs = Number.parseInt(process.env.ASC_RECORDING_PAUSE_MS ?? '2200', 10)
+const holdMs = Number.parseInt(process.env.ASC_RECORDING_HOLD_MS ?? '12000', 10)
+const initialPauseMs = Number.parseInt(process.env.ASC_RECORDING_INITIAL_PAUSE_MS ?? '0', 10)
+const recordingTitle = process.env.ASC_RECORDING_WINDOW_TITLE ?? 'ASC · CLI session demo'
+const workspace = resolve(process.env.ASC_RECORDING_WORKSPACE ?? root)
+const userDataDir = process.env.ASC_RECORDING_USER_DATA_DIR ?? mkdtempSync(
+  join(tmpdir(), 'asc-recording-')
 )
 
 function delay(milliseconds) {
@@ -80,14 +80,14 @@ async function run() {
 
   const env = {
     ...process.env,
-    GBC_USER_DATA_DIR: userDataDir,
+    ASC_USER_DATA_DIR: userDataDir,
     ...(fixtureMode
       ? {
-          GBC_E2E: '1',
-          GBC_E2E_CLI_FIXTURE: '1',
-          GBC_FIXTURE_OBSERVER: '1'
+          ASC_E2E: '1',
+          ASC_E2E_CLI_FIXTURE: '1',
+          ASC_FIXTURE_OBSERVER: '1'
         }
-      : { GBC_E2E_CLI_FIXTURE: '0' })
+      : { ASC_E2E_CLI_FIXTURE: '0' })
   }
   const app = await electron.launch({ args: [main], env })
   const page = await app.firstWindow()

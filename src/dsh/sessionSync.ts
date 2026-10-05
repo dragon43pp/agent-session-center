@@ -1,6 +1,6 @@
 /**
  * DSH presentation actions. Official DSH owns its full session catalog;
- * GBC only renames through the official API or locally unfollows a
+ * ASC only renames through the official API or locally unfollows a
  * Home-created tracking slot. The official session itself remains untouched.
  */
 

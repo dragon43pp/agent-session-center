@@ -25,7 +25,7 @@ for (const path of await filesBelow(join(root, 'src'))) {
     source.includes("'./dsh/bootDsh'") ||
     source.includes('"./dsh/bootDsh"')
   ) {
-    throw new Error(`Official DSH UI leaked into the GBC renderer: ${path}`)
+    throw new Error(`Official DSH UI leaked into the ASC renderer: ${path}`)
   }
 }
 
@@ -56,7 +56,7 @@ const [preloadSource, mainSource] = await Promise.all([
   readFile(surfacePreload, 'utf8'),
   readFile(mainBundle, 'utf8')
 ])
-if (!preloadSource.includes('__GBC_DSH_EMBED__')) {
+if (!preloadSource.includes('__ASC_DSH_EMBED__')) {
   throw new Error('Official DSH surface preload bridge is missing from the build')
 }
 if (!preloadSource.includes('__ModuleLoader__')) {
@@ -65,7 +65,7 @@ if (!preloadSource.includes('__ModuleLoader__')) {
 if (!preloadSource.includes('--no-open') && !mainSource.includes('--no-open')) {
   throw new Error('DSH host spawn is missing --no-open for official web embedding')
 }
-if (!mainSource.includes('persist:gbc-dsh-surface')) {
+if (!mainSource.includes('persist:asc-dsh-surface')) {
   throw new Error('Official DSH WebContentsView controller is missing from the build')
 }
 

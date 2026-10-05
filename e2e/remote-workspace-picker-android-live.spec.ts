@@ -12,18 +12,18 @@ import {
 import { launchApp } from "./helpers";
 
 const execFileAsync = promisify(execFile);
-const joinUrl = process.env.GBC_REMOTE_WORKSPACE_JOIN_URL;
-const adbExecutable = process.env.GBC_ANDROID_ADB;
+const joinUrl = process.env.ASC_REMOTE_WORKSPACE_JOIN_URL;
+const adbExecutable = process.env.ASC_ANDROID_ADB;
 const appPackage =
-  process.env.GBC_ANDROID_APP_PACKAGE ?? "app.modplex.gbc.remote";
-const uiDumpPath = "/sdcard/gbc-workspace-picker-window.xml";
+  process.env.ASC_ANDROID_APP_PACKAGE ?? "app.modplex.asc.remote";
+const uiDumpPath = "/sdcard/asc-workspace-picker-window.xml";
 
 function quoteRegex(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 async function adb(...args: string[]): Promise<string> {
-  if (!adbExecutable) throw new Error("GBC_ANDROID_ADB is not configured");
+  if (!adbExecutable) throw new Error("ASC_ANDROID_ADB is not configured");
   const result = await execFileAsync(adbExecutable, args, {
     encoding: "utf8",
     maxBuffer: 4 * 1024 * 1024,
@@ -300,8 +300,8 @@ async function enableSoftKeyboardWithHardwareKeyboard(): Promise<void> {
   }
 }
 
-async function connectGbc(page: Page, url: string): Promise<void> {
-  await page.evaluate(() => window.__gbcDebugShell?.navigate("settings"));
+async function connectAsc(page: Page, url: string): Promise<void> {
+  await page.evaluate(() => window.__ascDebugShell?.navigate("settings"));
   await page.getByTestId("settings-category-remote").click();
   await page.getByTestId("settings-remote-url").fill(url);
   await page.getByTestId("settings-remote-connect").click();
@@ -332,7 +332,7 @@ async function startAndPairAndroid(url: string): Promise<void> {
 test.describe("remote workspace picker Android live relay", () => {
   test.skip(
     !joinUrl || !adbExecutable,
-    "set GBC_REMOTE_WORKSPACE_JOIN_URL and GBC_ANDROID_ADB",
+    "set ASC_REMOTE_WORKSPACE_JOIN_URL and ASC_ANDROID_ADB",
   );
 
   test("browses the real desktop filesystem and launches Codex in the selected folder", async ({}, testInfo) => {
@@ -363,9 +363,9 @@ test.describe("remote workspace picker Android live relay", () => {
         cliFixture: false,
       });
       app = launched.app;
-      const gbcPage = launched.window;
+      const ascPage = launched.window;
 
-      const codex = await gbcPage.evaluate(async () => {
+      const codex = await ascPage.evaluate(async () => {
         const report = await window.cliApi.scan(true);
         const launchable = report.launchable.find(
           (candidate) => candidate.definition.id === "codex",
@@ -385,7 +385,7 @@ test.describe("remote workspace picker Android live relay", () => {
       });
       expect(codex).not.toBeNull();
 
-      await connectGbc(gbcPage, joinUrl);
+      await connectAsc(ascPage, joinUrl);
       await startAndPairAndroid(joinUrl);
       await waitForUi(
         (xml) =>
@@ -457,7 +457,7 @@ test.describe("remote workspace picker Android live relay", () => {
         90_000,
       );
 
-      const created = await gbcPage.evaluate(async (workspace) => {
+      const created = await ascPage.evaluate(async (workspace) => {
         const active = await window.agentApi.listActive();
         const recoverable = await window.ptyApi.listRecoverable();
         const pty = recoverable.find(
@@ -490,7 +490,7 @@ test.describe("remote workspace picker Android live relay", () => {
       await expect
         .poll(
           () =>
-            gbcPage.evaluate(async (ptyId) => {
+            ascPage.evaluate(async (ptyId) => {
               const history = await window.ptyApi.getHistory(ptyId);
               return history?.retainedOutputBytes ?? 0;
             }, created.ptyId),
@@ -517,7 +517,7 @@ test.describe("remote workspace picker Android live relay", () => {
       }
 
       await expect
-        .poll(() => gbcPage.evaluate(() => window.remoteApi.getDriveState()))
+        .poll(() => ascPage.evaluate(() => window.remoteApi.getDriveState()))
         .toMatchObject({
           phase: "driven",
           cols: portrait.cols,
@@ -547,7 +547,7 @@ test.describe("remote workspace picker Android live relay", () => {
       }
       expect(terminalWithKeyboard.top).toBeLessThan(terminalBeforeKeyboard.top);
       await expect
-        .poll(() => gbcPage.evaluate(() => window.remoteApi.getDriveState()))
+        .poll(() => ascPage.evaluate(() => window.remoteApi.getDriveState()))
         .toMatchObject({
           phase: "driven",
           cols: portrait.cols,
@@ -570,7 +570,7 @@ test.describe("remote workspace picker Android live relay", () => {
         `[workspace-terminal-fit] before=${portrait.cols}x${portrait.rows} keyboard=${keyboard?.cols ?? 0}x${keyboard?.rows ?? 0} restored=${restored?.cols ?? 0}x${restored?.rows ?? 0}`,
       );
       await expect
-        .poll(() => gbcPage.evaluate(() => window.remoteApi.getDriveState()))
+        .poll(() => ascPage.evaluate(() => window.remoteApi.getDriveState()))
         .toMatchObject({
           phase: "driven",
           cols: portrait.cols,

@@ -366,7 +366,7 @@ function curlArgs(endpoint: string, path: string): string[] {
   ]
 }
 
-const WSL_STATUS_MARK = '__GBC_STATUS__'
+const WSL_STATUS_MARK = '__ASC_STATUS__'
 
 function parseWslHttp(stdout: string): { status: number; body: string } {
   const index = stdout.lastIndexOf(WSL_STATUS_MARK)

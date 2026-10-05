@@ -5,16 +5,16 @@ set -euo pipefail
 workspace="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 package_path="$workspace/package.json"
 version="$(node -p "require('$package_path').version")"
-# HRACK_LINUX_ARCH 是历史遗留的环境变量名（早期工作名 HRack），保留以兼容既有
-# CI/本地配置。默认值 x64 与 package.json 的 linux.target arch 一致。
-arch="${HRACK_LINUX_ARCH:-x64}"
+# ASC_LINUX_ARCH 用于覆盖待校验/打包的架构；默认值 x64 与 package.json 的
+# linux.target arch 一致。
+arch="${ASC_LINUX_ARCH:-x64}"
 artifact_dir="$workspace/artifacts"
 release_root="${TMPDIR:-/tmp}"
 release_root="${release_root%/}"
-release_dir="$(mktemp -d "$release_root/gbc-release-linux.XXXXXX")"
+release_dir="$(mktemp -d "$release_root/asc-release-linux.XXXXXX")"
 
 cleanup() {
-  if [[ -d "$release_dir" && "$release_dir" == "$release_root"/gbc-release-linux.* ]]; then
+  if [[ -d "$release_dir" && "$release_dir" == "$release_root"/asc-release-linux.* ]]; then
     rm -rf -- "$release_dir"
   fi
 }

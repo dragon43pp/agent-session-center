@@ -19,9 +19,9 @@ const EVENTS = [
 ] as const
 
 const POSIX_COMMAND =
-  'if [ -n "${GBC_GROK_HOOK_BRIDGE:-}" ] && [ -f "$GBC_GROK_HOOK_BRIDGE" ]; then /bin/sh "$GBC_GROK_HOOK_BRIDGE" >/dev/null 2>&1 || :; fi'
+  'if [ -n "${ASC_GROK_HOOK_BRIDGE:-}" ] && [ -f "$ASC_GROK_HOOK_BRIDGE" ]; then /bin/sh "$ASC_GROK_HOOK_BRIDGE" >/dev/null 2>&1 || :; fi'
 const WINDOWS_SCRIPT =
-  "$p=[Environment]::GetEnvironmentVariable('GBC_GROK_HOOK_BRIDGE_WINDOWS'); if ($p -and (Test-Path -LiteralPath $p -PathType Leaf)) { & $p }; exit 0"
+  "$p=[Environment]::GetEnvironmentVariable('ASC_GROK_HOOK_BRIDGE_WINDOWS'); if ($p -and (Test-Path -LiteralPath $p -PathType Leaf)) { & $p }; exit 0"
 const WINDOWS_COMMAND = `powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -EncodedCommand ${Buffer.from(WINDOWS_SCRIPT, 'utf16le').toString('base64')}`
 
 export function grokWindowsHookCommand(): string {
@@ -73,15 +73,15 @@ function decodedHookCommands(serialized: string): string {
   return `${serialized}\n${decoded}`
 }
 
-export function isGbcGrokHookFile(value: unknown): boolean {
+export function isAscGrokHookFile(value: unknown): boolean {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false
   const hooks = (value as { hooks?: unknown }).hooks
   if (!hooks || typeof hooks !== 'object' || Array.isArray(hooks)) return false
   const start = (hooks as { SessionStart?: unknown }).SessionStart
   const haystack = decodedHookCommands(JSON.stringify(start ?? ''))
   return (
-    haystack.includes('GBC_GROK_HOOK_BRIDGE') ||
-    haystack.includes('GBC_GROK_HOOK_BRIDGE_WINDOWS')
+    haystack.includes('ASC_GROK_HOOK_BRIDGE') ||
+    haystack.includes('ASC_GROK_HOOK_BRIDGE_WINDOWS')
   )
 }
 
@@ -92,7 +92,7 @@ export function grokHookFileName(): string {
 export function grokWindowsBridgeScript(): string {
   return `$ErrorActionPreference = 'Stop'
 try {
-  $drop = $env:GBC_GROK_HOOK_DROP
+  $drop = $env:ASC_GROK_HOOK_DROP
   if ([string]::IsNullOrWhiteSpace($drop) -or -not [IO.Directory]::Exists($drop)) { exit 0 }
   $inputStream = [Console]::OpenStandardInput()
   $memory = [IO.MemoryStream]::new()
@@ -118,9 +118,9 @@ export function grokPosixBridgeScript(): string {
   return `#!/bin/sh
 set -eu
 umask 077
-drop="\${GBC_GROK_HOOK_DROP:-}"
+drop="\${ASC_GROK_HOOK_DROP:-}"
 [ -n "$drop" ] && [ -d "$drop" ] || exit 0
-tmp="$(mktemp "$drop/.gbc-grok.XXXXXX.partial")" || exit 0
+tmp="$(mktemp "$drop/.asc-grok.XXXXXX.partial")" || exit 0
 trap 'rm -f "$tmp"' EXIT HUP INT TERM
 dd bs=1048577 count=1 of="$tmp" 2>/dev/null || true
 size="$(wc -c < "$tmp" | tr -d ' ')"

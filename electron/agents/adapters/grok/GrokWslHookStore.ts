@@ -89,7 +89,7 @@ async function ensureWslGrokManagedHooksUnlocked(
     return { ok: false, reason: 'grok-hook-path-unavailable' }
   }
   const distro = context.installation.runtime.distro
-  // GBC launches the WSL CLI directly with `wsl.exe --exec`, so the hook
+  // ASC launches the WSL CLI directly with `wsl.exe --exec`, so the hook
   // location must be resolved from that same non-login environment. Starting
   // `$SHELL -lic` here was both inconsistent with the actual Grok process and
   // vulnerable to slow/broken shell startup files, custom shells, and WSL cold
@@ -100,7 +100,7 @@ async function ensureWslGrokManagedHooksUnlocked(
     wslShellArgs(
       distro,
       'printf "HOME=%s\\000GROK_HOME=%s\\000" "${HOME:-}" "${GROK_HOME:-}"',
-      'gbc-grok-hook-home'
+      'asc-grok-hook-home'
     )
   )
   const configuredHome = loginEnvironmentValue(
@@ -142,18 +142,19 @@ async function ensureWslGrokManagedHooksUnlocked(
           'nonce="$3"',
           'dir="$(dirname "$hook")"',
           'mkdir -p "$dir"',
+          'if [ -f "$dir/gbc-observer.json" ]; then rm -f "$dir/gbc-observer.json"; fi',
           'if [ -f "$hook" ]; then',
-          '  if ! grep -q GBC_GROK_HOOK_BRIDGE "$hook"; then exit 17; fi',
+          '  if ! grep -q ASC_GROK_HOOK_BRIDGE "$hook"; then exit 17; fi',
           '  if cmp -s "$hook" "$candidate"; then exit 0; fi',
           'fi',
-          'tmp="$dir/.gbc-observer.json.$nonce.tmp"',
+          'tmp="$dir/.asc-observer.json.$nonce.tmp"',
           'trap \'rm -f "$tmp"\' EXIT HUP INT TERM',
           'cp -- "$candidate" "$tmp"',
           'chmod 600 "$tmp"',
           'mv -f -- "$tmp" "$hook"',
           'trap - EXIT HUP INT TERM'
         ].join('\n'),
-        'gbc-grok-hook-install',
+        'asc-grok-hook-install',
         [
           hookPath,
           runtimeCandidate,

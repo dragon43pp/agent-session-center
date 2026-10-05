@@ -9,7 +9,7 @@ test.describe('remote workspace host', () => {
   let workspace = ''
 
   test.beforeEach(async () => {
-    workspace = await mkdtemp(join(tmpdir(), 'gbc-remote-workspace-'))
+    workspace = await mkdtemp(join(tmpdir(), 'asc-remote-workspace-'))
   })
 
   test.afterEach(async () => {

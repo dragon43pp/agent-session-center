@@ -1,5 +1,5 @@
 ---
-name: create-gbc-floating-renderer
+name: create-asc-floating-renderer
 description: Create, modify, debug, or package Agent Session Center floating-window renderers, including HTML/CSS widgets, animated desktop mascots, irregular transparent windows, and Live2D companions. Use when implementing a built-in or user-installed floating renderer, connecting visuals to real CLI turn/session state, adding renderer controls or resize behavior, or adapting licensed character assets for Agent Session Center's sandbox.
 ---
 
@@ -49,7 +49,7 @@ Keep `id` lowercase with letters, digits, dots, underscores, or hyphens. Keep al
 
 ## Use only the renderer bridge
 
-The page receives only `window.gbcFloating`:
+The page receives only `window.ascFloating`:
 
 ```ts
 interface FloatingRendererApi {
@@ -65,8 +65,8 @@ interface FloatingRendererApi {
 Subscribe before the initial read so no update is lost:
 
 ```js
-const unsubscribe = window.gbcFloating.onSnapshot(render)
-window.gbcFloating.getSnapshot().then(render)
+const unsubscribe = window.ascFloating.onSnapshot(render)
+window.ascFloating.getSnapshot().then(render)
 window.addEventListener('pagehide', unsubscribe, { once: true })
 ```
 

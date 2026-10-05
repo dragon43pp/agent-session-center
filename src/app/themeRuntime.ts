@@ -111,7 +111,7 @@ function emergencyLightTheme(value: unknown): ResolvedUiTheme {
   }
   return {
     id: 'light',
-    name: 'GBC Light (safe mode)',
+    name: 'ASC Light (safe mode)',
     type: 'light',
     colors,
     terminal: null

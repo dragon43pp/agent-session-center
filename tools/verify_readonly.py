@@ -53,7 +53,6 @@ DEFAULT_ROOTS = [
     os.path.join(HOME, ".pi", "agent"),
     os.path.join(HOME, ".gemini", "antigravity"),
     os.path.join(HOME, ".gemini", "antigravity-cli"),
-    os.path.join(os.environ.get("APPDATA", ""), "HRack"),
 ]
 
 
@@ -93,7 +92,7 @@ def live_pids() -> set:
 def external_reason(root: str, rel: str) -> str | None:
     """能**证明**是别人在写的改动，返回说明；证明不了就返回 None，照旧判失败。
 
-    为什么要有这个函数：用户在用的 CLI 是活数据（HRack 正在跑、它拉起的 grok 在写
+    为什么要有这个函数：用户在用的 CLI 是活数据（上游 CLI 正在跑、它拉起的 grok 在写
     自己的 memtrace、codex_sync.py 每 3 秒重写 rollout），一刀切地把「有改动」
     当成本 App 的锅会给出假阳性，也会让人学会无视这个脚本。所以这里只放行
     **有独立证据**的几类，其余一律算失败。
@@ -108,9 +107,9 @@ def external_reason(root: str, rel: str) -> str | None:
         return (f"grok 进程自己在写实时 memtrace（文件名里的 pid={pid}，"
                 f"{'当前仍在运行' if alive else '本次扫描时已退出'}）")
 
-    # Chromium/Electron 自己的 GPU、代码缓存：HRack 正在运行就会动。
+    # Chromium/Electron 自己的 GPU、代码缓存：本 App 正在运行就会动。
     if re.search(r"/(GPUCache|DawnWebGPUCache|DawnGraphiteCache|Code Cache)/", full):
-        return "Chromium/Electron 自身的 GPU / 代码缓存（HRack 正在运行）"
+        return "Chromium/Electron 自身的 GPU / 代码缓存（本 App 正在运行）"
 
     # 注册表 CodexSessionSync 拉起的常驻脚本会重写 rollout 首行。
     if re.search(r"/\.codex/sessions/.*rollout-.*\.jsonl$", full):

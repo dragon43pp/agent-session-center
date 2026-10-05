@@ -140,12 +140,12 @@ test('D0 real DSH supports a trusted public browser without loopback privilege',
   browserName
 }) => {
   test.skip(browserName !== 'chromium', 'host resolver prototype uses Chromium')
-  const executable = process.env['GBC_E2E_REAL_DSH']
-  test.skip(!executable, 'Set GBC_E2E_REAL_DSH to a real installed dsh executable')
+  const executable = process.env['ASC_E2E_REAL_DSH']
+  test.skip(!executable, 'Set ASC_E2E_REAL_DSH to a real installed dsh executable')
   test.setTimeout(180_000)
 
   const port = await allocatePort()
-  const dshHome = mkdtempSync(resolve(tmpdir(), 'gbc-dsh-d0-home-'))
+  const dshHome = mkdtempSync(resolve(tmpdir(), 'asc-dsh-d0-home-'))
   const overlay = resolve(__dirname, 'fixtures/dsh-remote-browse.patch.yml')
   const args = [
     '--profile', 'web',
@@ -171,7 +171,7 @@ test('D0 real DSH supports a trusted public browser without loopback privilege',
             ...process.env,
             DSH_HOME: dshHome,
             DSH_TELEMETRY_DISABLED: '1',
-            SSH_CONNECTION: 'gbc-embed'
+            SSH_CONNECTION: 'asc-embed'
           },
           windowsVerbatimArguments: true,
           stdio: ['ignore', 'pipe', 'pipe']
@@ -182,7 +182,7 @@ test('D0 real DSH supports a trusted public browser without loopback privilege',
           ...process.env,
           DSH_HOME: dshHome,
           DSH_TELEMETRY_DISABLED: '1',
-          SSH_CONNECTION: 'gbc-embed'
+          SSH_CONNECTION: 'asc-embed'
         },
         stdio: ['ignore', 'pipe', 'pipe']
       })

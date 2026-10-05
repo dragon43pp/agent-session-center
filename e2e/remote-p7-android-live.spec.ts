@@ -11,18 +11,18 @@ import {
 import { launchApp } from './helpers'
 
 const execFileAsync = promisify(execFile)
-const targetUrl = process.env.GBC_REMOTE_P7_URL
-const adbExecutable = process.env.GBC_ANDROID_ADB
+const targetUrl = process.env.ASC_REMOTE_P7_URL
+const adbExecutable = process.env.ASC_ANDROID_ADB
 const appPackage =
-  process.env.GBC_ANDROID_APP_PACKAGE ?? 'app.modplex.gbc.remote'
-const uiDumpPath = '/sdcard/gbc-p7-window.xml'
+  process.env.ASC_ANDROID_APP_PACKAGE ?? 'app.modplex.asc.remote'
+const uiDumpPath = '/sdcard/asc-p7-window.xml'
 
 function quoteRegex(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 async function adb(...args: string[]): Promise<string> {
-  if (!adbExecutable) throw new Error('GBC_ANDROID_ADB is not configured')
+  if (!adbExecutable) throw new Error('ASC_ANDROID_ADB is not configured')
   const result = await execFileAsync(adbExecutable, args, {
     encoding: 'utf8',
     maxBuffer: 4 * 1024 * 1024,
@@ -107,8 +107,8 @@ async function pairAndroid(joinUrl: string): Promise<void> {
   await tapResource('pairing-connect')
 }
 
-async function connectGbc(page: Page, joinUrl: string): Promise<void> {
-  await page.evaluate(() => window.__gbcDebugShell?.navigate('settings'))
+async function connectAsc(page: Page, joinUrl: string): Promise<void> {
+  await page.evaluate(() => window.__ascDebugShell?.navigate('settings'))
   await page.getByTestId('settings-category-remote').click()
   await page.getByTestId('settings-remote-url').fill(joinUrl)
   await page.getByTestId('settings-remote-connect').click()
@@ -122,7 +122,7 @@ async function connectGbc(page: Page, joinUrl: string): Promise<void> {
 test.describe('remote P7 Android live relay', () => {
   test.skip(
     !targetUrl || !adbExecutable,
-    'set GBC_REMOTE_P7_URL and GBC_ANDROID_ADB for the installed App gate'
+    'set ASC_REMOTE_P7_URL and ASC_ANDROID_ADB for the installed App gate'
   )
 
   test('creates one real Electron PTY from the installed App over public WSS', async ({
@@ -143,26 +143,26 @@ test.describe('remote P7 Android live relay', () => {
       roomCreated = true
       const joinUrl = await relayPage.getByTestId('join-url').innerText()
 
-      const missingWorkspace = `${process.cwd()}\\__gbc_missing_p7_${Date.now()}`
+      const missingWorkspace = `${process.cwd()}\\__asc_missing_p7_${Date.now()}`
       const launched = await launchApp({
         createDefaultTerminal: false,
         env: {
-          GBC_FIXTURE_OBSERVER: '1',
-          GBC_FIXTURE_OBSERVER_HOLD: '1',
-          GBC_E2E_CLI_EXECUTABLE: resolve(
+          ASC_FIXTURE_OBSERVER: '1',
+          ASC_FIXTURE_OBSERVER_HOLD: '1',
+          ASC_E2E_CLI_EXECUTABLE: resolve(
             __dirname,
             'fixtures/remote/interactive-cli.cmd'
           )
         }
       })
       app = launched.app
-      const gbcPage = launched.window
-      await gbcPage.evaluate(
+      const ascPage = launched.window
+      await ascPage.evaluate(
         ([workspace, missing]) =>
           window.remoteApi.setRecentWorkspaces([workspace, missing]),
         [process.cwd(), missingWorkspace]
       )
-      await connectGbc(gbcPage, joinUrl)
+      await connectAsc(ascPage, joinUrl)
 
       await adb('shell', 'settings', 'put', 'system', 'accelerometer_rotation', '0')
       await adb('shell', 'settings', 'put', 'system', 'user_rotation', '0')
@@ -197,7 +197,7 @@ test.describe('remote P7 Android live relay', () => {
       )
       await screenshot(testInfo, 'p7-android-create-terminal.png')
 
-      const created = await gbcPage.evaluate(async () => {
+      const created = await ascPage.evaluate(async () => {
         const active = await window.agentApi.listActive()
         const recoverable = await window.ptyApi.listRecoverable()
         return {
@@ -232,13 +232,13 @@ test.describe('remote P7 Android live relay', () => {
         'created session list upsert'
       )
       await expect
-        .poll(() => gbcPage.evaluate(() => window.remoteApi.getDriveState()))
+        .poll(() => ascPage.evaluate(() => window.remoteApi.getDriveState()))
         .toMatchObject({ phase: 'idle', sessionId: null })
       await screenshot(testInfo, 'p7-android-created-session.png')
 
       // The newly launched workspace is persisted by AppShell and refreshes the
       // catalog. Re-publish the invalid fixture immediately before this check.
-      await gbcPage.evaluate(
+      await ascPage.evaluate(
         ([workspace, missing]) =>
           window.remoteApi.setRecentWorkspaces([workspace, missing]),
         [process.cwd(), missingWorkspace]
@@ -254,8 +254,8 @@ test.describe('remote P7 Android live relay', () => {
       )
       await screenshot(testInfo, 'p7-android-create-rejected.png')
 
-      expect(await gbcPage.evaluate(() => window.agentApi.listActive())).toHaveLength(1)
-      expect(await gbcPage.evaluate(() => window.ptyApi.listRecoverable())).toHaveLength(1)
+      expect(await ascPage.evaluate(() => window.agentApi.listActive())).toHaveLength(1)
+      expect(await ascPage.evaluate(() => window.ptyApi.listRecoverable())).toHaveLength(1)
 
       await relayPage.getByTestId('revoke-room').click()
       await expect(relayPage.getByTestId('status')).toHaveText('Room revoked.')

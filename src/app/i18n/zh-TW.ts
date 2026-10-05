@@ -143,7 +143,7 @@ export const zhTW = {
     homeLabel: 'DSH_HOME',
     homeIsolated: '隔離（建議）',
     homeShared: '共用 ~/.dsh',
-    homeEnvOverride: '目前由 GBC_DSH_HOME 覆寫，設定不會改路徑。',
+    homeEnvOverride: '目前由 ASC_DSH_HOME 覆寫，設定不會改路徑。',
     homeSwitchConfirm:
       '切換 DSH_HOME 會重啟 host 並重新整理視窗，不會遷移既有會話。確定繼續？',
     retentionLabel: '會話保留',

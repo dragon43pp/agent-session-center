@@ -27,7 +27,7 @@ import {
 } from '../electron/dsh-host/DshBrowserAuth'
 import type { DshRuntimeCandidate } from '../shared/dsh-ipc'
 import {
-  resolveGbcUserDataDir,
+  resolveAscUserDataDir,
   resolveNativeDshHome,
   resolveWslDshHome
 } from '../electron/app-paths'
@@ -182,20 +182,20 @@ test('DSH boot manifest parsing follows the capability across runtime spellings'
   }
 })
 
-test('GBC paths use the new brand and share an existing DSH home', () => {
+test('ASC paths use the new brand and share an existing DSH home', () => {
   const appData = join('users', 'test', 'app-data')
   const home = join('users', 'test')
-  expect(resolveGbcUserDataDir(appData, true)).toBe(join(appData, 'GBC'))
+  expect(resolveAscUserDataDir(appData, true)).toBe(join(appData, 'ASC'))
   expect(
     resolveNativeDshHome(
       'shared',
       home,
-      join(appData, 'GBC', 'dsh-home')
+      join(appData, 'ASC', 'dsh-home')
     )
   ).toBe(join(home, '.dsh'))
   expect(resolveWslDshHome('shared', '/home/test')).toBe('/home/test/.dsh')
   expect(resolveWslDshHome('isolated', '/home/test')).toBe(
-    '/home/test/.local/share/gbc/dsh-home'
+    '/home/test/.local/share/asc/dsh-home'
   )
 })
 
@@ -225,7 +225,7 @@ test('external launch preserves native and WSL runtime boundaries', () => {
   const windows = buildDshExternalSpawnSpec({
     candidate: windowsCandidate,
     port: 43123,
-    dshHome: 'C:\\GBC Data\\dsh-home',
+    dshHome: 'C:\\ASC Data\\dsh-home',
     commandInterpreter: 'C:\\Windows\\System32\\cmd.exe',
     inheritedEnv: { SystemRoot: 'C:\\Windows' }
   })
@@ -234,13 +234,13 @@ test('external launch preserves native and WSL runtime boundaries', () => {
   expect(windows.args[3]).toContain('dsh.cmd')
   expect(windows.args[3]).toContain('"--port" "43123"')
   expect(windows.args[3]).toContain('"--no-open"')
-  expect(windows.env.DSH_HOME).toBe('C:\\GBC Data\\dsh-home')
+  expect(windows.env.DSH_HOME).toBe('C:\\ASC Data\\dsh-home')
   expect(windows.env.SSH_CONNECTION).toBe(DSH_EMBED_SSH_CONNECTION)
 
   const rc8Windows = buildDshExternalSpawnSpec({
     candidate: { ...windowsCandidate, version: '0.1.0-rc.8' },
     port: 43123,
-    dshHome: 'C:\\GBC Data\\dsh-home',
+    dshHome: 'C:\\ASC Data\\dsh-home',
     commandInterpreter: 'C:\\Windows\\System32\\cmd.exe',
     inheritedEnv: { SystemRoot: 'C:\\Windows' }
   })
@@ -248,7 +248,7 @@ test('external launch preserves native and WSL runtime boundaries', () => {
   const rc8WindowsRetry = buildDshExternalSpawnSpec({
     candidate: { ...windowsCandidate, version: '0.1.0-rc.8' },
     port: 43123,
-    dshHome: 'C:\\GBC Data\\dsh-home',
+    dshHome: 'C:\\ASC Data\\dsh-home',
     commandInterpreter: 'C:\\Windows\\System32\\cmd.exe',
     inheritedEnv: { SystemRoot: 'C:\\Windows' },
     noOpen: false
@@ -267,7 +267,7 @@ test('external launch preserves native and WSL runtime boundaries', () => {
   const wsl = buildDshExternalSpawnSpec({
     candidate: wslCandidate,
     port: 43124,
-    dshHome: '/home/test/.local/share/gbc/dsh-home',
+    dshHome: '/home/test/.local/share/asc/dsh-home',
     environmentPath: '/home/test/.local/bin:/usr/bin:/bin',
     inheritedEnv: { SystemRoot: 'C:\\Windows' }
   })
@@ -276,7 +276,7 @@ test('external launch preserves native and WSL runtime boundaries', () => {
     '--distribution',
     'Ubuntu-24.04',
     'PATH=/home/test/.local/bin:/usr/bin:/bin',
-    'DSH_HOME=/home/test/.local/share/gbc/dsh-home',
+    'DSH_HOME=/home/test/.local/share/asc/dsh-home',
     '/home/test/.local/bin/dsh',
     '--port',
     '43124',
@@ -297,12 +297,12 @@ test('remote launch pins loopback, product overlay and the public authority', ()
     inheritedEnv: { SystemRoot: 'C:\\Windows' },
     remote: {
       publicOrigin: 'https://dsh.example.test',
-      overlayPath: 'C:\\GBC Data\\dsh-runtime\\remote-web.patch.yml'
+      overlayPath: 'C:\\ASC Data\\dsh-runtime\\remote-web.patch.yml'
     }
   })
   const command = remote.args.join(' ')
   expect(command).toContain('"--profile" "web"')
-  expect(command).toContain('"--patch" "C:\\GBC Data\\dsh-runtime\\remote-web.patch.yml"')
+  expect(command).toContain('"--patch" "C:\\ASC Data\\dsh-runtime\\remote-web.patch.yml"')
   expect(command).toContain('"--host" "127.0.0.1"')
   expect(command).toContain('"--trusted-host" "dsh.example.test"')
   expect(command).toContain('"--no-open"')
@@ -317,12 +317,12 @@ test('remote launch pins loopback, product overlay and the public authority', ()
     noOpen: false,
     remote: {
       publicOrigin: 'https://dsh.example.test',
-      overlayPath: 'C:\\GBC Data\\dsh-runtime\\remote-web.patch.yml'
+      overlayPath: 'C:\\ASC Data\\dsh-runtime\\remote-web.patch.yml'
     }
   })
   const retryCommand = retry.args.join(' ')
   expect(retryCommand).not.toContain('--no-open')
-  expect(retryCommand).toContain('"--patch" "C:\\GBC Data\\dsh-runtime\\remote-web.patch.yml"')
+  expect(retryCommand).toContain('"--patch" "C:\\ASC Data\\dsh-runtime\\remote-web.patch.yml"')
   expect(retryCommand).toContain('"--trusted-host" "dsh.example.test"')
   expect(retry.env.SSH_CONNECTION).toBe(DSH_EMBED_SSH_CONNECTION)
 })
@@ -351,7 +351,7 @@ test('settings scans DSH runtimes and persists an explicit local choice', async 
   })
   try {
     await first.window.evaluate(() => {
-      window.__gbcDebugShell?.navigate('settings')
+      window.__ascDebugShell?.navigate('settings')
     })
     await openSettings(first.window, 'session')
     const select = first.window.getByTestId('dsh-runtime-select')
@@ -404,7 +404,7 @@ test('Home exposes a discovered local DSH runtime', async () => {
       : 'Linux'
   const appState = await launchApp({
     createDefaultTerminal: false,
-    env: { GBC_E2E_DSH_INSTALLATION: executable }
+    env: { ASC_E2E_DSH_INSTALLATION: executable }
   })
   try {
     const report = await appState.window.evaluate(() =>
@@ -468,7 +468,7 @@ test('host retries without --no-open when the selected DSH rejects it', async ()
   )
   const appState = await launchApp({
     createDefaultTerminal: false,
-    env: { GBC_E2E_DSH_INSTALLATION: executable }
+    env: { ASC_E2E_DSH_INSTALLATION: executable }
   })
   try {
     await expect(appState.window.getByTestId('home-quick-dsh')).toBeVisible({
@@ -491,16 +491,16 @@ test('host retries without --no-open when the selected DSH rejects it', async ()
 })
 
 test('a real installed Windows DSH captures the official Electron surface', async () => {
-  const executable = process.env['GBC_E2E_REAL_DSH']
+  const executable = process.env['ASC_E2E_REAL_DSH']
   test.skip(
     process.platform !== 'win32' || !executable,
-    'Set GBC_E2E_REAL_DSH to the installed Windows dsh.cmd'
+    'Set ASC_E2E_REAL_DSH to the installed Windows dsh.cmd'
   )
   test.setTimeout(180_000)
   expect(existsSync(executable!)).toBe(true)
   const appState = await launchApp({
     createDefaultTerminal: false,
-    env: { GBC_E2E_DSH_INSTALLATION: executable! }
+    env: { ASC_E2E_DSH_INSTALLATION: executable! }
   })
   try {
     await expect(appState.window.getByTestId('home-quick-dsh')).toBeVisible({
@@ -527,12 +527,12 @@ test('a real installed Windows DSH captures the official Electron surface', asyn
 })
 
 test('installed DSH session creation, selection and titles reach the desktop sidebar', async () => {
-  const executable = process.env['GBC_E2E_REAL_DSH']
-  test.skip(!executable, 'Set GBC_E2E_REAL_DSH to an installed DSH 0.1.5+ executable')
+  const executable = process.env['ASC_E2E_REAL_DSH']
+  test.skip(!executable, 'Set ASC_E2E_REAL_DSH to an installed DSH 0.1.5+ executable')
   test.setTimeout(180_000)
   const { app, window, userDataDir } = await launchApp({
     createDefaultTerminal: false,
-    env: { GBC_E2E_DSH_INSTALLATION: executable! }
+    env: { ASC_E2E_DSH_INSTALLATION: executable! }
   })
   try {
     await window.getByTestId('home-quick-dsh').click()
@@ -555,7 +555,7 @@ test('installed DSH session creation, selection and titles reach the desktop sid
     )
     // Use the installed official service and its real host, in an isolated home.
     const create = () => official<string>(`(async () => {
-      const sessions = globalThis.__GBC_DSH_EMBED__.ctx.get('sessions');
+      const sessions = globalThis.__ASC_DSH_EMBED__.ctx.get('sessions');
       const id = await sessions.create({ cwd: ${JSON.stringify(userDataDir)} });
       sessions.open(id);
       return id;
@@ -570,14 +570,14 @@ test('installed DSH session creation, selection and titles reach the desktop sid
     await expect.poll(active).toContainEqual(
       expect.objectContaining({ sessionId: slotId, adapterSessionId: second })
     )
-    await official(`globalThis.__GBC_DSH_EMBED__.ctx.get('sessions').open(${JSON.stringify(first)})`)
+    await official(`globalThis.__ASC_DSH_EMBED__.ctx.get('sessions').open(${JSON.stringify(first)})`)
     await expect.poll(active).toContainEqual(
       expect.objectContaining({ sessionId: slotId, adapterSessionId: first })
     )
     await expect(window.getByTestId('dsh-page')).toHaveAttribute('data-dsh-session', first)
 
     await official(`(async () => {
-      const result = await globalThis.__GBC_DSH_EMBED__.ctx.get('remote').session.rename({
+      const result = await globalThis.__ASC_DSH_EMBED__.ctx.get('remote').session.rename({
         sessionId: ${JSON.stringify(first)}, title: 'DSH sidebar regression'
       });
       if (!result.ok) throw new Error(result.error.message);
@@ -585,8 +585,8 @@ test('installed DSH session creation, selection and titles reach the desktop sid
     await expect(window.locator(`[data-testid="sidebar-session-item"][data-session-id="${slotId}"]`)).toContainText('DSH sidebar regression')
 
     await window.evaluate(() => {
-      (window as unknown as { __gbcDebugShell: { navigate(page: string): void } })
-        .__gbcDebugShell.navigate('home')
+      (window as unknown as { __ascDebugShell: { navigate(page: string): void } })
+        .__ascDebugShell.navigate('home')
     })
     await window.getByTestId('home-quick-dsh').click()
     await expect(window.getByTestId('dsh-page')).not.toHaveAttribute('data-dsh-slot', slotId!)
@@ -599,7 +599,7 @@ test('installed DSH session creation, selection and titles reach the desktop sid
     ]))
     await window.locator(`[data-testid="sidebar-session-item"][data-session-id="${slotId}"]`).click()
     await expect.poll(() => official<string>(
-      'globalThis.__GBC_DSH_EMBED__.ctx.get("sessions").list.getSnapshot().current'
+      'globalThis.__ASC_DSH_EMBED__.ctx.get("sessions").list.getSnapshot().current'
     )).toBe(first)
     await expect(window.getByTestId('dsh-page')).toHaveAttribute('data-dsh-surface-phase', 'ready')
     await window.screenshot({ path: '.dev-shots/dsh-session-sync-fixed.png' })
@@ -651,7 +651,7 @@ test('auto fails when a cached local install is stale and nothing else is found'
   )
   const appState = await launchApp({
     createDefaultTerminal: false,
-    env: { GBC_E2E_DSH_INSTALLATION: missingExecutable }
+    env: { ASC_E2E_DSH_INSTALLATION: missingExecutable }
   })
   try {
     await expect.poll(
@@ -668,10 +668,10 @@ test('auto fails when a cached local install is stale and nothing else is found'
 })
 
 test('a real WSL launch receives Linux PATH/HOME and is reaped on stop', async () => {
-  const distro = process.env['GBC_E2E_REAL_DSH_WSL']
+  const distro = process.env['ASC_E2E_REAL_DSH_WSL']
   test.skip(
     process.platform !== 'win32' || !distro,
-    'Set GBC_E2E_REAL_DSH_WSL to an installed distro for the real gate'
+    'Set ASC_E2E_REAL_DSH_WSL to an installed distro for the real gate'
   )
   test.setTimeout(120_000)
   const windowsFixture = resolve(
@@ -695,10 +695,10 @@ test('a real WSL launch receives Linux PATH/HOME and is reaped on stop', async (
   const appState = await launchApp({
     createDefaultTerminal: false,
     env: {
-      GBC_E2E_DSH_INSTALLATION: executable,
-      GBC_E2E_DSH_WSL_DISTRO: distro!,
-      GBC_E2E_DSH_WSL_HOME: home,
-      GBC_E2E_DSH_WSL_PATH:
+      ASC_E2E_DSH_INSTALLATION: executable,
+      ASC_E2E_DSH_WSL_DISTRO: distro!,
+      ASC_E2E_DSH_WSL_HOME: home,
+      ASC_E2E_DSH_WSL_PATH:
         '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
     }
   })
@@ -729,7 +729,7 @@ test('a real WSL launch receives Linux PATH/HOME and is reaped on stop', async (
       }
     }
     expect(envelope.result.value).toMatchObject({
-      dshHome: `${home}/.local/share/gbc/dsh-home`,
+      dshHome: `${home}/.local/share/asc/dsh-home`,
       telemetryDisabled: '1'
     })
     linuxPid = envelope.result.value.pid

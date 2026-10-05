@@ -21,10 +21,10 @@
   left: 4px;
   height: 3px;
   border-radius: 999px;
-  background: var(--gbc-accent-target);
+  background: var(--asc-accent-target);
   box-shadow:
-    0 0 0 1px var(--gbc-bg-surface),
-    0 0 9px color-mix(in srgb, var(--gbc-accent-target) 70%, transparent);
+    0 0 0 1px var(--asc-bg-surface),
+    0 0 9px color-mix(in srgb, var(--asc-accent-target) 70%, transparent);
 }
 
 [data-session-drop-before='true']::before {
@@ -95,8 +95,8 @@
 }
 
 @font-face {
-  font-family: "GBC Brand";
-  src: url("./assets/fonts/.subset/gbc-brand.woff2") format("woff2");
+  font-family: "ASC Brand";
+  src: url("./assets/fonts/.subset/asc-brand.woff2") format("woff2");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -105,7 +105,7 @@
 @theme inline {
   --font-sans: var(--font-pingfang);
   --font-heading: var(--font-pingfang);
-  --font-brand: "GBC Brand", sans-serif;
+  --font-brand: "ASC Brand", sans-serif;
   /* PingFang 无谚文/部分日文假名；ko/ja 界面字形回退平台系统栈（M5.c §4.6） */
   --font-pingfang: "PingFang SC", "PingFang TC", "Hiragino Sans GB", "Microsoft YaHei",
     "Apple SD Gothic Neo", "Malgun Gothic", "Hiragino Kaku Gothic ProN", Meiryo,
@@ -114,68 +114,68 @@
      Maple Mono NF CN），不要落到 generic monospace（Windows 会命中宋体）。 */
   --font-maple: "Maple Mono", "PingFang SC", "PingFang TC", "Hiragino Sans GB", "Microsoft YaHei", ui-monospace, monospace;
 
-  --color-app: var(--gbc-bg-app);
-  --color-content: var(--gbc-bg-content);
-  --color-surface: var(--gbc-bg-surface);
-  --color-surface-hover: var(--gbc-bg-surface-hover);
-  --color-surface-strong: var(--gbc-bg-surface-strong);
-  --color-control: var(--gbc-bg-control);
-  --color-control-active: var(--gbc-bg-control-active);
-  --color-hover: var(--gbc-bg-hover);
-  --color-overlay: var(--gbc-bg-overlay);
-  --color-backdrop: var(--gbc-bg-backdrop);
-  --color-backdrop-strong: var(--gbc-bg-backdrop-strong);
-  --color-text-primary: var(--gbc-text-primary);
-  --color-text-secondary: var(--gbc-text-secondary);
-  --color-text-strong: var(--gbc-text-strong);
-  --color-text-muted: var(--gbc-text-muted);
-  --color-text-faint: var(--gbc-text-faint);
-  --color-text-disabled: var(--gbc-text-disabled);
-  --color-text-inverse: var(--gbc-text-inverse);
-  --color-border-default: var(--gbc-border-default);
-  --color-border-subtle: var(--gbc-border-subtle);
-  --color-border-faint: var(--gbc-border-faint);
-  --color-border-strong: var(--gbc-border-strong);
-  --color-border-control: var(--gbc-border-control);
-  --color-flame: var(--gbc-accent-flame);
-  --color-cursor-accent: var(--gbc-accent-cursor);
-  --color-target-accent: var(--gbc-accent-target);
-  --color-brand-logo: var(--gbc-brand-logo);
-  --color-brand-logo-shine: var(--gbc-brand-logoShine);
-  --color-brand-logo-muted: var(--gbc-brand-logoMuted);
-  --color-brand: var(--gbc-status-needsYou);
-  --color-status-working: var(--gbc-status-working);
-  --color-status-working-dot: var(--gbc-status-working-dot);
-  --color-status-needs-you: var(--gbc-status-needsYou);
-  --color-status-needs-you-dot: var(--gbc-status-needsYou-dot);
-  --color-status-done: var(--gbc-status-done);
-  --color-status-done-dot: var(--gbc-status-done-dot);
-  --color-status-error: var(--gbc-status-error);
-  --color-status-error-dot: var(--gbc-status-error-dot);
-  --color-status-idle: var(--gbc-status-idle);
-  --color-status-idle-dot: var(--gbc-status-idle-dot);
-  --color-status-exited: var(--gbc-status-exited);
-  --color-status-exited-dot: var(--gbc-status-exited-dot);
-  --color-button-primary: var(--gbc-button-primary-bg);
-  --color-button-primary-hover: var(--gbc-button-primary-bg-hover);
-  --color-button-primary-fg: var(--gbc-button-primary-fg);
-  --color-button-secondary: var(--gbc-button-secondary-bg);
-  --color-button-secondary-hover: var(--gbc-button-secondary-bg-hover);
-  --color-button-secondary-fg: var(--gbc-button-secondary-fg);
-  --color-input: var(--gbc-input-bg);
-  --color-input-hover: var(--gbc-input-bg-hover);
-  --color-input-focus: var(--gbc-input-border-focus);
-  --color-focus-ring: var(--gbc-focus-ring);
+  --color-app: var(--asc-bg-app);
+  --color-content: var(--asc-bg-content);
+  --color-surface: var(--asc-bg-surface);
+  --color-surface-hover: var(--asc-bg-surface-hover);
+  --color-surface-strong: var(--asc-bg-surface-strong);
+  --color-control: var(--asc-bg-control);
+  --color-control-active: var(--asc-bg-control-active);
+  --color-hover: var(--asc-bg-hover);
+  --color-overlay: var(--asc-bg-overlay);
+  --color-backdrop: var(--asc-bg-backdrop);
+  --color-backdrop-strong: var(--asc-bg-backdrop-strong);
+  --color-text-primary: var(--asc-text-primary);
+  --color-text-secondary: var(--asc-text-secondary);
+  --color-text-strong: var(--asc-text-strong);
+  --color-text-muted: var(--asc-text-muted);
+  --color-text-faint: var(--asc-text-faint);
+  --color-text-disabled: var(--asc-text-disabled);
+  --color-text-inverse: var(--asc-text-inverse);
+  --color-border-default: var(--asc-border-default);
+  --color-border-subtle: var(--asc-border-subtle);
+  --color-border-faint: var(--asc-border-faint);
+  --color-border-strong: var(--asc-border-strong);
+  --color-border-control: var(--asc-border-control);
+  --color-flame: var(--asc-accent-flame);
+  --color-cursor-accent: var(--asc-accent-cursor);
+  --color-target-accent: var(--asc-accent-target);
+  --color-brand-logo: var(--asc-brand-logo);
+  --color-brand-logo-shine: var(--asc-brand-logoShine);
+  --color-brand-logo-muted: var(--asc-brand-logoMuted);
+  --color-brand: var(--asc-status-needsYou);
+  --color-status-working: var(--asc-status-working);
+  --color-status-working-dot: var(--asc-status-working-dot);
+  --color-status-needs-you: var(--asc-status-needsYou);
+  --color-status-needs-you-dot: var(--asc-status-needsYou-dot);
+  --color-status-done: var(--asc-status-done);
+  --color-status-done-dot: var(--asc-status-done-dot);
+  --color-status-error: var(--asc-status-error);
+  --color-status-error-dot: var(--asc-status-error-dot);
+  --color-status-idle: var(--asc-status-idle);
+  --color-status-idle-dot: var(--asc-status-idle-dot);
+  --color-status-exited: var(--asc-status-exited);
+  --color-status-exited-dot: var(--asc-status-exited-dot);
+  --color-button-primary: var(--asc-button-primary-bg);
+  --color-button-primary-hover: var(--asc-button-primary-bg-hover);
+  --color-button-primary-fg: var(--asc-button-primary-fg);
+  --color-button-secondary: var(--asc-button-secondary-bg);
+  --color-button-secondary-hover: var(--asc-button-secondary-bg-hover);
+  --color-button-secondary-fg: var(--asc-button-secondary-fg);
+  --color-input: var(--asc-input-bg);
+  --color-input-hover: var(--asc-input-bg-hover);
+  --color-input-focus: var(--asc-input-border-focus);
+  --color-focus-ring: var(--asc-focus-ring);
 }
 
 html,
 body,
-#gbc-root {
+#asc-root {
   height: 100%;
   margin: 0;
 }
 
-#gbc-root {
+#asc-root {
   display: flex;
   min-height: 100%;
   flex-direction: column;
@@ -192,42 +192,42 @@ html.workspace-splitting * {
 }
 
 body {
-  background-color: var(--gbc-bg-app);
-  color: var(--gbc-text-primary);
+  background-color: var(--asc-bg-app);
+  color: var(--asc-text-primary);
   overflow: hidden;
 }
 
 html[data-surface="floating"],
 html[data-surface="floating"] body,
-html[data-surface="floating"] #gbc-root {
+html[data-surface="floating"] #asc-root {
   background: transparent;
 }
 
 @keyframes floating-attention-persistent {
   0%,
   100% {
-    border-color: var(--gbc-border-default);
+    border-color: var(--asc-border-default);
     box-shadow: 0 3px 8px -4px rgb(0 0 0 / 28%);
   }
   50% {
-    border-color: var(--gbc-status-needsYou);
+    border-color: var(--asc-status-needsYou);
     box-shadow:
-      0 0 0 3px color-mix(in srgb, var(--gbc-status-needsYou) 28%, transparent),
-      0 0 18px color-mix(in srgb, var(--gbc-status-needsYou) 45%, transparent);
+      0 0 0 3px color-mix(in srgb, var(--asc-status-needsYou) 28%, transparent),
+      0 0 18px color-mix(in srgb, var(--asc-status-needsYou) 45%, transparent);
   }
 }
 
 @keyframes floating-attention-complete {
   0%,
   100% {
-    border-color: var(--gbc-border-default);
+    border-color: var(--asc-border-default);
     box-shadow: 0 3px 8px -4px rgb(0 0 0 / 28%);
   }
   45% {
-    border-color: var(--gbc-status-done);
+    border-color: var(--asc-status-done);
     box-shadow:
-      0 0 0 3px color-mix(in srgb, var(--gbc-status-done) 24%, transparent),
-      0 0 16px color-mix(in srgb, var(--gbc-status-done) 42%, transparent);
+      0 0 0 3px color-mix(in srgb, var(--asc-status-done) 24%, transparent),
+      0 0 16px color-mix(in srgb, var(--asc-status-done) 42%, transparent);
   }
 }
 
@@ -246,13 +246,13 @@ html[data-surface="floating"] #gbc-root {
   }
 
   .floating-attention-persistent {
-    border-color: var(--gbc-status-needsYou);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--gbc-status-needsYou) 28%, transparent);
+    border-color: var(--asc-status-needsYou);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--asc-status-needsYou) 28%, transparent);
   }
 
   .floating-attention-complete {
-    border-color: var(--gbc-status-done);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--gbc-status-done) 24%, transparent);
+    border-color: var(--asc-status-done);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--asc-status-done) 24%, transparent);
   }
 }
 
@@ -269,7 +269,7 @@ textarea,
    已在 @layer base 内做了同样的 reset）。 */
 
 .app-shell {
-  background: var(--gbc-bg-app);
+  background: var(--asc-bg-app);
 }
 
 .app-drag-region {
@@ -284,7 +284,7 @@ textarea,
 .titlebar {
   /* 透明：露出 app-shell 根上的底色与环境渐变层 */
   background: transparent;
-  color: var(--gbc-titlebar-fg);
+  color: var(--asc-titlebar-fg);
 }
 
 .titlebar-macos .titlebar-actions {
@@ -298,22 +298,22 @@ textarea,
 
 /* 原型：标题栏功能按钮 text-neutral-500 → hover neutral-800 / 激活 neutral-900 */
 .titlebar-action {
-  color: var(--gbc-text-muted);
+  color: var(--asc-text-muted);
 }
 
 .titlebar-action:hover:not(:disabled) {
-  background: var(--gbc-titlebar-bg-hover);
-  color: var(--gbc-text-secondary);
+  background: var(--asc-titlebar-bg-hover);
+  color: var(--asc-text-secondary);
 }
 
 .titlebar-action-active,
 .titlebar-action-active:hover:not(:disabled) {
-  background: var(--gbc-titlebar-bg-hover);
-  color: var(--gbc-text-primary);
+  background: var(--asc-titlebar-bg-hover);
+  color: var(--asc-text-primary);
 }
 
 .titlebar-action:disabled {
-  color: var(--gbc-text-disabled);
+  color: var(--asc-text-disabled);
   cursor: default;
 }
 
@@ -322,18 +322,18 @@ textarea,
   display: grid;
   width: 46px;
   place-items: center;
-  color: var(--gbc-titlebar-fg);
+  color: var(--asc-titlebar-fg);
   transition: background-color 100ms ease, color 100ms ease;
 }
 
 .window-control:hover {
-  background: var(--gbc-titlebar-bg-hover);
-  color: var(--gbc-titlebar-fg-hover);
+  background: var(--asc-titlebar-bg-hover);
+  color: var(--asc-titlebar-fg-hover);
 }
 
 .window-control-close:hover {
-  background: var(--gbc-titlebar-close-bg-hover);
-  color: var(--gbc-titlebar-close-fg-hover);
+  background: var(--asc-titlebar-close-bg-hover);
+  color: var(--asc-titlebar-close-fg-hover);
 }
 
 .window-control-minimize {
@@ -361,12 +361,12 @@ textarea,
   width: 9px;
   height: 9px;
   border: 1px solid currentColor;
-  background: var(--gbc-bg-app);
+  background: var(--asc-bg-app);
   content: "";
 }
 
 .window-control:hover .window-control-restore::before {
-  background: var(--gbc-titlebar-bg-hover);
+  background: var(--asc-titlebar-bg-hover);
 }
 
 /* 关闭按钮画一个 10×10 的 X：两条对角线分别绕自身中心旋转 ±45°。 */
@@ -395,7 +395,7 @@ textarea,
 }
 
 .sidebar-scroll {
-  scrollbar-color: var(--gbc-scrollbar-thumb) transparent;
+  scrollbar-color: var(--asc-scrollbar-thumb) transparent;
   scrollbar-width: thin;
 }
 
@@ -411,23 +411,23 @@ textarea,
 .sidebar-scroll::-webkit-scrollbar-thumb {
   border: 1px solid transparent;
   border-radius: 999px;
-  background: var(--gbc-scrollbar-thumb);
+  background: var(--asc-scrollbar-thumb);
   background-clip: content-box;
 }
 
 .sidebar-scroll::-webkit-scrollbar-thumb:hover {
-  background: var(--gbc-scrollbar-thumb-hover);
+  background: var(--asc-scrollbar-thumb-hover);
   background-clip: content-box;
 }
 
 .sidebar-scroll::-webkit-scrollbar-thumb:active {
-  background: var(--gbc-scrollbar-thumb-active);
+  background: var(--asc-scrollbar-thumb-active);
   background-clip: content-box;
 }
 
 .workspace-reader-scrollbars,
 .workspace-reader-scrollbars * {
-  scrollbar-color: var(--gbc-scrollbar-thumb) transparent;
+  scrollbar-color: var(--asc-scrollbar-thumb) transparent;
   scrollbar-width: thin;
 }
 
@@ -442,11 +442,11 @@ textarea,
 
 .workspace-reader-scrollbars ::-webkit-scrollbar-thumb {
   border-radius: 999px;
-  background: var(--gbc-scrollbar-thumb);
+  background: var(--asc-scrollbar-thumb);
 }
 
 .workspace-reader-scrollbars ::-webkit-scrollbar-thumb:hover {
-  background: var(--gbc-scrollbar-thumb-hover);
+  background: var(--asc-scrollbar-thumb-hover);
 }
 
 .top-tab-viewport {
@@ -470,7 +470,7 @@ textarea,
 }
 
 .shell-popover {
-  box-shadow: 0 20px 25px -5px var(--gbc-shadow-popover);
+  box-shadow: 0 20px 25px -5px var(--asc-shadow-popover);
 }
 
 /* 原型 hover 卡：transition-opacity delay-150，进入前先停 150ms 再淡入 */
@@ -506,7 +506,7 @@ textarea,
 }
 
 .shell-sheet {
-  box-shadow: 0 -18px 40px var(--gbc-shadow-window);
+  box-shadow: 0 -18px 40px var(--asc-shadow-window);
 }
 
 @keyframes copy-toast-in {
@@ -521,9 +521,9 @@ textarea,
 }
 
 .copy-toast {
-  border-color: var(--gbc-border-default);
-  background: var(--gbc-bg-overlay);
-  box-shadow: 0 10px 15px -3px var(--gbc-shadow-popover);
-  color: var(--gbc-text-primary);
+  border-color: var(--asc-border-default);
+  background: var(--asc-bg-overlay);
+  box-shadow: 0 10px 15px -3px var(--asc-shadow-popover);
+  color: var(--asc-text-primary);
   animation: copy-toast-in 140ms ease-out;
 }

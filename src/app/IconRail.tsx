@@ -59,7 +59,7 @@ export default function IconRail({
       className="flex w-12 shrink-0 flex-col items-center pt-3 pb-2"
     >
       {/* 字标只用一个字母：rail 只有 48px 宽。必须是字体子集里存在的字形
-         （`scripts/subset-fonts.mjs` 的字形串是 'gbc'），否则回退到系统字体
+         （`scripts/subset-fonts.mjs` 的字形串是 'asc'），否则回退到系统字体
           就成另一个样子了。 */}
       <span className="font-brand text-[20px] leading-none text-brand-logo-muted select-none">
         g

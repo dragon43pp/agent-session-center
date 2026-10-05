@@ -3,8 +3,8 @@
 任务背景：「幽灵启动」要回答的问题是「哪一步把 CLI 拉起来了」。逐个 profile 读日志
 效率太低，这里一次性把每个 profile 的
   · 阶段（从目录名解析）
-  · 有没有 `[gbc] spawn ptyId`
-  · 有没有 renderer 的 `[gbc-diag]` 追踪行
+  · 有没有 `[asc] spawn ptyId`
+  · 有没有 renderer 的 `[asc-diag]` 追踪行
   · 探测脚本自己报的「首次出现 grok」秒数
 三列并排，才能看出相关性。纯只读。
 """
@@ -18,14 +18,14 @@ TEMP = Path.home() / 'AppData' / 'Local' / 'Temp'
 
 
 def profile_stage(name: str) -> str:
-    m = re.match(r'gbc-spawn-(\w+?)-\d+$', name)
+    m = re.match(r'asc-spawn-(\w+?)-\d+$', name)
     return m.group(1) if m else name
 
 
 def summarize(profile: Path) -> dict:
     info = {'stage': profile_stage(profile.name), 'log': '', 'spawns': [], 'diag': [], 'first': '-'}
 
-    log_file = profile / 'logs' / 'gbc-diagnostic.jsonl'
+    log_file = profile / 'logs' / 'asc-diagnostic.jsonl'
     if log_file.exists():
         for raw in log_file.read_text(encoding='utf-8', errors='replace').splitlines():
             raw = raw.strip()
@@ -39,12 +39,12 @@ def summarize(profile: Path) -> dict:
             if 'Render frame was disposed' in msg:
                 continue
             if 'spawn ptyId' in msg:
-                info['spawns'].append(msg.replace('[gbc] ', ''))
-            elif '[gbc-diag]' in msg:
+                info['spawns'].append(msg.replace('[asc] ', ''))
+            elif '[asc-diag]' in msg:
                 info['diag'].append(msg.split('|')[0].strip())
 
     # probe_spawn.sh 自己的 .log（文件名不含 pid）
-    probe_log = TEMP / f"gbc-spawn-{info['stage']}.log"
+    probe_log = TEMP / f"asc-spawn-{info['stage']}.log"
     if probe_log.exists():
         text = probe_log.read_text(encoding='utf-8', errors='replace')
         m = re.findall(r'阶段 \S+：观察窗口第 (\d+)s 首次出现 grok', text)
@@ -54,7 +54,7 @@ def summarize(profile: Path) -> dict:
 
 
 def main() -> int:
-    profiles = sorted(p for p in TEMP.glob('gbc-spawn-*') if p.is_dir())
+    profiles = sorted(p for p in TEMP.glob('asc-spawn-*') if p.is_dir())
     if not profiles:
         print('没有找到任何 profile')
         return 1

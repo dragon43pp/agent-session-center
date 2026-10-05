@@ -87,7 +87,7 @@ type NewSessionIntent =
       notice?: string
     }
 
-export interface GBCDebugShellApi {
+export interface ASCDebugShellApi {
   navigate(pageId: PageId): void
   openNewSession(): void
   setNavMode(mode: NavMode): void
@@ -1027,8 +1027,8 @@ export default function AppShell() {
   }, [closeTerminalAndRoute, navigate, openNewSession, pageId, terminalIds])
 
   useEffect(() => {
-    if (!import.meta.env.DEV && !window.__GBC_E2E__) return
-    const api: GBCDebugShellApi = {
+    if (!import.meta.env.DEV && !window.__ASC_E2E__) return
+    const api: ASCDebugShellApi = {
       navigate: (nextPage) => {
         if (isPageId(nextPage)) navigate(nextPage)
       },
@@ -1037,10 +1037,10 @@ export default function AppShell() {
       agentEvents: () => [...useAgentEventsStore.getState().events],
       agentSessions: () => [...useSessionsStore.getState().sessions]
     }
-    window.__gbcDebugShell = api
+    window.__ascDebugShell = api
     return () => {
-      if (window.__gbcDebugShell === api) {
-        delete window.__gbcDebugShell
+      if (window.__ascDebugShell === api) {
+        delete window.__ascDebugShell
       }
     }
   }, [navigate, openNewSession, setNavMode])
@@ -1240,8 +1240,8 @@ export default function AppShell() {
           spinDuration={2}
           parallaxOn
           hoverDuration={0.2}
-          cursorColor="var(--gbc-accent-cursor)"
-          cursorColorOnTarget="var(--gbc-accent-target)"
+          cursorColor="var(--asc-accent-cursor)"
+          cursorColorOnTarget="var(--asc-accent-target)"
         />
       )}
 

@@ -16,7 +16,7 @@ import { useSettingsStore } from '../state/settingsStore'
 import { useStrings } from './i18n'
 
 interface DshPageProps {
-  /** Stable GBC identity created only from Home. */
+  /** Stable ASC identity created only from Home. */
   slotId: string | null
   /** Official DSH session currently bound to this slot. */
   adapterSessionId?: string
@@ -121,9 +121,9 @@ function DshBootScreen({ label, detail }: DshBootScreenProps) {
           }
           style={{
             background:
-              'linear-gradient(90deg, var(--gbc-brand-logoMuted), var(--gbc-brand-logoShine) 72%, var(--gbc-brand-logo))',
+              'linear-gradient(90deg, var(--asc-brand-logoMuted), var(--asc-brand-logoShine) 72%, var(--asc-brand-logo))',
             boxShadow:
-              '0 0 12px color-mix(in srgb, var(--gbc-brand-logoShine) 40%, transparent)'
+              '0 0 12px color-mix(in srgb, var(--asc-brand-logoShine) 40%, transparent)'
           }}
         />
       </div>

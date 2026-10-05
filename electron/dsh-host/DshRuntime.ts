@@ -58,22 +58,22 @@ export interface DshRemoteLaunchOptions {
   overlayPath: string
 }
 
-export const DSH_WSL_PID_MARKER = '__GBC_DSH_PID__='
+export const DSH_WSL_PID_MARKER = '__ASC_DSH_PID__='
 
 /**
  * DSH opens the OS browser when `openBrowser` is true and SSH_CONNECTION /
- * SSH_TTY are unset. GBC embeds the official page, so the spawned host
+ * SSH_TTY are unset. ASC embeds the official page, so the spawned host
  * always carries this marker — including first profile boot, before `--no-open`
  * is parsed, and WSL installs that reject the flag.
  */
-export const DSH_EMBED_SSH_CONNECTION = 'gbc-embed'
+export const DSH_EMBED_SSH_CONNECTION = 'asc-embed'
 
 function quoteCmdArg(value: string): string {
   return `"${value.replace(/"/g, '""')}"`
 }
 
 /**
- * `dsh web` started opening the OS browser in 0.1.0-rc.7. GBC embeds the
+ * `dsh web` started opening the OS browser in 0.1.0-rc.7. ASC embeds the
  * official page in a WebContentsView, so those versions need `--no-open`.
  * Older web CLIs reject the flag.
  */
@@ -164,7 +164,7 @@ export function buildDshExternalSpawnSpec(options: {
         'sh',
         '-c',
         `printf '${DSH_WSL_PID_MARKER}%s\\n' "$$" >&2; exec env "$@"`,
-        'gbc-dsh',
+        'asc-dsh',
         ...(options.environmentPath
           ? [`PATH=${options.environmentPath}`]
           : []),

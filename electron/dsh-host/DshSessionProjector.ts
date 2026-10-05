@@ -156,7 +156,7 @@ function firstQuestion(questions: unknown): string | undefined {
 const BOOTSTRAP_RETRY_INITIAL_MS = 100
 const BOOTSTRAP_RETRY_MAX_MS = 2_000
 
-/** Deterministic GBC identity for a session created outside an existing slot. */
+/** Deterministic ASC identity for a session created outside an existing slot. */
 function adoptedSlotId(sessionId: string): string {
   return `official:${sessionId}`
 }
@@ -264,7 +264,7 @@ export class DshSessionProjector {
     this.activeSlotId = undefined
   }
 
-  /** Close host streams without unfollowing GBC slots. Used for host restart. */
+  /** Close host streams without unfollowing ASC slots. Used for host restart. */
   pause(): void {
     this.disconnect()
   }
@@ -318,7 +318,7 @@ export class DshSessionProjector {
     this.publishSlot(slotId)
   }
 
-  /** Remove one GBC slot without touching the official DSH session. */
+  /** Remove one ASC slot without touching the official DSH session. */
   unfollow(slotId: string): void {
     this.slots.delete(slotId)
     this.closedSlotIds.add(slotId)
@@ -640,7 +640,7 @@ export class DshSessionProjector {
 
   /**
    * A session created by the phone or another official DSH surface has no
-   * Home-created GBC slot. Bind a pending local slot when one exists;
+   * Home-created ASC slot. Bind a pending local slot when one exists;
    * otherwise publish a deterministic slot so desktop and remote stay in sync.
    */
   private adoptExternalSession(sessionId: string): void {

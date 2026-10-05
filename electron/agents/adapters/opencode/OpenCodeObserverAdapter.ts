@@ -182,7 +182,7 @@ async function wslPortFree(distro: string, port: number): Promise<boolean> {
   const result = await runWslCommand(distro, '/bin/sh', [
     '-c',
     script,
-    'gbc-port',
+    'asc-port',
     hex
   ])
   return result.code === 0

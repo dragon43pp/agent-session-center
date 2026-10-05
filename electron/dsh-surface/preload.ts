@@ -12,11 +12,11 @@ import { DSH_SURFACE_ACTIVE_SESSION_REPORT_CHANNEL } from '../../shared/dsh-ipc'
 import { installOfficialRuntimeCapture } from './officialRuntimeCapture'
 
 const requestedLocale = process.argv
-  .find((arg) => arg.startsWith('--gbc-dsh-locale='))
-  ?.slice('--gbc-dsh-locale='.length)
+  .find((arg) => arg.startsWith('--asc-dsh-locale='))
+  ?.slice('--asc-dsh-locale='.length)
 const locale = requestedLocale === 'en' ? 'en' : 'zh'
 
-contextBridge.exposeInMainWorld('__GBC_DSH_HOST_BRIDGE__', {
+contextBridge.exposeInMainWorld('__ASC_DSH_HOST_BRIDGE__', {
   reportActiveSession: (value: unknown): void => {
     ipcRenderer.send(
       DSH_SURFACE_ACTIVE_SESSION_REPORT_CHANNEL,

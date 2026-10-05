@@ -15,7 +15,7 @@ const brandFont = {
     'ammonite',
     'Ammonite-2.otf'
   ),
-  subset: join(outputRoot, 'gbc-brand.woff2')
+  subset: join(outputRoot, 'asc-brand.woff2')
 }
 const PRINTABLE_ASCII = Array.from(
   { length: 95 },
@@ -100,12 +100,12 @@ for (const filename of pingfangFiles) {
 const brandBytes = await subset(
   brandFont.source,
   brandFont.subset,
-  'gbc'
+  'asc'
 )
 
 // Remove obsolete generated artifacts only after every expected replacement is
 // ready, so renames cannot leave stale fonts behind without creating a gap.
-const expectedFiles = new Set([...pingfangFiles, 'gbc-brand.woff2'])
+const expectedFiles = new Set([...pingfangFiles, 'asc-brand.woff2'])
 for (const entry of await readdir(outputRoot, { withFileTypes: true })) {
   if (!expectedFiles.has(entry.name)) {
     await rm(join(outputRoot, entry.name), {

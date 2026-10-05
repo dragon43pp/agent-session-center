@@ -725,7 +725,7 @@ function dedupeCandidates(candidates: readonly ResolvedCandidate[]): ResolvedCan
   })
 }
 
-const WSL_KNOWN_PATHS_SEPARATOR = '--gbc-known-paths--'
+const WSL_KNOWN_PATHS_SEPARATOR = '--asc-known-paths--'
 const WSL_CANDIDATE_SCAN_SCRIPT = [
   'path_value=$1',
   'shift',
@@ -775,7 +775,7 @@ async function scanWslCandidateInventory(
   const result = await runWsl(distro, 'sh', [
     '-c',
     WSL_CANDIDATE_SCAN_SCRIPT,
-    'gbc-candidate-scan',
+    'asc-candidate-scan',
     environmentPath,
     ...executables,
     WSL_KNOWN_PATHS_SEPARATOR,
@@ -1262,9 +1262,9 @@ function e2eFixtureReport(startedAt: number): CliScanReport {
   // S1：observer fixture 走查需要 CLI 在脚本重放期间保持存活，
   // 因此 Windows 安装改用交互式 cmd.exe（普通 e2e 仍用 where.exe 快速退出）。
   const fixtureExecutable =
-    process.env['GBC_E2E_CLI_EXECUTABLE']?.trim() ||
+    process.env['ASC_E2E_CLI_EXECUTABLE']?.trim() ||
     (process.platform === 'win32'
-      ? process.env['GBC_FIXTURE_OBSERVER'] === '1'
+      ? process.env['ASC_FIXTURE_OBSERVER'] === '1'
         ? 'cmd.exe'
         : 'where.exe'
       : '/bin/false')
@@ -1387,7 +1387,7 @@ export class AiCliDiscoveryService {
   }
 
   private async loadPersistedScan(): Promise<CliScanReport | null> {
-    if (!this.cachePath || process.env['GBC_E2E_CLI_FIXTURE'] === '1') return null
+    if (!this.cachePath || process.env['ASC_E2E_CLI_FIXTURE'] === '1') return null
     try {
       const cached = parsePersistedCliScan(
         JSON.parse(await readFile(this.cachePath, 'utf8'))
@@ -1404,7 +1404,7 @@ export class AiCliDiscoveryService {
   }
 
   private async persistScan(report: CliScanReport): Promise<void> {
-    if (!this.cachePath || process.env['GBC_E2E_CLI_FIXTURE'] === '1') return
+    if (!this.cachePath || process.env['ASC_E2E_CLI_FIXTURE'] === '1') return
     const payload: PersistedCliScan = {
       version: CLI_SCAN_CACHE_VERSION,
       report,
@@ -1424,16 +1424,16 @@ export class AiCliDiscoveryService {
 
   private async performScan(): Promise<CliScanReport> {
     const startedAt = Date.now()
-    if (process.env['GBC_E2E_CLI_FIXTURE'] === '1') {
+    if (process.env['ASC_E2E_CLI_FIXTURE'] === '1') {
       const report = e2eFixtureReport(startedAt)
       this.installations = report.launchable.flatMap(
         (cli) => cli.installations
       )
       this.wslEnvironmentPaths = new Map()
       this.wslHomes = new Map()
-      const dshExecutable = process.env['GBC_E2E_DSH_INSTALLATION']
+      const dshExecutable = process.env['ASC_E2E_DSH_INSTALLATION']
       if (dshExecutable && dshExecutable.length <= 4_096) {
-        const distro = process.env['GBC_E2E_DSH_WSL_DISTRO']
+        const distro = process.env['ASC_E2E_DSH_WSL_DISTRO']
         const runtime: CliRuntime = distro
           ? { kind: 'wsl', distro }
           : {
@@ -1454,8 +1454,8 @@ export class AiCliDiscoveryService {
           verification: 'verified'
         })
         if (runtime.kind === 'wsl') {
-          const environmentPath = process.env['GBC_E2E_DSH_WSL_PATH']
-          const home = process.env['GBC_E2E_DSH_WSL_HOME']
+          const environmentPath = process.env['ASC_E2E_DSH_WSL_PATH']
+          const home = process.env['ASC_E2E_DSH_WSL_HOME']
           if (environmentPath) {
             this.wslEnvironmentPaths.set(runtime.distro, environmentPath)
           }

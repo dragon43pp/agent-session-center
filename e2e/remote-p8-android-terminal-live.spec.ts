@@ -13,34 +13,34 @@ import {
 import { launchApp } from './helpers'
 
 const execFileAsync = promisify(execFile)
-const targetUrl = process.env.GBC_REMOTE_P8_URL
-const providedJoinUrl = process.env.GBC_REMOTE_P8_JOIN_URL
+const targetUrl = process.env.ASC_REMOTE_P8_URL
+const providedJoinUrl = process.env.ASC_REMOTE_P8_JOIN_URL
 const accountCredentialFile =
-  process.env.GBC_REMOTE_P8_ACCOUNT_CREDENTIAL_FILE
-const adbExecutable = process.env.GBC_ANDROID_ADB
+  process.env.ASC_REMOTE_P8_ACCOUNT_CREDENTIAL_FILE
+const adbExecutable = process.env.ASC_ANDROID_ADB
 const appPackage =
-  process.env.GBC_ANDROID_APP_PACKAGE ?? 'app.modplex.gbc.remote'
-const realAiTarget = process.env.GBC_REMOTE_P8_REAL_AI_TARGET ?? ''
+  process.env.ASC_ANDROID_APP_PACKAGE ?? 'app.modplex.asc.remote'
+const realAiTarget = process.env.ASC_REMOTE_P8_REAL_AI_TARGET ?? ''
 if (realAiTarget && !['claude', 'codex'].includes(realAiTarget)) {
-  throw new Error('GBC_REMOTE_P8_REAL_AI_TARGET must be claude or codex')
+  throw new Error('ASC_REMOTE_P8_REAL_AI_TARGET must be claude or codex')
 }
-const chineseImeDriver = process.env.GBC_REMOTE_P8_CHINESE_IME ?? ''
+const chineseImeDriver = process.env.ASC_REMOTE_P8_CHINESE_IME ?? ''
 if (chineseImeDriver && !['gboard', 'fcitx5'].includes(chineseImeDriver)) {
-  throw new Error('GBC_REMOTE_P8_CHINESE_IME must be gboard or fcitx5')
+  throw new Error('ASC_REMOTE_P8_CHINESE_IME must be gboard or fcitx5')
 }
 const chineseImeGate =
   chineseImeDriver === 'gboard' || chineseImeDriver === 'fcitx5'
 const gboardIme =
   'com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME'
 const fcitx5Ime = 'org.fcitx.fcitx5.android/.input.FcitxInputMethodService'
-const uiDumpPath = '/sdcard/gbc-p8-window.xml'
+const uiDumpPath = '/sdcard/asc-p8-window.xml'
 
 function quoteRegex(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 async function adb(...args: string[]): Promise<string> {
-  if (!adbExecutable) throw new Error('GBC_ANDROID_ADB is not configured')
+  if (!adbExecutable) throw new Error('ASC_ANDROID_ADB is not configured')
   const result = await execFileAsync(adbExecutable, args, {
     encoding: 'utf8',
     maxBuffer: 4 * 1024 * 1024,
@@ -417,8 +417,8 @@ async function pairAndroid(joinUrl: string): Promise<void> {
   await tapResource('pairing-connect')
 }
 
-async function connectGbc(page: Page, joinUrl: string): Promise<void> {
-  await page.evaluate(() => window.__gbcDebugShell?.navigate('settings'))
+async function connectAsc(page: Page, joinUrl: string): Promise<void> {
+  await page.evaluate(() => window.__ascDebugShell?.navigate('settings'))
   await page.getByTestId('settings-category-remote').click()
   await page.getByTestId('settings-remote-url').fill(joinUrl)
   await page.getByTestId('settings-remote-connect').click()
@@ -479,7 +479,7 @@ async function launchSession(
   terminalId: string
   ptyId: string
 }> {
-  await page.evaluate(() => window.__gbcDebugShell?.navigate('home'))
+  await page.evaluate(() => window.__ascDebugShell?.navigate('home'))
   await expect(page.getByTestId(`home-quick-${adapterId}`)).toBeVisible({
     timeout: 45_000
   })
@@ -530,7 +530,7 @@ async function historyText(page: Page, ptyId: string): Promise<string> {
 }
 
 test.describe('remote P8 Android terminal preflight layout', () => {
-  test.skip(!adbExecutable, 'set GBC_ANDROID_ADB for the installed App gate')
+  test.skip(!adbExecutable, 'set ASC_ANDROID_ADB for the installed App gate')
 
   test('refits both axes after rotation', async ({}, testInfo) => {
     test.skip(process.platform !== 'win32', 'current Android gate is Windows')
@@ -593,7 +593,7 @@ test.describe('remote P8 Android terminal preflight layout', () => {
 test.describe('remote P8 Android terminal live relay', () => {
   test.skip(
     !targetUrl || !adbExecutable,
-    'set GBC_REMOTE_P8_URL and GBC_ANDROID_ADB for the installed App gate'
+    'set ASC_REMOTE_P8_URL and ASC_ANDROID_ADB for the installed App gate'
   )
 
   test('refits a driven terminal on both axes after rotation', async ({
@@ -629,19 +629,19 @@ test.describe('remote P8 Android terminal live relay', () => {
       const launched = await launchApp({
         createDefaultTerminal: false,
         env: {
-          GBC_FIXTURE_OBSERVER: '1',
-          GBC_FIXTURE_OBSERVER_HOLD: '1',
-          GBC_E2E_CLI_EXECUTABLE: resolve(
+          ASC_FIXTURE_OBSERVER: '1',
+          ASC_FIXTURE_OBSERVER_HOLD: '1',
+          ASC_E2E_CLI_EXECUTABLE: resolve(
             __dirname,
             'fixtures/remote/interactive-cli.cmd'
           )
         }
       })
       app = launched.app
-      const gbcPage = launched.window
+      const ascPage = launched.window
       const sessionName = 'P8 rotation probe'
-      const existing = await launchSession(gbcPage, sessionName)
-      await connectGbc(gbcPage, joinUrl)
+      const existing = await launchSession(ascPage, sessionName)
+      await connectAsc(ascPage, joinUrl)
 
       await adb(
         'shell',
@@ -684,7 +684,7 @@ test.describe('remote P8 Android terminal live relay', () => {
         rows: portrait.rows
       })
       await expect
-        .poll(() => gbcPage.evaluate(() => window.remoteApi.getDriveState()))
+        .poll(() => ascPage.evaluate(() => window.remoteApi.getDriveState()))
         .toMatchObject({
           phase: 'driven',
           sessionId: existing.sessionId,
@@ -798,33 +798,33 @@ test.describe('remote P8 Android terminal live relay', () => {
       const launched = await launchApp({
         createDefaultTerminal: false,
         env: {
-          GBC_FIXTURE_OBSERVER: '1',
-          GBC_FIXTURE_OBSERVER_HOLD: '1',
+          ASC_FIXTURE_OBSERVER: '1',
+          ASC_FIXTURE_OBSERVER_HOLD: '1',
           PATH: `${resolve(__dirname, 'fixtures/remote')}${delimiter}${process.env.PATH ?? ''}`,
-          GBC_E2E_CLI_EXECUTABLE: resolve(
+          ASC_E2E_CLI_EXECUTABLE: resolve(
             __dirname,
             'fixtures/remote/interactive-cli.cmd'
           )
         }
       })
       app = launched.app
-      const gbcPage = launched.window
+      const ascPage = launched.window
       const sessionName = 'P8 Android terminal'
-      const existing = await launchSession(gbcPage, sessionName)
+      const existing = await launchSession(ascPage, sessionName)
       const historyMarker = `p8history${Date.now()}`
-      await gbcPage.evaluate(
+      await ascPage.evaluate(
         ({ ptyId, marker }) => window.ptyApi.write(ptyId, `echo ${marker}\r`),
         { ptyId: existing.ptyId, marker: historyMarker }
       )
       await expect
-        .poll(() => historyText(gbcPage, existing.ptyId))
+        .poll(() => historyText(ascPage, existing.ptyId))
         .toContain(historyMarker)
 
-      await gbcPage.evaluate(
+      await ascPage.evaluate(
         (workspace) => window.remoteApi.setRecentWorkspaces([workspace]),
         process.cwd()
       )
-      await connectGbc(gbcPage, joinUrl)
+      await connectAsc(ascPage, joinUrl)
 
       await adb(
         'shell',
@@ -852,7 +852,7 @@ test.describe('remote P8 Android terminal live relay', () => {
       if (!portrait) throw new Error('missing portrait terminal metrics')
       expect(portrait.parsedBytes).toBeGreaterThan(0)
       await expect
-        .poll(() => gbcPage.evaluate(() => window.remoteApi.getDriveState()))
+        .poll(() => ascPage.evaluate(() => window.remoteApi.getDriveState()))
         .toMatchObject({
           phase: 'driven',
           sessionId: existing.sessionId,
@@ -880,7 +880,7 @@ test.describe('remote P8 Android terminal live relay', () => {
         rows: portrait.rows
       })
       await expect
-        .poll(() => gbcPage.evaluate(() => window.remoteApi.getDriveState()))
+        .poll(() => ascPage.evaluate(() => window.remoteApi.getDriveState()))
         .toMatchObject({
           phase: 'driven',
           sessionId: existing.sessionId,
@@ -911,7 +911,7 @@ test.describe('remote P8 Android terminal live relay', () => {
             'Chinese IME composing pinyin in the native draft'
           )
         }
-        expect(await historyText(gbcPage, existing.ptyId)).not.toContain(
+        expect(await historyText(ascPage, existing.ptyId)).not.toContain(
           'zhongwen'
         )
         await screenshot(testInfo, 'p8-android-terminal-chinese-composing.png')
@@ -948,7 +948,7 @@ test.describe('remote P8 Android terminal live relay', () => {
         `[p8-terminal-keyboard] portrait=${portrait.cols}x${portrait.rows} keyboard=${keyboard.cols}x${keyboard.rows} restored=${restored.cols}x${restored.rows}`
       )
       await expect
-        .poll(() => gbcPage.evaluate(() => window.remoteApi.getDriveState()))
+        .poll(() => ascPage.evaluate(() => window.remoteApi.getDriveState()))
         .toMatchObject({
           phase: 'driven',
           sessionId: existing.sessionId,
@@ -958,10 +958,10 @@ test.describe('remote P8 Android terminal live relay', () => {
       await screenshot(testInfo, 'p8-android-terminal-keyboard-restored.png')
       await tapResource('terminal-command-send')
       await expect
-        .poll(() => historyText(gbcPage, existing.ptyId), { timeout: 30_000 })
+        .poll(() => historyText(ascPage, existing.ptyId), { timeout: 30_000 })
         .toContain(inputMarker)
       if (chineseImeGate) {
-        const committedHistory = await historyText(gbcPage, existing.ptyId)
+        const committedHistory = await historyText(ascPage, existing.ptyId)
         expect(committedHistory).toContain('中文')
         expect(committedHistory).not.toContain('zhongwen')
       }
@@ -990,17 +990,17 @@ test.describe('remote P8 Android terminal live relay', () => {
       }
       await tapResource('terminal-command-send')
       await expect
-        .poll(() => historyText(gbcPage, existing.ptyId), { timeout: 30_000 })
-        .toContain('GBC_REMOTE_KEY_PROBE_READY')
+        .poll(() => historyText(ascPage, existing.ptyId), { timeout: 30_000 })
+        .toContain('ASC_REMOTE_KEY_PROBE_READY')
       await tapResource('terminal-key-esc')
       await expect
-        .poll(() => historyText(gbcPage, existing.ptyId), { timeout: 30_000 })
-        .toContain('GBC_REMOTE_KEY_Escape')
+        .poll(() => historyText(ascPage, existing.ptyId), { timeout: 30_000 })
+        .toContain('ASC_REMOTE_KEY_Escape')
 
       const beforeBurst = terminalMetrics(parsedAfterInput)?.parsedBytes ?? 0
       const burstMarker = `p8burst${Date.now()}`
       const burstStartedAt = Date.now()
-      await gbcPage.evaluate(
+      await ascPage.evaluate(
         ({ ptyId, marker }) =>
           window.ptyApi.write(
             ptyId,
@@ -1010,7 +1010,7 @@ test.describe('remote P8 Android terminal live relay', () => {
         { ptyId: existing.ptyId, marker: burstMarker }
       )
       await expect
-        .poll(() => historyText(gbcPage, existing.ptyId), { timeout: 45_000 })
+        .poll(() => historyText(ascPage, existing.ptyId), { timeout: 45_000 })
         .toContain(burstMarker)
       const afterBurstXml = await waitForUi(
         (xml) => {
@@ -1033,7 +1033,7 @@ test.describe('remote P8 Android terminal live relay', () => {
         .poll(
           async () => {
             const metrics = terminalMetrics(await dumpUi().catch(() => ''))
-            const drive = await gbcPage.evaluate(() =>
+            const drive = await ascPage.evaluate(() =>
               window.remoteApi.getDriveState()
             )
             if (
@@ -1064,7 +1064,7 @@ test.describe('remote P8 Android terminal live relay', () => {
         'session list after undrive'
       )
       await expect
-        .poll(() => gbcPage.evaluate(() => window.remoteApi.getDriveState()))
+        .poll(() => ascPage.evaluate(() => window.remoteApi.getDriveState()))
         .toMatchObject({ phase: 'idle', sessionId: null })
 
       await adb('shell', 'settings', 'put', 'system', 'user_rotation', '0')
@@ -1081,7 +1081,7 @@ test.describe('remote P8 Android terminal live relay', () => {
       await expandTerminalHud('newly created measured terminal')
       const createdMetrics = terminalMetrics(await dumpUi())
       if (!createdMetrics) throw new Error('missing created terminal metrics')
-      const created = await gbcPage.evaluate(async (firstSessionId) => {
+      const created = await ascPage.evaluate(async (firstSessionId) => {
         const sessions = await window.agentApi.listActive()
         const next = sessions.find(
           (session) => session.sessionId !== firstSessionId
@@ -1100,7 +1100,7 @@ test.describe('remote P8 Android terminal live relay', () => {
       }, existing.sessionId)
       expect(created).not.toBeNull()
       await expect
-        .poll(() => gbcPage.evaluate(() => window.remoteApi.getDriveState()))
+        .poll(() => ascPage.evaluate(() => window.remoteApi.getDriveState()))
         .toMatchObject({
           phase: 'driven',
           sessionId: created?.sessionId,
@@ -1111,7 +1111,7 @@ test.describe('remote P8 Android terminal live relay', () => {
 
       await tapResource('terminal-back')
       await expect
-        .poll(() => gbcPage.evaluate(() => window.remoteApi.getDriveState()))
+        .poll(() => ascPage.evaluate(() => window.remoteApi.getDriveState()))
         .toMatchObject({ phase: 'idle', sessionId: null })
 
       if (roomCreated) {
@@ -1157,8 +1157,8 @@ test.describe('remote P8 Android terminal live relay', () => {
       'current Android/Electron gate is Windows'
     )
     test.skip(
-      process.env.GBC_REMOTE_P8_REAL_AI !== '1',
-      'set GBC_REMOTE_P8_REAL_AI=1 to launch installed authenticated AI CLIs'
+      process.env.ASC_REMOTE_P8_REAL_AI !== '1',
+      'set ASC_REMOTE_P8_REAL_AI=1 to launch installed authenticated AI CLIs'
     )
     test.setTimeout(300_000)
     if (!targetUrl) throw new Error('missing live relay target')
@@ -1179,7 +1179,7 @@ test.describe('remote P8 Android terminal live relay', () => {
         cliFixture: false
       })
       app = launched.app
-      const gbcPage = launched.window
+      const ascPage = launched.window
       const targets = [
         {
           adapterId: 'claude',
@@ -1205,7 +1205,7 @@ test.describe('remote P8 Android terminal live relay', () => {
         sessions.push({
           ...target,
           ...(await launchSession(
-            gbcPage,
+            ascPage,
             target.name,
             target.adapterId,
             target.args
@@ -1213,11 +1213,11 @@ test.describe('remote P8 Android terminal live relay', () => {
         })
       }
 
-      await gbcPage.evaluate(
+      await ascPage.evaluate(
         (workspace) => window.remoteApi.setRecentWorkspaces([workspace]),
         process.cwd()
       )
-      await connectGbc(gbcPage, joinUrl)
+      await connectAsc(ascPage, joinUrl)
 
       await adb(
         'shell',
@@ -1251,7 +1251,7 @@ test.describe('remote P8 Android terminal live relay', () => {
         expect(initial.parsedBytes).toBeGreaterThan(0)
         await expect
           .poll(() =>
-            gbcPage.evaluate(() => window.remoteApi.getDriveState())
+            ascPage.evaluate(() => window.remoteApi.getDriveState())
           )
           .toMatchObject({ phase: 'driven', sessionId: session.sessionId })
         await new Promise((resolveWait) => setTimeout(resolveWait, 750))
@@ -1279,7 +1279,7 @@ test.describe('remote P8 Android terminal live relay', () => {
         await expect.poll(isImeShown, { timeout: 5_000 }).toBe(false)
         await tapResource('terminal-command-send')
         await expect
-          .poll(() => historyText(gbcPage, session.ptyId), {
+          .poll(() => historyText(ascPage, session.ptyId), {
             timeout: 60_000
           })
           .toContain(session.helpEvidence)
@@ -1312,7 +1312,7 @@ test.describe('remote P8 Android terminal live relay', () => {
         )
         await expect
           .poll(() =>
-            gbcPage.evaluate(() => window.remoteApi.getDriveState())
+            ascPage.evaluate(() => window.remoteApi.getDriveState())
           )
           .toMatchObject({ phase: 'idle', sessionId: null })
       }

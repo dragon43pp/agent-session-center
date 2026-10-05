@@ -42,9 +42,9 @@ function inspectFloating(app: ElectronApplication): Promise<FloatingInspect> {
   return app.evaluate(() =>
     (
       globalThis as unknown as {
-        __gbcMainDebug: { floatingWindowInspect(): FloatingInspect };
+        __ascMainDebug: { floatingWindowInspect(): FloatingInspect };
       }
-    ).__gbcMainDebug.floatingWindowInspect(),
+    ).__ascMainDebug.floatingWindowInspect(),
   );
 }
 
@@ -94,11 +94,11 @@ async function publish(
   await app.evaluate((_electron, payload) => {
     (
       globalThis as unknown as {
-        __gbcMainDebug: {
+        __ascMainDebug: {
           floatingWindowPublishProjection(projection: unknown): boolean;
         };
       }
-    ).__gbcMainDebug.floatingWindowPublishProjection(payload);
+    ).__ascMainDebug.floatingWindowPublishProjection(payload);
   }, value);
 }
 
@@ -122,7 +122,7 @@ test("built-in renderer uses the sandbox API and surfaces attention transitions"
     });
     expect(
       await floating.evaluate(() => ({
-        rendererApi: typeof window.gbcFloating,
+        rendererApi: typeof window.ascFloating,
         broadAgentApi: typeof window.agentApi,
         ptyApi: typeof window.ptyApi,
         nodeRequire: typeof (globalThis as Record<string, unknown>)["require"],
@@ -228,7 +228,7 @@ test("built-in Live2D renderer follows real turn projections", async () => {
       "需要你的确认",
     );
     expect(await live2d.pageErrors()).toEqual([]);
-    if (process.env["GBC_CAPTURE_BUILTIN_LIVE2D"]) {
+    if (process.env["ASC_CAPTURE_BUILTIN_LIVE2D"]) {
       const captureDir = resolve(__dirname, "../.dev-shots");
       mkdirSync(captureDir, { recursive: true });
       await live2d.screenshot({
@@ -242,7 +242,7 @@ test("built-in Live2D renderer follows real turn projections", async () => {
 });
 
 test("user renderer hot reloads in the same sandbox and falls back when invalid", async () => {
-  const userDataDir = mkdtempSync(join(tmpdir(), "gbc-floating-e2e-"));
+  const userDataDir = mkdtempSync(join(tmpdir(), "asc-floating-e2e-"));
   const rendererDir = join(userDataDir, "floating-renderers", "sample");
   const modelDir = join(rendererDir, "models");
   mkdirSync(modelDir, { recursive: true });
@@ -267,7 +267,7 @@ test("user renderer hot reloads in the same sandbox and falls back when invalid"
   const writeRenderer = (label: string): void => {
     writeFileSync(
       join(rendererDir, "index.html"),
-      `<!doctype html><meta charset="utf-8"><body>${label}<output id="sandbox"></output><output id="local-asset">loading</output><output id="binary-asset">loading</output><output id="wasm-asset">loading</output><output id="remote-asset">loading</output><script>document.querySelector('#sandbox').textContent=[typeof window.gbcFloating,typeof window.ptyApi,typeof require].join('|');fetch('./models/fixture.model3.json').then((response)=>response.json()).then((model)=>document.querySelector('#local-asset').textContent=model.name).catch(()=>document.querySelector('#local-asset').textContent='blocked');fetch('./models/fixture.moc3').then(async(response)=>document.querySelector('#binary-asset').textContent=response.headers.get('content-type')+':'+(await response.arrayBuffer()).byteLength).catch(()=>document.querySelector('#binary-asset').textContent='blocked');WebAssembly.instantiateStreaming(fetch('./models/fixture.wasm')).then(()=>document.querySelector('#wasm-asset').textContent='ready').catch(()=>document.querySelector('#wasm-asset').textContent='blocked');fetch('https://example.com/live2d.model3.json').then(()=>document.querySelector('#remote-asset').textContent='allowed').catch(()=>document.querySelector('#remote-asset').textContent='blocked')</script>`,
+      `<!doctype html><meta charset="utf-8"><body>${label}<output id="sandbox"></output><output id="local-asset">loading</output><output id="binary-asset">loading</output><output id="wasm-asset">loading</output><output id="remote-asset">loading</output><script>document.querySelector('#sandbox').textContent=[typeof window.ascFloating,typeof window.ptyApi,typeof require].join('|');fetch('./models/fixture.model3.json').then((response)=>response.json()).then((model)=>document.querySelector('#local-asset').textContent=model.name).catch(()=>document.querySelector('#local-asset').textContent='blocked');fetch('./models/fixture.moc3').then(async(response)=>document.querySelector('#binary-asset').textContent=response.headers.get('content-type')+':'+(await response.arrayBuffer()).byteLength).catch(()=>document.querySelector('#binary-asset').textContent='blocked');WebAssembly.instantiateStreaming(fetch('./models/fixture.wasm')).then(()=>document.querySelector('#wasm-asset').textContent='ready').catch(()=>document.querySelector('#wasm-asset').textContent='blocked');fetch('https://example.com/live2d.model3.json').then(()=>document.querySelector('#remote-asset').textContent='allowed').catch(()=>document.querySelector('#remote-asset').textContent='blocked')</script>`,
     );
   };
   writeRenderer("custom-v1");
@@ -283,7 +283,7 @@ test("user renderer hot reloads in the same sandbox and falls back when invalid"
       await window.floatingWindowApi.setEnabled(true);
     });
     let custom = await floatingPage(app, (url) =>
-      url.startsWith("gbc-floating://sample/"),
+      url.startsWith("asc-floating://sample/"),
     );
     await expect(custom.locator("body")).toContainText("custom-v1");
     await expect(custom.locator("#sandbox")).toHaveText(
@@ -303,7 +303,7 @@ test("user renderer hot reloads in the same sandbox and falls back when invalid"
           const current = app
             .windows()
             .find((candidate) =>
-              candidate.url().startsWith("gbc-floating://sample/"),
+              candidate.url().startsWith("asc-floating://sample/"),
             );
           return current
             ? current
@@ -316,7 +316,7 @@ test("user renderer hot reloads in the same sandbox and falls back when invalid"
       )
       .toContain("custom-v2");
     custom = await floatingPage(app, (url) =>
-      url.startsWith("gbc-floating://sample/"),
+      url.startsWith("asc-floating://sample/"),
     );
     await expect(custom.locator("#sandbox")).toHaveText(
       "object|undefined|undefined",
@@ -338,7 +338,7 @@ test("user renderer hot reloads in the same sandbox and falls back when invalid"
 });
 
 test("Sunny Buddy example renders session moods and respects the effect toggle", async () => {
-  const userDataDir = mkdtempSync(join(tmpdir(), "gbc-sunny-e2e-"));
+  const userDataDir = mkdtempSync(join(tmpdir(), "asc-sunny-e2e-"));
   const rendererRoot = join(userDataDir, "floating-renderers", "sunny-buddy");
   mkdirSync(join(userDataDir, "floating-renderers"), { recursive: true });
   cpSync(
@@ -358,7 +358,7 @@ test("Sunny Buddy example renders session moods and respects the effect toggle",
       await window.floatingWindowApi.setEnabled(true);
     });
     const sunny = await floatingPage(app, (url) =>
-      url.startsWith("gbc-floating://sunny-buddy/"),
+      url.startsWith("asc-floating://sunny-buddy/"),
     );
     await expect(sunny.locator("#buddy")).toBeVisible();
     await expect
@@ -391,7 +391,7 @@ test("Sunny Buddy example renders session moods and respects the effect toggle",
         )
         .toBeGreaterThan(100);
     }
-    if (process.env["GBC_CAPTURE_SUNNY"]) {
+    if (process.env["ASC_CAPTURE_SUNNY"]) {
       const captureDir = resolve(__dirname, "../.dev-shots");
       mkdirSync(captureDir, { recursive: true });
       await sunny.screenshot({
@@ -427,7 +427,7 @@ test("settings copies the built-in renderer creation Skill without exposing its 
     await app.evaluate(({ ipcMain }) => {
       ipcMain.removeHandler("clipboard:write-text");
       ipcMain.handle("clipboard:write-text", (_event, text: unknown) => {
-        (globalThis as Record<string, unknown>)["__gbcCopiedSkill"] = text;
+        (globalThis as Record<string, unknown>)["__ascCopiedSkill"] = text;
       });
     });
 
@@ -437,7 +437,7 @@ test("settings copies the built-in renderer creation Skill without exposing its 
     await expect(settings).toBeVisible();
     await expect(copy).toBeVisible();
     await expect(settings).not.toContainText("interface FloatingRendererApi");
-    if (process.env["GBC_CAPTURE_FLOATING_SETTINGS"]) {
+    if (process.env["ASC_CAPTURE_FLOATING_SETTINGS"]) {
       const captureDir = resolve(__dirname, "../.dev-shots");
       mkdirSync(captureDir, { recursive: true });
       await settings.screenshot({
@@ -448,10 +448,10 @@ test("settings copies the built-in renderer creation Skill without exposing its 
     await copy.click();
     const copied = await app.evaluate(() =>
       String(
-        (globalThis as Record<string, unknown>)["__gbcCopiedSkill"] ?? "",
+        (globalThis as Record<string, unknown>)["__ascCopiedSkill"] ?? "",
       ),
     );
-    expect(copied).toContain("name: create-gbc-floating-renderer");
+    expect(copied).toContain("name: create-asc-floating-renderer");
     expect(copied).toContain("## Live2D implementation");
     expect(copied).toContain("activeTurnId");
     expect(copied).toContain("60%–160%");
@@ -463,13 +463,13 @@ test("settings copies the built-in renderer creation Skill without exposing its 
 });
 
 test("local official Live2D model renders and animates offline", async () => {
-  const rendererSource = process.env["GBC_LIVE2D_RENDERER"];
+  const rendererSource = process.env["ASC_LIVE2D_RENDERER"];
   test.skip(
     !rendererSource || !existsSync(rendererSource),
-    "Set GBC_LIVE2D_RENDERER to a licensed local renderer fixture",
+    "Set ASC_LIVE2D_RENDERER to a licensed local renderer fixture",
   );
 
-  const userDataDir = mkdtempSync(join(tmpdir(), "gbc-live2d-e2e-"));
+  const userDataDir = mkdtempSync(join(tmpdir(), "asc-live2d-e2e-"));
   const rendererRoot = join(
     userDataDir,
     "floating-renderers",
@@ -489,7 +489,7 @@ test("local official Live2D model renders and animates offline", async () => {
       await window.floatingWindowApi.setEnabled(true);
     });
     const live2d = await floatingPage(app, (url) =>
-      url.startsWith("gbc-floating://live2d-mao-smoke/"),
+      url.startsWith("asc-floating://live2d-mao-smoke/"),
     );
     await expect(live2d.locator("html")).toHaveAttribute(
       "data-live2d-ready",

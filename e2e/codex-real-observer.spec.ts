@@ -6,9 +6,9 @@ import { join } from 'node:path'
 import { buildCodexInlineHookConfig } from '../electron/agents/adapters/codex/CodexHookConfig'
 import { launchApp } from './helpers'
 
-const enabled = process.env.GBC_E2E_REAL_CODEX === '1'
-const allowHookTrust = process.env.GBC_E2E_TRUST_CODEX_HOOKS === '1'
-const wslEnabled = process.env.GBC_E2E_REAL_CODEX_WSL === '1'
+const enabled = process.env.ASC_E2E_REAL_CODEX === '1'
+const allowHookTrust = process.env.ASC_E2E_TRUST_CODEX_HOOKS === '1'
+const wslEnabled = process.env.ASC_E2E_REAL_CODEX_WSL === '1'
 
 /**
  * 真 Codex 回归（opt-in）：唯一覆盖「Codex hook 信任」这一外部契约的 seam。
@@ -17,15 +17,15 @@ const wslEnabled = process.env.GBC_E2E_REAL_CODEX_WSL === '1'
  * "Hooks need review" 且本轮 hook 静默不投递——seam 级用例无法发现。
  *
  * 运行：
- *   GBC_E2E_REAL_CODEX=1 npx playwright test e2e/codex-real-observer.spec.ts
- * 首次或 hook 内容变化后需追加 GBC_E2E_TRUST_CODEX_HOOKS=1，
+ *   ASC_E2E_REAL_CODEX=1 npx playwright test e2e/codex-real-observer.spec.ts
+ * 首次或 hook 内容变化后需追加 ASC_E2E_TRUST_CODEX_HOOKS=1，
  * 通过 Codex 原生流程完成一次性重信任。
  */
 test.describe('real Codex observer', () => {
   test.setTimeout(240_000)
   test.skip(
     !enabled,
-    'Set GBC_E2E_REAL_CODEX=1 after trusting the GBC source in /hooks'
+    'Set ASC_E2E_REAL_CODEX=1 after trusting the ASC source in /hooks'
   )
 
   test('Windows Codex strictly accepts the generated inline Hook table', async () => {
@@ -65,7 +65,7 @@ test.describe('real Codex observer', () => {
   if (wslEnabled) runtimes.push('wsl-Ubuntu-22.04')
   for (const runtime of runtimes) {
     test(`${runtime} reports a real turn and completion through stable hooks`, async () => {
-      const workspace = await mkdtemp(join(tmpdir(), 'gbc-codex-real-'))
+      const workspace = await mkdtemp(join(tmpdir(), 'asc-codex-real-'))
       const { app, window } = await launchApp({
         cliFixture: false,
         createDefaultTerminal: false
@@ -73,8 +73,8 @@ test.describe('real Codex observer', () => {
       let completed = false
       try {
         await window.evaluate(() => {
-          window.__gbcDebugShell?.setNavMode('sidebar')
-          window.__gbcDebugShell?.navigate('home')
+          window.__ascDebugShell?.setNavMode('sidebar')
+          window.__ascDebugShell?.navigate('home')
         })
         const quick = window.getByTestId('home-quick-codex')
         await expect(quick).toBeVisible({ timeout: 90_000 })
@@ -121,7 +121,7 @@ test.describe('real Codex observer', () => {
           .poll(
             async () => {
               const buffer = await window.evaluate(() =>
-                (window.__gbcDebug?.dumpBuffer() ?? []).join('\n')
+                (window.__ascDebug?.dumpBuffer() ?? []).join('\n')
               )
               if (
                 !updatePromptHandled &&
@@ -147,7 +147,7 @@ test.describe('real Codex observer', () => {
               if (!hookTrustHandled && buffer.includes('Hooks need review')) {
                 if (!allowHookTrust) {
                   throw new Error(
-                    'Codex is waiting for Hook trust. Re-run this opt-in real E2E with GBC_E2E_TRUST_CODEX_HOOKS=1 to trust the reviewed GBC hooks through the native Codex flow.'
+                    'Codex is waiting for Hook trust. Re-run this opt-in real E2E with ASC_E2E_TRUST_CODEX_HOOKS=1 to trust the reviewed ASC hooks through the native Codex flow.'
                   )
                 }
                 expect(buffer).toMatch(/hooks are new or changed/i)
@@ -167,7 +167,7 @@ test.describe('real Codex observer', () => {
         const afterSeq = await window.evaluate(() =>
           Math.max(
             0,
-            ...(window.__gbcDebugShell?.agentEvents() ?? []).map(
+            ...(window.__ascDebugShell?.agentEvents() ?? []).map(
               (event) => event.seq
             )
           )
@@ -177,7 +177,7 @@ test.describe('real Codex observer', () => {
         )
         await terminalInput.focus()
         await window.keyboard.type(
-          'Reply with exactly GBC_CODEX_HOOK_OK.',
+          'Reply with exactly ASC_CODEX_HOOK_OK.',
           { delay: 1 }
         )
         await window.waitForTimeout(750)
@@ -187,7 +187,7 @@ test.describe('real Codex observer', () => {
             () =>
               window.evaluate(
                 (seq) =>
-                  (window.__gbcDebugShell?.agentEvents() ?? [])
+                  (window.__ascDebugShell?.agentEvents() ?? [])
                     .filter((event) => event.seq > seq)
                     .map((event) => event.kind),
                 afterSeq
@@ -210,7 +210,7 @@ test.describe('real Codex observer', () => {
             () =>
               window.evaluate(
                 (seq) =>
-                  (window.__gbcDebugShell?.agentEvents() ?? [])
+                  (window.__ascDebugShell?.agentEvents() ?? [])
                     .filter((event) => event.seq > seq)
                     .map((event) => event.kind),
                 afterSeq
@@ -223,14 +223,14 @@ test.describe('real Codex observer', () => {
         const toolAfterSeq = await window.evaluate(() =>
           Math.max(
             0,
-            ...(window.__gbcDebugShell?.agentEvents() ?? []).map(
+            ...(window.__ascDebugShell?.agentEvents() ?? []).map(
               (event) => event.seq
             )
           )
         )
         await terminalInput.focus()
         await window.keyboard.type(
-          'Use the shell tool to run node -e "console.log(\'GBC_CODEX_TOOL_OK\')", then reply exactly GBC_CODEX_TOOL_DONE.',
+          'Use the shell tool to run node -e "console.log(\'ASC_CODEX_TOOL_OK\')", then reply exactly ASC_CODEX_TOOL_DONE.',
           { delay: 1 }
         )
         await window.waitForTimeout(750)
@@ -240,7 +240,7 @@ test.describe('real Codex observer', () => {
             () =>
               window.evaluate(
                 (seq) =>
-                  (window.__gbcDebugShell?.agentEvents() ?? [])
+                  (window.__ascDebugShell?.agentEvents() ?? [])
                     .filter((event) => event.seq > seq)
                     .map((event) => event.kind),
                 toolAfterSeq
@@ -255,7 +255,7 @@ test.describe('real Codex observer', () => {
             async () => {
               const kinds = await window.evaluate(
                 (seq) =>
-                  (window.__gbcDebugShell?.agentEvents() ?? [])
+                  (window.__ascDebugShell?.agentEvents() ?? [])
                     .filter((event) => event.seq > seq)
                     .map((event) => event.kind),
                 toolAfterSeq
@@ -275,7 +275,7 @@ test.describe('real Codex observer', () => {
             () =>
               window.evaluate(
                 (seq) =>
-                  (window.__gbcDebugShell?.agentEvents() ?? [])
+                  (window.__ascDebugShell?.agentEvents() ?? [])
                     .filter((event) => event.seq > seq)
                     .map((event) => event.kind),
                 toolAfterSeq
@@ -289,8 +289,8 @@ test.describe('real Codex observer', () => {
         if (!completed) {
           const diagnostics = await window
             .evaluate(async () => ({
-              buffer: window.__gbcDebug?.dumpBuffer() ?? [],
-              events: window.__gbcDebugShell?.agentEvents() ?? [],
+              buffer: window.__ascDebug?.dumpBuffer() ?? [],
+              events: window.__ascDebugShell?.agentEvents() ?? [],
               sessions: await window.agentApi.listActive()
             }))
             .catch(() => null)

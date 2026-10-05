@@ -3,14 +3,14 @@
  *
  * 两轮：
  *   ① 离线轮（默认跑）：不联网。验未配置时的报错码、清单形状、伪造 key 被过滤。
- *   ② 联网轮（`GBC_ASSISTANT_LIVE=1` 时跑）：读 userData 里用户自己配的端点，
+ *   ② 联网轮（`ASC_ASSISTANT_LIVE=1` 时跑）：读 userData 里用户自己配的端点，
  *      真发一枪，验它能从 fixture 清单里挑出命中场次。
  *
  * 离线轮不碰网络，所以判卷永远可跑；联网轮只在你想确认端点活着时才跑：
  *   node_modules/.bin/esbuild tools/assistant_search_check.ts --bundle \
  *     --platform=node --format=esm --outfile=tools/_assistant_search_check.mjs \
  *     && node tools/_assistant_search_check.mjs
- *   GBC_ASSISTANT_LIVE=1 node tools/_assistant_search_check.mjs
+ *   ASC_ASSISTANT_LIVE=1 node tools/_assistant_search_check.mjs
  */
 
 import { join } from 'node:path'
@@ -89,11 +89,11 @@ const sessions: HistorySession[] = [
 }
 
 // ---- ② 联网（可选）
-if (process.env['GBC_ASSISTANT_LIVE'] === '1') {
+if (process.env['ASC_ASSISTANT_LIVE'] === '1') {
   // 判卷不 import electron（esbuild 链路会断），userData 从外面指进来。
   const userData =
-    process.env['GBC_ASSISTANT_USERDATA'] ??
-    join(process.env['APPDATA'] ?? '', 'Grok Build Center Dev')
+    process.env['ASC_ASSISTANT_USERDATA'] ??
+    join(process.env['APPDATA'] ?? '', 'Agent Session Center Dev')
   const config = loadAssistantConfig(userData)
   check('userData 里已配置 AI 助手', isConfigured(config), `baseURL=${config.baseURL}`)
   if (isConfigured(config)) {

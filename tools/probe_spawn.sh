@@ -27,14 +27,14 @@ NODE="C:/Users/admin/.workbuddy/binaries/node/versions/22.22.2-3/node.exe"
 PY="C:/Users/admin/.workbuddy/binaries/python/versions/3.13.12/python.exe"
 STAMP="$(date +%H%M%S)"
 PORT=$(( 9351 + ${2:-0} ))
-PROFILE="$TEMP/gbc-spawn-$STAGE-$STAMP"
+PROFILE="$TEMP/asc-spawn-$STAGE-$STAMP"
 # 每轮**独立**日志：老版本 `: > "$LOG"` 会把上一轮的结果截掉，
 # 回头只看到最后一行，白跑。
-LOG="$TEMP/gbc-spawn-$STAGE-$STAMP.log"
-WATCH="$TEMP/gbc-watch-$STAGE-$STAMP.log"
+LOG="$TEMP/asc-spawn-$STAGE-$STAMP.log"
+WATCH="$TEMP/asc-watch-$STAGE-$STAMP.log"
 SHOT="$TEMP/_probe-$STAGE-$STAMP.png"
-export GBC_USER_DATA_DIR="$PROFILE"
-export HRACK_DISABLE_UPDATES=1
+export ASC_USER_DATA_DIR="$PROFILE"
+export ASC_DISABLE_UPDATES=1
 unset ELECTRON_RUN_AS_NODE NODE_OPTIONS
 
 cd "$APP" || exit 1
@@ -69,7 +69,7 @@ SLEEP="const sleep=(ms)=>new Promise(r=>setTimeout(r,ms));"
 # 关键区分：**真实**物理点击会带 mousedown→mouseup→click 成对出现，且带坐标；
 # 合成的 `dispatchEvent(new MouseEvent('dblclick'))` 只产生孤零零一行 dblclick。
 # round 3 抓到的就是前者 —— 说明事件来自窗口外部，不是 App 自己。
-SPY="window.__gbcProbe=[];for(const ty of ['mousedown','mouseup','click','dblclick','focusin','keydown']){document.addEventListener(ty,(e)=>{const t=e.target;const d=(t&&t.dataset)?(t.dataset.testid||t.dataset.session||t.tagName):String(t);const a=(document.activeElement&&document.activeElement.dataset&&document.activeElement.dataset.testid)||document.activeElement?.tagName||'-';const xy=(e.clientX!==undefined)?('@'+e.clientX+','+e.clientY):'';const line=ty+' on '+d+' active='+a+xy+' hasFocus='+document.hasFocus();window.__gbcProbe.push(line);console.info('[gbc-probe] '+line);},true);}"
+SPY="window.__ascProbe=[];for(const ty of ['mousedown','mouseup','click','dblclick','focusin','keydown']){document.addEventListener(ty,(e)=>{const t=e.target;const d=(t&&t.dataset)?(t.dataset.testid||t.dataset.session||t.tagName):String(t);const a=(document.activeElement&&document.activeElement.dataset&&document.activeElement.dataset.testid)||document.activeElement?.tagName||'-';const xy=(e.clientX!==undefined)?('@'+e.clientX+','+e.clientY):'';const line=ty+' on '+d+' active='+a+xy+' hasFocus='+document.hasFocus();window.__ascProbe.push(line);console.info('[asc-probe] '+line);},true);}"
 
 ONBOARD="$SPY const go=[...document.querySelectorAll('button')].find(b=>(b.textContent||'').includes('进入会话中心')); const onboarded=!!go; if(go){go.click(); await sleep(1500);}"
 NAV="const navBtn=(()=>{for(const s of ['[data-testid=rail-sessions]','[data-testid=titlebar-sessions]']){const e=document.querySelector(s);if(e&&!e.disabled)return e}return null})(); if(navBtn)navBtn.click(); const navDeadline=Date.now()+25000; while(Date.now()<navDeadline){if(document.querySelectorAll('[data-testid=session-history-row]').length>0)break; await sleep(400);} const rowCount=document.querySelectorAll('[data-testid=session-history-row]').length;"
@@ -78,7 +78,7 @@ FOCUS="const focusRow=[...document.querySelectorAll('[data-testid=session-histor
 WAITONLY="await sleep(800); const focusOk='n/a'; const focusId='-';"
 # 正对照：真双击整行（唯一被设计成「恢复」的手势）。
 DBL="const dblRow=[...document.querySelectorAll('[data-testid=session-history-row]')].find(x=>x.dataset.resumable==='true'); const dblId=dblRow?dblRow.querySelector('[data-testid=session-history-resume]')?.dataset.session:'-'; if(dblRow){dblRow.dispatchEvent(new MouseEvent('dblclick',{bubbles:true})); await sleep(800);} const focusOk='n/a'; const focusId=dblId;"
-PROBEOUT="const probe=window.__gbcProbe||[]; const probeText=probe.length?probe.join(' ; '):'(无事件)';"
+PROBEOUT="const probe=window.__ascProbe||[]; const probeText=probe.length?probe.join(' ; '):'(无事件)';"
 
 STATS="const statsBtn=(()=>{for(const s of ['[data-testid=rail-stats]','[data-testid=titlebar-stats]']){const e=document.querySelector(s);if(e&&!e.disabled)return e}return null})(); if(statsBtn)statsBtn.click(); const statsDeadline=Date.now()+25000; while(Date.now()<statsDeadline){if(document.querySelectorAll('[data-testid=usage-agent-row]').length>0)break; await sleep(400);} const scroller=document.querySelector('[data-testid=usage-page]'); if(scroller)scroller.scrollTop=scroller.scrollHeight;"
 CLICK="const claudeRow=[...document.querySelectorAll('[data-testid=session-history-row]')].find(x=>x.dataset.agent==='claude'&&x.dataset.resumable==='true'); const claudeBtn=claudeRow&&claudeRow.querySelector('[data-testid=session-history-resume]'); const clickedId=claudeBtn?claudeBtn.dataset.session:'-'; if(claudeBtn)claudeBtn.click(); await sleep(1500); const draftOpen=!!document.querySelector('[data-testid=cli-config]');"
