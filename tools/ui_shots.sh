@@ -12,7 +12,7 @@
 #     首启引导那一步就点了个空）。改用每轮唯一目录，不需要删任何东西。
 set -u
 
-APP="/d/grok-build-center-desktop"
+APP="/d/agent-session-center"
 NODE="C:/Users/admin/.workbuddy/binaries/node/versions/22.22.2-3/node.exe"
 PY="C:/Users/admin/.workbuddy/binaries/python/versions/3.13.12/python.exe"
 PORT=9347
@@ -30,7 +30,7 @@ cd "$APP" || exit 1
 # 截图还能拍，但桥接功能是假的，而且进程越攒越多。只杀路径属于本仓库的。
 "$PY" - <<'PYEOF' 2>/dev/null || true
 import glob, json, os, shutil, subprocess
-here = "grok-build-center-desktop"
+here = "agent-session-center"
 out = subprocess.run(
     ["powershell", "-NoProfile", "-Command",
      "Get-CimInstance Win32_Process -Filter \"Name='electron.exe'\" | "

@@ -22,7 +22,7 @@
 set -u
 
 STAGE="${1:-none}"
-APP="/d/grok-build-center-desktop"
+APP="/d/agent-session-center"
 NODE="C:/Users/admin/.workbuddy/binaries/node/versions/22.22.2-3/node.exe"
 PY="C:/Users/admin/.workbuddy/binaries/python/versions/3.13.12/python.exe"
 STAMP="$(date +%H%M%S)"

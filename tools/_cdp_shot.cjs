@@ -1,7 +1,7 @@
 const fs = require('fs')
 const ws = require('ws')
 const port = Number(process.argv[2]) || 9367
-const outPath = process.argv[3] || 'D:/grok-build-center-desktop/tools/_screenshot_theme.png'
+const outPath = process.argv[3] || 'D:/agent-session-center/tools/_screenshot_theme.png'
 async function main() {
   const list = await (await fetch('http://127.0.0.1:' + port + '/json')).json()
   const target = list.find(t => t.type === 'page' && !t.url.startsWith('devtools://'))

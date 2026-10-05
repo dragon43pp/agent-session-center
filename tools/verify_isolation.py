@@ -17,7 +17,7 @@ import time
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-APP = r"D:\grok-build-center-desktop"
+APP = r"D:\agent-session-center"
 ELECTRON = os.path.join(APP, "node_modules", "electron", "dist", "electron.exe")
 MAIN = os.path.join(APP, "out", "main", "index.js")
 USER_HRACK = os.path.join(os.environ["APPDATA"], "HRack")
