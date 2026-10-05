@@ -5,6 +5,7 @@ export function resolveAppUserDataDir(
   appDataDir: string,
   isPackaged: boolean
 ): string {
+  // userData 目录名沿用历史产品名，避免迁移用户本地配置（飞书 token、LLM key）；如需改名必须附带迁移逻辑
   return join(appDataDir, isPackaged ? 'Grok Build Center' : 'Grok Build Center Dev')
 }
 

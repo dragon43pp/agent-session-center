@@ -1309,7 +1309,7 @@ test.describe('OpenCode bridge P1', () => {
       userDataDir: mkdtempSync(join(tmpdir(), 'gbc-empty-'))
     })
     expect(missing).toBe(2)
-    expect(stderr.join('')).toMatch(/Grok Build Center is not running/)
+    expect(stderr.join('')).toMatch(/Agent Session Center is not running/)
 
     const dir = mkdtempSync(join(tmpdir(), 'gbc-token-'))
     writeFileSync(join(dir, 'bridge.token'), `${'ab'.repeat(32)}\n`)

@@ -1,10 +1,10 @@
-# Grok Build Center · 设计规范
+# Agent Session Center · 设计规范
 
 > 一页看完。改任何视觉之前先读这个。
 
 ## 一、名字
 
-**Grok Build Center** —— 会话中心。
+**Agent Session Center** —— 会话中心。
 
 你开了六个 Grok Build，去泡了杯咖啡。回来的时候不知道哪个卡在等你点确认。
 这里把所有会话收在一个地方：**一场不漏，卡住的那场会主动找你。**
@@ -12,27 +12,37 @@
 它**不做成 dashboard（仪表盘）**。仪表盘要你持续盯着它；而这里的原则是：
 **不要求你持续关注，只在该打断你的时候打断你。**
 
-仓库名 `grok-build-center`。前面那截 `grok-build-` 不是装饰 —— GitHub 上
-`grok-build-vscode` / `grok-build-switch` / `grok-build-auth` 是这个生态的搜索命名空间，
-搜 `grok build` 能命中，这是引流的一部分，别改。
+仓库名 `agent-session-center`（2026-10-05 起定稿；曾用 `grok-build-center`）。
+
+> **该结论已于 2026-10-05 修订** —— 下面这段落的是当时的判断，保留原文以存照，
+> 但结论已被推翻：`grok-build-` 前缀的搜索引流设想没有兑现，而 `grok-build-`
+> 搜索池的第一位早已是官方仓库 `xai-org/grok-build`（27,226★，2026-10-05 实测）。
+> 0 star 的跟随项目挤在官方仓库后面，拿不到自然流量；且 8 个会话源里 grok 只占 1，
+> 用它当地名反而缩小了产品的通用性。所以最终还是改成了 `agent-session-center`。
+>
+> 仓库名 `grok-build-center`。前面那截 `grok-build-` 不是装饰 —— GitHub 上
+> `grok-build-vscode` / `grok-build-switch` / `grok-build-auth` 是这个生态的搜索命名空间，
+> 搜 `grok build` 能命中，这是引流的一部分，别改。
 
 ### 改名的教训（记下来免得再犯）
 
 这项目叫过 `hrack`（原型来自第三方 Apache-2.0 项目 UniRound-Tec/hrack），
-再之前叫过 `grok-build-pager`，最早叫过 `SessionDeck`。三次改名换来三条规矩：
+再之前叫过 `grok-build-pager`，最早叫过 `SessionDeck`。改名后叫过 `grok-build-center`，
+现在叫 `agent-session-center`。完整沿革：**SessionDeck → grok-build-pager →
+Grok Build Center → Agent Session Center**。几次改名换来三条规矩：
 
 1. **名字不能是比喻。** pager（传呼机）这个比喻其实很准 —— 但用户遇到问题时
    搜的是 `grok build session manager`，**没人会去搜一个比喻**。
    要么名字就是用户会打的词，要么你有推广预算去教育他。我们没有预算。
 2. **名字不用扛搜索关键词。** 关键词交给仓库简介 + 话题标签
-   （现在挂了 `session-manager` / `resume` / `handoff` / `session-history` 等 20 个），
+   （现在挂了 `session-manager` / `resume` / `handoff` / `session-history` 等 8 个），
    名字只要干净、短、像这生态里的一员就行。
 3. **不能撞名。** 没用 `grok-build-manager` 就是因为
    `Rylaispirit/grok-build-manager` 已经存在（1★）—— 撞名会在搜索结果里互相分流。
    同理当年弃用 `grok-build-deck`（`grokdeck` 5★、`grok-deck` 1★ 已占）。
    **改名之前先搜一遍。**
 
-> 为什么不全用 `grok` 当前缀：`grok` 这个搜索池有 **28,000+ 个仓库**，被
+> 为什么不全用 `grok` 当前缀：`grok` 这个搜索池有 **18,000+ 个仓库（2026-10-05 实测）**，被
 > `grok-1`(52k★)、系统提示词泄露(50k★)、虚拟伴侣(49k★) 这类项目霸屏，搜它的人
 > 多半在找「免费 ChatGPT 替代品」。而 `grok-build` 只有 **445 个仓库**，
 > 全是围绕这个 CLI 的 —— **搜它的人就是目标用户。**
@@ -118,7 +128,7 @@
 > **凡是机器给的东西一律等宽。** 路径、时长、状态名、恢复命令 —— 全部。
 > 这是区分「我写的」和「它跑出来的」最快的办法，尤其在中文混排里。
 
-字距规则：小型全大写标签（`GROK BUILD`、`LOG · RESUME · SEARCH`）
+字距规则：小型全大写标签（`AGENT SESSION`、`LOG · RESUME · SEARCH`）
 一律拉开 `letter-spacing: 3.4px` 以上；大标题反而要压紧（`-1.6px`）。
 **「小字拉开、大字压紧」是铭牌式排版的骨架。**
 
@@ -127,7 +137,7 @@
 品牌 lockup 不用「logo 在左、字在右」的常规排法，用**产品铭牌**的结构：
 
 ```
-GROK BUILD            ← 小、等宽、字距拉开、灰
+AGENT SESSION          ← 小、等宽、字距拉开、灰
 Center                ← 大、粗、字距压紧、白
 ─────────────
 会话卡住了，它主动找你。   ← 一句话价值主张
@@ -191,4 +201,6 @@ python tools/gen_assets.py app-icon   # 单个
 - **不要用紫色渐变。** 这是终端工具，不是 AI 营销页。
 - **不要在浅色模式用 `#FF6B4A` 做正文色**（对比度不够），浅色下改用 `#C8452A`。
 - **不要往 logo 或图标里加字。** 名字在 lockup 里有，图标里没有。
-- **不要把 `grok-build-` 前缀改掉。** 那是搜索入口。
+- **不要把 `agent-session-` 前缀改掉。** 名字要跟着产品能力走，不跟着某一个 agent 走
+  （这条已于 2026-10-05 修订：原先写的「保住 `grok-build-` 前缀当搜索入口」结论已推翻，
+  见第一节）。

@@ -1,10 +1,10 @@
-# Grok Build Center · 设计规范
+# Agent Session Center · 设计规范
 
 > 一页看完。改任何视觉之前先读这个。
 
 ## 一、名字
 
-**Grok Build Center** —— 会话中心。
+**Agent Session Center** —— 会话中心。
 
 你开了六个 Grok Build，去泡了杯咖啡。回来的时候不知道哪个卡在等你点确认。
 这里把所有会话收在一个地方：**一场不漏，卡住的那场会主动找你。**
@@ -12,7 +12,7 @@
 它**不做成 dashboard（仪表盘）**。仪表盘要你持续盯着它；而这里的原则是：
 **不要求你持续关注，只在该打断你的时候打断你。**
 
-仓库名 `grok-build-center`。前面那截 `grok-build-` 不是装饰 —— GitHub 上
+仓库名 `agent-session-center`。前面那截 `grok-build-` 不是装饰 —— GitHub 上
 `grok-build-vscode` / `grok-build-switch` / `grok-build-auth` 是这个生态的搜索命名空间，
 搜 `grok build` 能命中，这是引流的一部分，别改。
 
@@ -117,7 +117,7 @@
 > **凡是机器给的东西一律等宽。** 路径、时长、状态名、恢复命令 —— 全部。
 > 这是区分「我写的」和「它跑出来的」最快的办法，尤其在中文混排里。
 
-字距规则：小型全大写标签（`GROK BUILD`、`LOG · RESUME · SEARCH`）
+字距规则：小型全大写标签（`AGENT SESSION`、`LOG · RESUME · SEARCH`）
 一律拉开 `letter-spacing: 3.4px` 以上；大标题反而要压紧（`-1.6px`）。
 **「小字拉开、大字压紧」是铭牌式排版的骨架。**
 
@@ -126,7 +126,7 @@
 品牌 lockup 不用「logo 在左、字在右」的常规排法，用**产品铭牌**的结构：
 
 ```
-GROK BUILD            ← 小、等宽、字距拉开、灰
+AGENT SESSION            ← 小、等宽、字距拉开、灰
 Center                ← 大、粗、字距压紧、白
 ─────────────
 会话卡住了，它主动找你。   ← 一句话价值主张

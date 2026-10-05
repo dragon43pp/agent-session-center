@@ -190,7 +190,7 @@ const html = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>飞书扫码连接 · Grok Build Center</title>
+<title>飞书扫码连接 · Agent Session Center</title>
 <style>
   :root { color-scheme: light; }
   * { box-sizing: border-box; }

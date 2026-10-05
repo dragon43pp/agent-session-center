@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""生成 Grok Build Center 自己的应用图标（.png + .ico）。
+"""生成 Agent Session Center 自己的应用图标（.png + .ico）。
 
 为什么不用第三方库：本机没装 Pillow / cairosvg，而图标只是「圆角方板 + 一颗灯 + 一条槽」
 这么点几何 —— 手写一个 PNG/ICO 编码器比装依赖干净，而且完全离线可复现。

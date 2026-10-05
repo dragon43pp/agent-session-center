@@ -6,7 +6,8 @@
  * 不许进 git、读出来之后也不许原样塞进任何 IPC 响应给渲染进程。
  *
  * 落盘位置：`<userData>/feishu.json`（打包版是 `%APPDATA%\Grok Build Center`，
- * Dev 版是 `%APPDATA%\Grok Build Center Dev`）。刻意**不**放进 GBC 的目录，
+ * Dev 版是 `%APPDATA%\Grok Build Center Dev`；目录名沿用历史产品名，改了就得迁移用户凭据）。
+ * 刻意**不**放进 GBC 的目录，
  * 两套产品各有各的凭据。
  *
  * 三处防御：

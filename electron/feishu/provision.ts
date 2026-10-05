@@ -271,7 +271,7 @@ export async function provisionFeishuWorkspace(
       synced: stats.total,
       error: null,
       permissionUrl: null,
-      appName: 'Grok Build Center'
+      appName: 'Agent Session Center'
     })
     const welcomeError = await sendToAll(deps, card)
 
@@ -306,7 +306,7 @@ export async function provisionFeishuWorkspace(
         synced: null,
         error: message,
         permissionUrl,
-        appName: 'Grok Build Center'
+        appName: 'Agent Session Center'
       })
       welcomeError = await sendToAll(deps, card)
     }

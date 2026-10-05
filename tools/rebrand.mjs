@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 品牌改版：把上游 HRack 改成 Grok Build Center。
+ * 品牌改版：把上游 HRack 改成 Agent Session Center（原 Grok Build Center）。
  *
  * 为什么用脚本而不是手改：这套改动要跟着上游 rebase 反复重放，手改必然漏。
  *
@@ -42,16 +42,16 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const CHECK = process.argv.includes('--check')
 
 export const PRODUCT = {
-  /** npm 包名 —— 决定 %APPDATA% 下的数据目录，是最关键的隔离点 */
-  name: 'grok-build-center',
-  productName: 'Grok Build Center',
-  /** 中文里产品名（品牌规范 docs/brand.md：「Grok Build Center —— 会话中心」） */
+  /** npm 包名 —— 决定 electron-updater 的发布目标等；userData 目录不跟它走（见 userDataDir） */
+  name: 'agent-session-center',
+  productName: 'Agent Session Center',
+  /** 中文里产品名（品牌规范 docs/brand.md：「Agent Session Center —— 会话中心」） */
   productNameZh: '会话中心',
   productNameZhTw: '工作階段中心',
   version: '1.0.0',
-  appId: 'com.grokbuildcenter.app',
+  appId: 'com.agentsessioncenter.app',
   /** 界面字标。用户要求不叫 center，改用「gbc」（紧凑、rail 48px 也能塞、子集 3 字形）。
-   *  全名 Grok Build Center 留给窗口标题/托盘/包装；字标视觉统一用 gbc。 */
+   *  全名 Agent Session Center 留给窗口标题/托盘/包装；字标视觉统一用 gbc。 */
   wordmark: 'gbc',
   /** CSS font-family 名 */
   wordmarkFont: 'GBC Brand',
@@ -61,6 +61,7 @@ export const PRODUCT = {
   iconPrefix: 'gbc',
   /** 命名管道前缀。和已装的 HRack 必须不同，否则两边抢同一根管道 */
   pipePrefix: 'gbc-bridge',
+  /** userData 目录名沿用历史产品名（曾用名 Grok Build Center），避免迁移用户本地配置；改名必须附带迁移逻辑 */
   userDataDir: 'Grok Build Center',
   userDataDirDev: 'Grok Build Center Dev',
   /** bridge 协议里读的那个「HRACK_*」环境变量保留兼容，但优先读我们的 */
@@ -73,7 +74,7 @@ export const PRODUCT = {
    * 认定 app-update.yml 必须存在，而它只在配了 publish 时才生成。
    * 更要紧的是 —— 指向上游就等于「自动更新会把我们覆盖成 HRack」。
    */
-  repo: { provider: 'github', owner: 'dragon43pp', name: 'grok-build-center' },
+  repo: { provider: 'github', owner: 'dragon43pp', name: 'agent-session-center' },
   /** 出问题时要还原成上游值的地方，集中放这里方便回看 */
   upstreamRepo: { owner: 'UniRound-Tec', name: 'hrack' }
 }
@@ -182,12 +183,12 @@ const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'))
 pkg.name = PRODUCT.name
 pkg.version = PRODUCT.version
 pkg.description =
-  'Session center for every AI coding CLI on your machine — browse, resume, total up and export'
+  'Session center for every AI coding agent — browse, resume, fork and handoff across Claude Code, Codex, OpenCode, Kimi, Pi, Antigravity and WorkBuddy, with Feishu push and mobile approval'
 pkg.license = 'Apache-2.0'
 pkg.author = ''
 pkg.build.appId = PRODUCT.appId
 pkg.build.productName = PRODUCT.productName
-pkg.build.artifactName = 'GrokBuildCenter-Setup-${version}.${ext}'
+pkg.build.artifactName = 'AgentSessionCenter-Setup-${version}.${ext}'
 pkg.build.win.icon = `resources/tray/${PRODUCT.iconPrefix}-app.ico`
 // 指向我们自己的仓库，并且 release 脚本里带 --publish never：
 // 构建产物永远不会出现在别人（或我们自己）的 Release 里
@@ -195,13 +196,13 @@ pkg.build.publish = [{ ...PRODUCT.repo }]
 pkg.build.nsis.shortcutName = PRODUCT.productName
 if (pkg.build.dmg) pkg.build.dmg.title = `${PRODUCT.productName} \${version}`
 if (pkg.build.mac) {
-  pkg.build.mac.artifactName = `GrokBuildCenter-\${version}-macos-\${arch}.\${ext}`
+  pkg.build.mac.artifactName = `AgentSessionCenter-\${version}-macos-\${arch}.\${ext}`
 }
 if (pkg.build.linux) {
   pkg.build.linux.executableName = PRODUCT.name
   pkg.build.linux.vendor = PRODUCT.productName
   pkg.build.linux.maintainer = PRODUCT.productName
-  pkg.build.linux.artifactName = `GrokBuildCenter-\${version}-linux-\${arch}.\${ext}`
+  pkg.build.linux.artifactName = `AgentSessionCenter-\${version}-linux-\${arch}.\${ext}`
 }
 // 图标由我们自己的零依赖生成器产出（见 tools/make_brand_icons.py）
 pkg.scripts['generate:icons'] = 'python tools/make_brand_icons.py'
@@ -507,8 +508,8 @@ swap('electron/icon-theme.ts', 'hrackIconBasename', 'centerIconBasename', 'icon-
 
 swap('electron/app-icons.ts', `'hrack-app-16.png'`, `'${PRODUCT.iconPrefix}-app-16.png'`, 'app-icons: 16px 应用图标')
 swap('electron/app-icons.ts', `'hrack-app-32.png'`, `'${PRODUCT.iconPrefix}-app-32.png'`, 'app-icons: 32px 应用图标')
-// ⚠️ `to` 必须自带引号：这里换的是字符串字面量，漏掉引号会产出
-// `: com.grokbuildcenter.app` —— esbuild 不查类型，能过构建，运行时才炸。
+  // ⚠️ `to` 必须自带引号：这里换的是字符串字面量，漏掉引号会产出
+  // `: com.agentsessioncenter.app` —— esbuild 不查类型，能过构建，运行时才炸。
 swap('electron/app-icons.ts', `'com.hrack.app'`, `'${PRODUCT.appId}'`, 'app-icons: appId 回退值')
 swap('electron/app-icons.ts', 'hrackIconBasename', 'centerIconBasename', 'app-icons: 跟随函数改名')
 swap('electron/app-icons.ts', 'hrackWindowsIconFile', 'centerWindowsIconFile', 'app-icons: 跟随函数改名')
@@ -565,8 +566,8 @@ swap(
   '更新源校验: 改成我们自己的仓库'
 )
 swap('scripts/release-win.ps1', 'hrack-release-$version-', 'gbc-release-$version-', 'release: 临时目录名')
-swap('scripts/release-win.ps1', 'HRack-Setup-$version.exe', 'GrokBuildCenter-Setup-$version.exe', 'release: 安装包名')
-swap('scripts/release-win.ps1', `'win-unpacked\\HRack.exe'`, `'win-unpacked\\Grok Build Center.exe'`, 'release: 解包后 exe 名')
+swap('scripts/release-win.ps1', 'HRack-Setup-$version.exe', 'AgentSessionCenter-Setup-$version.exe', 'release: 安装包名')
+swap('scripts/release-win.ps1', `'win-unpacked\\HRack.exe'`, `'win-unpacked\\Agent Session Center.exe'`, 'release: 解包后 exe 名')
 
 // ───────────────────────── 11. 清理上游资产 ─────────────────────────
 // 上游 HRack 的完整源码拷贝（当初从 app.asar 抽出来当分叉底稿的），210MB、

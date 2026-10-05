@@ -99,7 +99,7 @@ def probe(relay: dict) -> dict:
             "Authorization": f"Bearer {key}",
             "Content-Type": "application/json",
             # Some relays gate on this.
-            "User-Agent": "grok-build-center-quota-probe/1.0",
+            "User-Agent": "agent-session-center-quota-probe/1.0",
         },
         method="POST",
     )

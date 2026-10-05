@@ -1,18 +1,18 @@
-# Grok Build Center · 前端设计施工规格（DESIGN-SPEC）
+# Agent Session Center · 前端设计施工规格（DESIGN-SPEC）
 
-> **这份文档给谁**：负责把界面「从 Grok Build Center 换皮变成 Grok Build Center」的实现者
+> **这份文档给谁**：负责把界面「从 Agent Session Center 换皮变成 Agent Session Center」的实现者
 > （人或 agent）。设计哲学与色板定义在 `docs/brand.md`，那是「宪法」；
 > 本文档是「施工图」—— 把宪法翻译成每一页、每一个组件的落地指令。
 > 两份都要读，冲突时以 brand.md 为准。
 
 ---
 
-## 〇、现状诊断：哪里还像 Grok Build Center
+## 〇、现状诊断：哪里还像 Agent Session Center
 
 产品身份已经换完（包名 / userData / 管道 / 图标 / 字标），但**视觉结构**仍是上游
-Grok Build Center 的「多 CLI 终端管理器」骨架。具体五处：
+Agent Session Center 的「多 CLI 终端管理器」骨架。具体五处：
 
-| # | Grok Build Center 残留 | 问题 |
+| # | Agent Session Center 残留 | 问题 |
 | --- | --- | --- |
 | 1 | **左侧 IconRail（竖排图标工具栏）+ 顶部 TopTabBar 双导航** | 终端管理器的导航密度；两个导航层在抢注意力，违背「只有一颗灯亮」 |
 | 2 | **信息架构以终端为中心**：开屏直进终端页 | 产品定位是「会话中心」——用户第一眼该看到的是「哪场在跑、哪场卡住」，不是一块黑终端 |
@@ -67,7 +67,7 @@ Grok Build Center 的「多 CLI 终端管理器」骨架。具体五处：
 ## 三、信息架构重排（施工的第 0 步）
 
 ```
-改前（Grok Build Center）:  IconRail ─ TopTabBar ─ 终端页(默认)
+改前（Agent Session Center）:  IconRail ─ TopTabBar ─ 终端页(默认)
 改后:           左侧「会话列」恒驻 ─ 右侧主区按需切换
 ```
 
@@ -91,7 +91,7 @@ Grok Build Center 的「多 CLI 终端管理器」骨架。具体五处：
 ### 4.2 铭牌 lockup（首启页 / 首页空态 / 标题栏）
 
 ```
-GROK BUILD        ← 11px 等宽 · letter-spacing: 3.4px · --gbc-dim
+AGENT SESSION        ← 11px 等宽 · letter-spacing: 3.4px · --gbc-dim
 center            ← 字标 Ammonite「center」· 34px · 压紧 -1.6px · --gbc-ink
 ──────────────    ← 1px 发丝线，宽度 = 文本宽
 一场不漏，卡住的那场会主动找你。   ← 13px · --gbc-dim

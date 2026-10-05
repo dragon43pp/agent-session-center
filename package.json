@@ -1,7 +1,7 @@
 {
-  "name": "grok-build-center",
+  "name": "agent-session-center",
   "version": "1.0.0",
-  "description": "Session center for every AI coding CLI on your machine — browse, resume, total up and export",
+  "description": "Session center for every AI coding agent — browse, resume, fork and handoff across Claude Code, Codex, OpenCode, Kimi, Pi, Antigravity and WorkBuddy, with Feishu push and mobile approval",
   "main": "out/main/index.js",
   "scripts": {
     "predev": "npm run subset-fonts",
@@ -33,15 +33,15 @@
   },
   "author": "dragon43pp",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/dragon43pp/grok-build-center#readme",
+  "homepage": "https://github.com/dragon43pp/agent-session-center#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dragon43pp/grok-build-center.git"
+    "url": "git+https://github.com/dragon43pp/agent-session-center.git"
   },
   "build": {
-    "appId": "com.grokbuildcenter.app",
-    "productName": "Grok Build Center",
-    "artifactName": "GrokBuildCenter-Setup-${version}.${ext}",
+    "appId": "com.agentsessioncenter.app",
+    "productName": "Agent Session Center",
+    "artifactName": "AgentSessionCenter-Setup-${version}.${ext}",
     "afterPack": "scripts/assert-packaged-resources.cjs",
     "electronLanguages": [
       "en-US",
@@ -111,7 +111,7 @@
       ],
       "icon": "build/icon.png",
       "category": "public.app-category.developer-tools",
-      "artifactName": "GrokBuildCenter-${version}-macos-${arch}.${ext}"
+      "artifactName": "AgentSessionCenter-${version}-macos-${arch}.${ext}"
     },
     "linux": {
       "target": [
@@ -130,27 +130,27 @@
       ],
       "icon": "build/icon.png",
       "category": "Development",
-      "executableName": "grok-build-center",
-      "artifactName": "GrokBuildCenter-${version}-linux-${arch}.${ext}",
-      "maintainer": "Grok Build Center",
-      "vendor": "Grok Build Center",
-      "synopsis": "Desktop terminal for AI coding CLI sessions"
+      "executableName": "agent-session-center",
+      "artifactName": "AgentSessionCenter-${version}-linux-${arch}.${ext}",
+      "maintainer": "Agent Session Center",
+      "vendor": "Agent Session Center",
+      "synopsis": "Session center for AI coding agents"
     },
     "dmg": {
-      "title": "Grok Build Center ${version}"
+      "title": "Agent Session Center ${version}"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Grok Build Center"
+      "shortcutName": "Agent Session Center"
     },
     "publish": [
       {
         "provider": "github",
         "owner": "dragon43pp",
-        "name": "grok-build-center"
+        "name": "agent-session-center"
       }
     ]
   },

@@ -9,21 +9,21 @@
 
 一个入口，两个 exe（同一次打包产出，共用 `_internal`）：
 
-    GrokBuildCenter.exe       GUI 子系统。双击 = 图形前台，全程没有黑窗口。
-    GrokBuildCenter-cli.exe   控制台子系统。README 里那一串命令用它。
+    AgentSessionCenter.exe       GUI 子系统。双击 = 图形前台，全程没有黑窗口。
+    AgentSessionCenter-cli.exe   控制台子系统。README 里那一串命令用它。
 
 图形版收到子命令会**转交**给命令行版（见 `_relaunch_cli`）——
 GUI 程序没有控制台，自己跑等于让输出掉进黑洞。
 
 子命令：
 
-    GrokBuildCenter-cli.exe check     体检（离线，不需要任何配置）
-    GrokBuildCenter-cli.exe ui        图形前台（起本地控制台 + 开浏览器）
-    GrokBuildCenter-cli.exe panel     启动飞书面板
-    GrokBuildCenter-cli.exe history   生成可搜索的历史会话网页并打开
-    GrokBuildCenter-cli.exe sessions ...  会话管理（list / search / recover / resume / handoff / drift / html）
-    GrokBuildCenter-cli.exe doctor    离线自检
-    GrokBuildCenter-cli.exe version
+    AgentSessionCenter-cli.exe check     体检（离线，不需要任何配置）
+    AgentSessionCenter-cli.exe ui        图形前台（起本地控制台 + 开浏览器）
+    AgentSessionCenter-cli.exe panel     启动飞书面板
+    AgentSessionCenter-cli.exe history   生成可搜索的历史会话网页并打开
+    AgentSessionCenter-cli.exe sessions ...  会话管理（list / search / recover / resume / handoff / drift / html）
+    AgentSessionCenter-cli.exe doctor    离线自检
+    AgentSessionCenter-cli.exe version
 
 打包后 config.json / panel.json / 产物都在 **exe 旁边**，不在包内部 ——
 见 `feishu_hub/paths.py`。想整体挪走就设环境变量 GROKBUILD_HOME。
@@ -216,7 +216,7 @@ def cmd_doctor(args) -> int:
 
 def cmd_version(_args) -> int:
     from feishu_hub import paths
-    print(f"Grok Build Center {VERSION}")
+    print(f"Agent Session Center {VERSION}")
     print(f"  程序目录   {BASE}")
     print(f"  数据目录   {paths.data_root()}")
     print(f"  资源目录   {paths.bundle_root()}")
@@ -234,7 +234,7 @@ def _exe() -> str:
 
 def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(
-        prog="GrokBuildCenter",
+        prog="AgentSessionCenter",
         description="Grok Build 会话管理中心 —— 卡住了它主动找你，"
                     "几百场旧会话也找得回、接得上。")
     ap.add_argument("--config", default=None, help="config.json 路径")
@@ -326,7 +326,7 @@ def main(argv: list[str] | None = None) -> int:
     return rc or 0
 
 
-CLI_EXE = "GrokBuildCenter-cli.exe"
+CLI_EXE = "AgentSessionCenter-cli.exe"
 
 
 def _owns_console() -> bool:
@@ -356,7 +356,7 @@ def _first_word(argv: list[str]) -> str:
 
 
 def _relaunch_cli(argv: list[str]) -> int | None:
-    """把子命令转交给同目录的 GrokBuildCenter-cli.exe。
+    """把子命令转交给同目录的 AgentSessionCenter-cli.exe。
 
     为什么需要：图形版是 **GUI 子系统**的程序，压根没有控制台，print 出去没人接。
     而同一个 exe 又要能当命令行用（README 里那一串命令），所以装了两个：

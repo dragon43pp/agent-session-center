@@ -13,7 +13,7 @@ if (!config || typeof config !== 'object') {
 if (
   config.provider !== 'github' ||
   config.owner !== 'dragon43pp' ||
-  config.repo !== 'grok-build-center'
+  config.repo !== 'agent-session-center'
 ) {
   throw new Error(
     `Unexpected packaged update provider: ${JSON.stringify(config)}`

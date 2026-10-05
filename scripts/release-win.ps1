@@ -6,12 +6,12 @@ $package = Get-Content -LiteralPath $packagePath -Raw | ConvertFrom-Json
 $version = [string]$package.version
 $releaseDir = Join-Path $env:TEMP ("gbc-release-$version-" + [guid]::NewGuid().ToString('N'))
 $artifactDir = Join-Path $workspace 'artifacts'
-$installerName = "GrokBuildCenter-Setup-$version.exe"
+$installerName = "AgentSessionCenter-Setup-$version.exe"
 $installerPath = Join-Path $releaseDir $installerName
 $blockmapPath = "$installerPath.blockmap"
 $metadataName = 'latest.yml'
 $metadataPath = Join-Path $releaseDir $metadataName
-$unpackedExe = Join-Path $releaseDir 'win-unpacked\Grok Build Center.exe'
+$unpackedExe = Join-Path $releaseDir 'win-unpacked\Agent Session Center.exe'
 $packagedUpdateConfig = Join-Path $releaseDir 'win-unpacked\resources\app-update.yml'
 $succeeded = $false
 

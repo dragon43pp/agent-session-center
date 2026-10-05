@@ -1,11 +1,11 @@
 ---
 name: create-gbc-theme
-description: Create, modify, validate, or package Grok Build Center UI themes as JSON. Use when designing a new Grok Build Center color theme, editing semantic UI colors, converting a palette into Grok Build Center tokens, or contributing a built-in theme.
+description: Create, modify, validate, or package Agent Session Center UI themes as JSON. Use when designing a new Agent Session Center color theme, editing semantic UI colors, converting a palette into Agent Session Center tokens, or contributing a built-in theme.
 ---
 
-# Create an Grok Build Center Theme
+# Create an Agent Session Center Theme
 
-Create a semantic JSON theme that stays readable across the whole Grok Build Center interface. Prefer a coherent hierarchy and accessible contrast over direct one-to-one palette substitution.
+Create a semantic JSON theme that stays readable across the whole Agent Session Center interface. Prefer a coherent hierarchy and accessible contrast over direct one-to-one palette substitution.
 
 ## Decide the delivery target first
 
@@ -22,7 +22,7 @@ The bundled checker is the only sanctioned contrast oracle. Find it in this orde
 
 1. This skill's own folder in the repo checkout: `resources/skills/create-gbc-theme/validate-theme.cjs`.
 2. The session workspace (glob `**/validate-theme.cjs`).
-3. Ask the user once for the Grok Build Center checkout path. Do not guess paths and do not silently skip validation.
+3. Ask the user once for the Agent Session Center checkout path. Do not guess paths and do not silently skip validation.
 
 If no copy is reachable, write the embedded copy from the appendix below to a temp file and run it with `node`. **Never substitute manual WCAG arithmetic for the script.** Hand-computed ratios have produced wrong PASS/FAIL calls and missed required fields; only the script (and ultimately `validateUiTheme()`) is authoritative.
 
@@ -78,7 +78,7 @@ Contrast thresholds (WCAG, measured on `bg.content` unless noted):
 
 Imported palettes (Dracula, Nord, SynthWave '84, Gruvbox…) share one shape: two backgrounds, a foreground, a hover/brand color, and syntax colors. Map by role, not by name:
 
-| Palette slot | Grok Build Center tokens |
+| Palette slot | Agent Session Center tokens |
 |---|---|
 | Darkest background | `bg.app`, `input.bg`, `text.inverse` |
 | Main background | `bg.content`, `bg.overlay` (add ~94% alpha) |
@@ -104,7 +104,7 @@ Blend the two backgrounds for the surface family, then fill borders, scrollbars,
 **Built-in theme — full pipeline:**
 
 1. Fast-path script first, then confirm the theme resolves every `UI_COLOR_TOKENS` via `validateUiTheme()`/`resolveUiTheme()`, and that every existing built-in still does.
-2. Type-check Grok Build Center after changing TypeScript or the shared contract.
+2. Type-check Agent Session Center after changing TypeScript or the shared contract.
 3. Run the targeted theme editor and window-shell tests before any full E2E suite; full regression only at the merge gate.
 4. Verify save, hot reload, invalid JSON, duplicate ids, built-in id protection, and the selected-theme fallback.
 

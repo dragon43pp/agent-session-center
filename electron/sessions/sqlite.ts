@@ -81,7 +81,7 @@ export function openReadOnly(path: string): DatabaseSync {
 /**
  * 每进程一个目录：并发/残留的旧进程各写各的，清理时才不会删到别人正在用的副本。
  */
-const SCRATCH_ROOT = join(tmpdir(), 'grok-build-center-sqlite')
+const SCRATCH_ROOT = join(tmpdir(), 'agent-session-center-sqlite')
 
 /** 每个进程只扫一次：上次没关干净的副本（或崩溃残留）超过 6 小时就清掉。 */
 let swept = false

@@ -5,12 +5,12 @@
 
 产出（都在 dist/ 下）：
 
-    dist/GrokBuildCenter/            免安装版（整个目录拷走就能用）
-      GrokBuildCenter.exe            图形前台（双击这个，没有黑窗口）
-      GrokBuildCenter-cli.exe        命令行版（README 里那一串命令用它）
+    dist/AgentSessionCenter/            免安装版（整个目录拷走就能用）
+      AgentSessionCenter.exe            图形前台（双击这个，没有黑窗口）
+      AgentSessionCenter-cli.exe        命令行版（README 里那一串命令用它）
       _internal/                     两个 exe 共用这一份依赖
-    dist/GrokBuildCenter-Setup.exe   安装包（单文件，双击就装）
-    dist/GrokBuildCenter-portable.zip  上面那个免安装目录的压缩包
+    dist/AgentSessionCenter-Setup.exe   安装包（单文件，双击就装）
+    dist/AgentSessionCenter-portable.zip  上面那个免安装目录的压缩包
 
 跑法：
 
@@ -48,7 +48,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 DIST = os.path.join(ROOT, "dist")
 BUILD = os.path.join(ROOT, "build")
-APP_NAME = "GrokBuildCenter"
+APP_NAME = "AgentSessionCenter"
 CLI_NAME = APP_NAME + "-cli"
 ICON = os.path.join(ROOT, "assets", "icon", "center.ico")
 SPEC = os.path.join(BUILD, "gbc.spec")
@@ -329,7 +329,7 @@ def main() -> int:
 
     t0 = time.time()
     print("=" * 68)
-    print("  Grok Build Center · 打包")
+    print("  Agent Session Center · 打包")
     print("  Python  %s" % venv_python())
     print("=" * 68)
 

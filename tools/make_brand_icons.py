@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""生成 Grok Build Center 的托盘 / 应用图标资产（resources/tray/）。
+"""生成 Agent Session Center 的托盘 / 应用图标资产（resources/tray/）。
 
 为什么自己算像素：本机没装 Pillow，而图标只有两个形状（一颗灯 + 一条槽）。
 沿用上游「纯 Python 手写 PNG/ICO 编码器」的做法，零依赖、离线可复现。

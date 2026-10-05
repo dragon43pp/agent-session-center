@@ -13,7 +13,7 @@ export function bridgeSocketPath(): string {
     return `\\\\.\\pipe\\gbc-bridge-${sanitizePipeUser(userInfo().username)}`
   }
   const runtime = process.env.XDG_RUNTIME_DIR?.trim()
-  if (runtime) return join(runtime, 'grok-build-center', 'bridge.sock')
+  if (runtime) return join(runtime, 'agent-session-center', 'bridge.sock')
   return join(homedir(), '.gbc', 'bridge.sock')
 }
 

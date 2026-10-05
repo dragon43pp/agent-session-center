@@ -43,8 +43,8 @@ try {
 
   $artifactDir = Join-Path $workspace 'artifacts'
   # 必须与 release-win.ps1 的 $installerName 以及 package.json 的
-  # build.artifactName（GrokBuildCenter-Setup-${version}.${ext}）保持一致。
-  $installerName = "GrokBuildCenter-Setup-$version.exe"
+  # build.artifactName（AgentSessionCenter-Setup-${version}.${ext}）保持一致。
+  $installerName = "AgentSessionCenter-Setup-$version.exe"
   $installerPath = Join-Path $artifactDir $installerName
   $blockmapPath = "$installerPath.blockmap"
   $metadataPath = Join-Path $artifactDir 'latest.yml'

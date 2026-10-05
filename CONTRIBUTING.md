@@ -1,13 +1,13 @@
-# 参与 Grok Build Center 的开发
+# 参与 Agent Session Center 的开发
 
-感谢你愿意花时间。Grok Build Center 是一个面向多 Coding Agent 工作流的桌面终端：
+感谢你愿意花时间。Agent Session Center 是一个面向多 Coding Agent 工作流的桌面终端：
 保留每个 CLI 原本的 TUI，在外层补上会话状态、注意力提醒、悬浮监控、快速启动和只读工作区浏览。
 
 ## 三种参与方式
 
 | 想做什么 | 怎么做 |
 | --- | --- |
-| 报bug | 提 [issue](https://github.com/dragon43pp/grok-build-center/issues/new/choose)，用Bug 模板。描述里请贴上复现步骤。 |
+| 报bug | 提 [issue](https://github.com/dragon43pp/agent-session-center/issues/new/choose)，用Bug 模板。描述里请贴上复现步骤。 |
 | 提需求 | 提 issue，用 Feature 模板。重点写**使用场景**，不要只写功能名。 |
 | 提 PR |  fork → 建分支 → 改 → 提 PR。大型功能请先开 issue 讨论，避免白做。 |
 
@@ -16,8 +16,8 @@
 需要 Node.js 与 npm。仓库没有 `.nvmrc`，CI 用的是 Node 20；本机装 20 LTS 最稳。
 
 ```bash
-git clone https://github.com/dragon43pp/grok-build-center.git
-cd grok-build-center
+git clone https://github.com/dragon43pp/agent-session-center.git
+cd agent-session-center
 npm install
 npm run dev
 ```

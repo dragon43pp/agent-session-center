@@ -9,7 +9,7 @@ body:
         感谢你花时间反馈。
 
         提交前请先搜索现有 issue，大概率已经有人踩过同一个坑：
-        https://github.com/dragon43pp/grok-build-center/issues
+        https://github.com/dragon43pp/agent-session-center/issues
 
         **安全漏洞请不要公开提交**，见下面的说明。
 
@@ -48,7 +48,7 @@ body:
       label: 复现步骤
       description: 一步一步写，从打开应用开始。越具体，别人越容易复现。
       placeholder: |
-        1. 启动 Grok Build Center
+        1. 启动 Agent Session Center
         2. 扫描到 Codex CLI，创建会话
         3. 让 Codex 执行一个需要权限确认的命令
         4. 切到别的会话再切回来

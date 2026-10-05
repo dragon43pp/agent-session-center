@@ -1,25 +1,25 @@
-# Grok Build Center Remote DSH Web Tunnel — Spec
+# Agent Session Center Remote DSH Web Tunnel — Spec
 
 > 状态：**D0–D5 已关门（2026-08-24；D5 以正式域名 + Android release 模拟器验收，实体设备由项目所有者显式延期并接受风险）。** 本文定义 P0–P8 之后的独立 DSH 远程扩展轨，不表示 Remote P8 已关门或物理真机已经通过。
-> 父文档：[Grok Build Center 远程控制 Spec](./SPEC-REMOTE.md)、[DSH 官方 Web Surface 隔离嵌入计划](./PLAN-DSH-OFFICIAL-WEB-SURFACE.md)。
+> 父文档：[Agent Session Center 远程控制 Spec](./SPEC-REMOTE.md)、[DSH 官方 Web Surface 隔离嵌入计划](./PLAN-DSH-OFFICIAL-WEB-SURFACE.md)。
 > 范围：手机 App 通过现有 1:1:1 房间，打开并操作电脑上真实运行的 DSH 官方 Web UI；不重做 DSH UI，不把 DSH loopback 端口直接暴露到公网。
 
 ## 0. 一句话
 
-手机以顶层 WebView 打开一个有独立 HTTPS origin 的 DSH 网关；网关把官方页面的 HTTP、`POST /api/*` 与两条事件 WebSocket，经房间绑定的独立二进制隧道转到 Grok Build Center 桌面端，再由桌面端访问 `127.0.0.1:随机端口` 上的真实 `dsh web`。工作区选择使用 DSH 官方 browse picker，不能在远程手机上触发电脑的原生目录对话框。
+手机以顶层 WebView 打开一个有独立 HTTPS origin 的 DSH 网关；网关把官方页面的 HTTP、`POST /api/*` 与两条事件 WebSocket，经房间绑定的独立二进制隧道转到 Agent Session Center 桌面端，再由桌面端访问 `127.0.0.1:随机端口` 上的真实 `dsh web`。工作区选择使用 DSH 官方 browse picker，不能在远程手机上触发电脑的原生目录对话框。
 
 ## 1. 已确认的事实与问题
 
-2026-08-24 对本机实际安装的 DSH `0.1.0-rc.7` 和 Grok Build Center 开发进程做了真实接口检查，不是测试夹具：
+2026-08-24 对本机实际安装的 DSH `0.1.0-rc.7` 和 Agent Session Center 开发进程做了真实接口检查，不是测试夹具：
 
-- Grok Build Center 以 `dsh web --host 127.0.0.1 --port <random>` 启动 DSH，只监听 loopback；
+- Agent Session Center 以 `dsh web --host 127.0.0.1 --port <random>` 启动 DSH，只监听 loopback；
 - 官方根页面由完整 Vite 页面、动态插件模块和样式组成，本次启动共读取 46 个启动资源，未压缩正文合计 4,495,522 字节；
 - 上行 RPC 是同源 `POST /api/<method>`；下行是 `/api/events.mux` 与 `/api/events.host` 两条只下行 WebSocket；插件热更新另有一条长期 `GET /plugins/events` SSE；
 - 用 412 × 915 的真实 Chromium 页面加载本机 DSH，全部官方/plugin bundle、上述 SSE 与两条 WebSocket 都实际建立，页面没有 runtime error；启动还会请求 `settings.describe`、`credentials.describe` 等本机特权 RPC，因此 D0 必须证明这些调用在公网 authority 下被拒绝时官方主页面仍能完成普通 session/workspace 流程；
 - 用 loopback authority 调用真实 `host.describe`、`session.list` 成功；把 Host/Origin 改成未受信公网 authority 后，静态根页面仍为 200，但 `/api` 为 403；因此“只反代网页文件”会得到不能工作的页面壳；
 - 当前 Windows/loopback 启动由 DSH auto picker 选择了 `directory-picker-native`。网页按钮会在电脑上打开 Windows 原生目录对话框，手机看不到也无法操作；
 - DSH 官方已经提供 `dsh-host-directory-picker-browse` 与 `dsh-client-ui-directory-picker-browse`，通过 `host.listDirectory` / `host.createDirectory` 在网页内完成目录浏览和创建，明确适用于 remote-browser deployment；
-- Grok Build Center 已有本地主进程 `DshWireProxy`，掌握 `/api`、插件 bundle 和两条 WebSocket 的真实 wire 形状，但它只服务 Electron IPC，不足以承载完整公网网页、静态资源和手机认证。
+- Agent Session Center 已有本地主进程 `DshWireProxy`，掌握 `/api`、插件 bundle 和两条 WebSocket 的真实 wire 形状，但它只服务 Electron IPC，不足以承载完整公网网页、静态资源和手机认证。
 
 本文据此选择“受认证的整站反向隧道”，而不是重做 DSH React UI、远程桌面截图或开放 LAN 监听。
 
@@ -50,7 +50,7 @@
 ## 3. 总体架构
 
 ```text
-Grok Build Center Remote App
+Agent Session Center Remote App
   ├─ 主 Remote WSS：配对、会话列表、PTY、DSH 状态与 ticket 请求
   └─ 顶层 DSH WebView
           │ HTTPS + WSS（短期 HttpOnly Cookie）
@@ -59,7 +59,7 @@ https://<dsh-public-origin>/
   DSH Gateway（Relay 的独立 virtual host）
           │ 独立 dsh-tunnel WSS；HTTP/WS 多路复用、信用流控
           ▼
-Grok Build Center Desktop DshTunnelClient
+Agent Session Center Desktop DshTunnelClient
           │ Node HTTP/WS；目标固定，保留公网 Host/Origin
           ▼
 http://127.0.0.1:<random>/ 真实 dsh web
@@ -67,7 +67,7 @@ http://127.0.0.1:<random>/ 真实 dsh web
 
 ### 3.1 为什么必须是独立 origin
 
-DSH 根页面、启动 manifest、插件模块和运行时都使用 `/assets/*`、`/plugins/*`、`/api/*` 等根绝对路径。把它挂到现有 `/remote/<room>/dsh/` 会迫使 Grok Build Center 重写 HTML、动态插件 URL、`fetch`、WebSocket 和未来新增的 Worker/EventSource，版本升级极易失效。
+DSH 根页面、启动 manifest、插件模块和运行时都使用 `/assets/*`、`/plugins/*`、`/api/*` 等根绝对路径。把它挂到现有 `/remote/<room>/dsh/` 会迫使 Agent Session Center 重写 HTML、动态插件 URL、`fetch`、WebSocket 和未来新增的 Worker/EventSource，版本升级极易失效。
 
 因此 DSH Gateway 必须独占一个 origin，例如 `https://dsh.gbc.dev`。不要求每房间一个子域名，也不要求 wildcard 证书；房间映射由该 origin 上的短期 Cookie 完成。自部署者配置自己的单独 origin 和正式 TLS 即可。
 
@@ -79,7 +79,7 @@ App 使用已经引入的 `react-native-webview` 直接打开 DSH Gateway 顶层
 
 | 仓库 | 所有权 |
 |---|---|
-| Grok Build Center Desktop | DSH 启动 overlay、trusted authority、能力预检、surface 状态、独立 tunnel client、固定目标 loopback proxy |
+| Agent Session Center Desktop | DSH 启动 overlay、trusted authority、能力预检、surface 状态、独立 tunnel client、固定目标 loopback proxy |
 | Remote Server | `dshPublicOrigin`、ticket/Cookie、专用 virtual host、HTTP/WS gateway、独立 tunnel seat、流控/配额/吊销 |
 | Remote App | DSH surface 入口、ticket 状态机、隔离 WebView、同源导航栅栏、退出与错误恢复 |
 | 三方协议副本 | 主 WSS 的 DSH capability/ticket 报文和 tunnel control/binary framing；继续由 sync/check 门禁保证一致 |
@@ -88,11 +88,11 @@ App 使用已经引入的 `react-native-webview` 直接打开 DSH Gateway 顶层
 
 ### 4.1 显式启用
 
-升级后桌面端的“允许当前远控房间打开 DSH”默认关闭。用户显式开启后，Grok Build Center 才能：
+升级后桌面端的“允许当前远控房间打开 DSH”默认关闭。用户显式开启后，Agent Session Center 才能：
 
 1. 从 Relay 的能力响应取得规范 `dshPublicOrigin`；
 2. 以该 origin 的 authority 配置 DSH trust fence；
-3. 启动或重启 Grok Build Center 管理的 DSH Web host，并应用 browse picker overlay；
+3. 启动或重启 Agent Session Center 管理的 DSH Web host，并应用 browse picker overlay；
 4. 建立独立 DSH tunnel seat；
 5. 向手机发布 `dsh-surface-state: ready`。
 
@@ -175,11 +175,11 @@ dsh --profile web --patch <gbc-owned-overlay> \
   --trusted-host <dsh-public-authority> --no-open
 ```
 
-不能改成 `0.0.0.0`，不能把随机端口写进 App/Relay 协议，也不能把 `dshPublicOrigin` 写入用户的 `$DSH_HOME/profiles/web/cordis.patch.yml`。overlay 放在 Grok Build Center 自己的 userData/runtime 目录，由 Grok Build Center 随版本生成和验证；用户 DSH profile、插件和存储仍是权威来源。
+不能改成 `0.0.0.0`，不能把随机端口写进 App/Relay 协议，也不能把 `dshPublicOrigin` 写入用户的 `$DSH_HOME/profiles/web/cordis.patch.yml`。overlay 放在 Agent Session Center 自己的 userData/runtime 目录，由 Agent Session Center 随版本生成和验证；用户 DSH profile、插件和存储仍是权威来源。
 
 ### 5.2 强制 browse picker
 
-Grok Build Center-owned overlay 必须把默认 `directory-picker` 的 auto backend 替换为官方 browse backend，并同时得到对应 client bundle。不能同时挂载 auto/native/browse 两套插件；发现重复 service 或缺少 client face 时启动失败并把 surface 标为 unavailable。
+Agent Session Center-owned overlay 必须把默认 `directory-picker` 的 auto backend 替换为官方 browse backend，并同时得到对应 client bundle。不能同时挂载 auto/native/browse 两套插件；发现重复 service 或缺少 client face 时启动失败并把 surface 标为 unavailable。
 
 这是启用远程 DSH 后的全 host 决策：同一个 DSH server 不能对本机 WebContentsView 使用 native picker、同时对手机使用 browse picker，因为 DSH 当前只在 boot 时选择一次 capability，尚无 per-connection picker。故 Desktop 的 DSH surface 也会改用官方网页 browse dialog。这一行为可见但可接受，优先保证本机和远程使用同一官方 Web artifact 与确定性能力。
 
@@ -232,7 +232,7 @@ Desktop 连接 loopback 时必须保留 DSH 公网信任语义：
 
 DSH 将 `host.pickDirectory`、`host.openPath`、settings/credentials 修改和 agent preset authoring 等方法钉在 loopback authority。Gateway 必须让远程页面以配置的 trusted public authority 到达 DSH，使普通 session/workspace/browse API 可用，但上述 privileged methods 继续被 Host fence 拒绝。
 
-不得在 Relay 或 Desktop 重新实现一份易漂移的方法黑名单来替代 DSH 自己的 authority fence；Grok Build Center 只增加启动/运行时探针，证明 fence 没有因为 Host 重写而失效。若某个 DSH 版本无法同时满足 browse picker 和非 loopback privileged denial，则该版本不支持远程 DSH。
+不得在 Relay 或 Desktop 重新实现一份易漂移的方法黑名单来替代 DSH 自己的 authority fence；Agent Session Center 只增加启动/运行时探针，证明 fence 没有因为 Host 重写而失效。若某个 DSH 版本无法同时满足 browse picker 和非 loopback privileged denial，则该版本不支持远程 DSH。
 
 ## 7. 独立 Tunnel 协议与流控
 
@@ -299,8 +299,8 @@ interface RemoteWebSurface {
 ```
 
 `RemoteWebSurface` 只表达“官方网页是否可打开”和 generation，不再作为手机会话列表中的常驻行，也不出现
-`drive` 按钮。Desktop 的 `DshSessionProjector` 用 `session.list` 恢复**已经由 Grok Build Center 建立的监听条目**的
-初始状态，再以 `events.host/events.mux` 更新这些条目。`session.list` 不是手机端历史会话目录；未被 Grok Build Center
+`drive` 按钮。Desktop 的 `DshSessionProjector` 用 `session.list` 恢复**已经由 Agent Session Center 建立的监听条目**的
+初始状态，再以 `events.host/events.mux` 更新这些条目。`session.list` 不是手机端历史会话目录；未被 Agent Session Center
 监听的历史 DSH session 不得进入 Remote snapshot，即使它仍存在于官方 DSH 数据库：
 
 - `RemoteSession.sessionId` 使用官方 DSH session id，`adapterId` 固定为 `dsh`；桌面本地 slot id、
@@ -309,9 +309,9 @@ interface RemoteWebSurface {
   `sessions-snapshot/session-upsert/session-removed` 同步；
 - App 点击 `adapterId=dsh` 的会话时不得发送 PTY `drive`，而是唤出唯一 DSH WebView并选择该官方
   session；因此手机和桌面看到同一任务状态，但不会建立第二套 DSH 事件解释器；
-- 手机官方页面新建 session 后，Desktop 从 `host/session-added` 建立确定性的 Grok Build Center 监听条目；该条目再经
+- 手机官方页面新建 session 后，Desktop 从 `host/session-added` 建立确定性的 Agent Session Center 监听条目；该条目再经
   与桌面 renderer 完全相同的 `DshProjectionBridge` 增量进入手机。手机和桌面均不得依赖轮询刷新；
-- Remote Desktop 不得绕过 `DshProjectionBridge` 直接枚举 projector 的完整 session cache。Grok Build Center 取消监听
+- Remote Desktop 不得绕过 `DshProjectionBridge` 直接枚举 projector 的完整 session cache。Agent Session Center 取消监听
   或 slot 改绑时，手机必须同步移除旧官方 session id，再按需加入新 id。
 
 ### 8.2 WebView 状态机
@@ -325,7 +325,7 @@ idle → requesting-ticket → loading → ready
 - WebView 使用隔离、非共享且不落盘的 Cookie/storage；禁止第三方 Cookie，不与系统浏览器、Relay dashboard 或终端 WebView 共享数据目录；
 - 仅允许顶层导航到精确 `dshPublicOrigin`。其它 `http/https` 链接交系统浏览器前需用户点击；`file:`、`content:`、`intent:`、自定义 scheme 和跨 origin iframe 直接拒绝；
 - 禁用网页新窗口、下载、打印、摄像头、麦克风、定位、剪贴板自动读取和不必要权限；
-- 官方页面占据除 safe area 和一个最小返回/连接状态浮层外的全部屏幕；不加 Grok Build Center 文案卡、重复 header 或第二套工作区选择器；
+- 官方页面占据除 safe area 和一个最小返回/连接状态浮层外的全部屏幕；不加 Agent Session Center 文案卡、重复 header 或第二套工作区选择器；
 - 返回会话列表可以暂时隐藏同一个 WebView，保持当前 DSH page/session；主 room 断开、吊销、generation 变化或 App 明确退出 DSH 时销毁 WebView并清 Cookie；
 - WebView 在 document-start 捕获官方 Cordis `sessions` service。点击手机列表中的 DSH 会话时调用官方
   `sessions.open(sessionId)`；从 `+` 进入新建时调用官方 `sessions.clear()`。捕获失败、目标不存在或超时必须
@@ -337,7 +337,7 @@ idle → requesting-ticket → loading → ready
 右下角 `+` 是所有新建操作的唯一入口。原生 `CreateSessionScreen` 在 AI CLI 卡片旁展示 DSH 卡片；选择后
 立即打开同一个官方 WebView的空白 Home/新建态。工作区和 session 创建仍完全交给官方页面：用户打开
 官方 browse dialog、浏览电脑文件系统并确认目录，再由官方 `session.create`/workspace API 建立会话。
-Grok Build Center App 不提交自己的 `installationId/workspace/skipApproval` payload，也不把现有 CLI filepicker 强套给
+Agent Session Center App 不提交自己的 `installationId/workspace/skipApproval` payload，也不把现有 CLI filepicker 强套给
 DSH。会话列表不再常驻“官方 Web 控制台”装饰行。
 
 ## 9. 安全边界
@@ -377,7 +377,7 @@ DSH。会话列表不再常驻“官方 Web 控制台”装饰行。
 | 房间 revoke | 所有 DSH 层立即关闭，旧 URL/Cookie 后续稳定 401/404 |
 | DSH 版本不兼容 | 明确显示“当前 DSH 版本不支持远程网页”，不泄漏原始 stderr/路径 |
 
-恢复永远从新 ticket 和当前 generation 开始；HTTP body、DOM 状态和未完成 RPC 不做跨 generation 重放。DSH 自己持久化的会话仍由 DSH 恢复，Grok Build Center 不复制存储。
+恢复永远从新 ticket 和当前 generation 开始；HTTP body、DOM 状态和未完成 RPC 不做跨 generation 重放。DSH 自己持久化的会话仍由 DSH 恢复，Agent Session Center 不复制存储。
 
 ## 12. 验收与真实测试
 
@@ -396,7 +396,7 @@ DSH。会话列表不再常驻“官方 Web 控制台”装饰行。
 
 测试必须启动电脑真实安装的 DSH Web profile，不使用假的 HTML、Memory API 或手写 directory fixture：
 
-1. Grok Build Center 以随机 loopback 端口、trusted public authority 和远程嵌入标记启动 DSH，由 DSH 官方 auto picker 选择 browse 实现；
+1. Agent Session Center 以随机 loopback 端口、trusted public authority 和远程嵌入标记启动 DSH，由 DSH 官方 auto picker 选择 browse 实现；
 2. 用真实浏览器拉取根 HTML、全部 boot entries、assets/plugins，建立 `/plugins/events` SSE 与两条真实 WebSocket upgrade；
 3. 用 trusted public authority 调用真实 `host.describe`、`session.list`、`workspace.list`、`host.listDirectory`；
 4. 在临时 workspace 父目录中通过 browse API 看到真实目录并创建/选择一个测试子目录；
@@ -407,7 +407,7 @@ DSH。会话列表不再常驻“官方 Web 控制台”装饰行。
 ### 12.3 公网 Android 真实门槛
 
 1. 使用正式 TLS/WSS 的真实 Remote Relay 与独立 DSH origin 创建临时房间；
-2. 安装版 Android release App 加入真实 Grok Build Center Desktop，主会话列表出现 DeepSeek Harness 官方图标与 ready 状态；
+2. 安装版 Android release App 加入真实 Agent Session Center Desktop，主会话列表出现 DeepSeek Harness 官方图标与 ready 状态；
 3. App 请求真实一次性 ticket，顶层 WebView 从公网读取电脑当前 DSH 的真实 HTML、插件和 event WebSocket，不使用打包夹具；
 4. 在手机官方 browse dialog 中从电脑 Home/磁盘逐层进入专用临时目录，创建或选择工作区；电脑端不出现原生目录对话框；
 5. 在官方网页创建一条真实空白 DSH session，后端 `session.list` 与 workspace 权威状态出现对应 id/path；不提交模型 prompt、不产生模型费用；
@@ -437,10 +437,10 @@ safe area、物理软键盘、蜂窝网络切换、系统回收与 iOS 签名安
 这是独立 D 轨，不插入或重写 Remote P0–P8：
 
 1. **D0 — Spec 与安全原型**：冻结本文；用真实 DSH 证明 public authority、browse picker、privileged denial 和完整资源/WS 形状。
-2. **D1 — Desktop**：Grok Build Center-owned overlay、能力预检、surface state、固定目标 tunnel client；本机真实接口门槛通过。
+2. **D1 — Desktop**：Agent Session Center-owned overlay、能力预检、surface state、固定目标 tunnel client；本机真实接口门槛通过。
 3. **D2 — Server**：独立 origin、ticket/Cookie、tunnel seat、HTTP/WS multiplex、流控和部署路由；黑盒真实进程门槛通过。
 4. **D3 — App**：独立 DSH surface、ticket 状态机、隔离 WebView、导航/权限/生命周期；Android 构建与本机 Relay 门槛通过。
-5. **D4 — 公网 Android**：真实 TLS、真实 Grok Build Center/DSH、browse 工作区、空白 session、event stream、PTY 并行和 revoke 全链通过。
+5. **D4 — 公网 Android**：真实 TLS、真实 Agent Session Center/DSH、browse 工作区、空白 session、event stream、PTY 并行和 revoke 全链通过。
 6. **D5 — 发布关门**：默认要求 Android/iOS 物理真机、自部署、监控/日志、备份恢复与发布清单完成；本次可按 12.4 的显式发布风险接受例外关门。
 
 每一阶段失败后遵守根仓库 `AGENTS.md`：记录失败用例，只定向复跑失败项；定向通过且准备合并/发布时才跑一次完整回归。
@@ -463,7 +463,7 @@ safe area、物理软键盘、蜂窝网络切换、系统回收与 iOS 签名安
 
 D0 新增显式 opt-in 门禁 `e2e/remote-dsh-d0.spec.ts` 和固定原型 overlay `e2e/fixtures/dsh-remote-browse.patch.yml`。早期原型曾先禁用 auto picker，再同时挂载官方 browse host backend 与 browse client surface；只挂 host backend 会让 API 能浏览目录但 boot manifest 没有网页 picker，因此不能算远程能力完成。
 
-后续真机构发现，新版 DSH profile 或用户已固定 browse 实现时，Grok Build Center 再次插入同名 entry 会触发 `duplicate loader entry id` 并使 host 在 ready 前退出。当前 fixture 与产品 overlay 因此不再插入任何 picker entry：Grok Build Center 设置远程嵌入标记，由 DSH 官方 auto picker 负责唯一的 browse 组合；同时在用户层之后恢复官方 trusted-host 配置链，防止旧 profile/用户覆盖使公网 authority 误报 403。最后由 boot manifest 和 RPC 预检拒绝 native/auto 泄漏、browse 缺失或 authority 未生效。
+后续真机构发现，新版 DSH profile 或用户已固定 browse 实现时，Agent Session Center 再次插入同名 entry 会触发 `duplicate loader entry id` 并使 host 在 ready 前退出。当前 fixture 与产品 overlay 因此不再插入任何 picker entry：Agent Session Center 设置远程嵌入标记，由 DSH 官方 auto picker 负责唯一的 browse 组合；同时在用户层之后恢复官方 trusted-host 配置链，防止旧 profile/用户覆盖使公网 authority 误报 403。最后由 boot manifest 和 RPC 预检拒绝 native/auto 泄漏、browse 缺失或 authority 未生效。
 
 门禁使用系统真实安装的 DSH `0.1.0-rc.7`，为每次运行创建独立临时 `DSH_HOME` 和随机 loopback 端口，不读取/修改用户现有 DSH profile、session 或 workspace。Chromium 通过 host resolver 以 `dsh.remote.test:<random>` 这个非 loopback authority 访问真实页面，DSH 以 `--trusted-host dsh.remote.test` 启动；Node HTTP 探针使用相同 Host/Origin 语义。
 
@@ -499,7 +499,7 @@ D1 已实现桌面端产品链，而不是把 D0 测试脚本直接搬进产品�
 
 - Remote 设置新增默认关闭、主进程原子持久化的“允许当前远控房间打开 DSH”显式开关；关闭时独立 tunnel 立即终止，PTY 主通道不受影响；
 - 主 WSS `hello-ok` 可选携带规范 HTTPS `relayCapabilities.dshWebTunnel` 与 Desktop-only `dshSeatToken`；旧 Relay 省略字段时仍可照常完成 PTY 配对；
-- Grok Build Center 在 `<userData>/dsh-runtime/remote-web.patch.yml` 生成自己拥有的最小 YAML patch，不写用户 DSH profile，也不重复插入可能已被 profile 固定的 browse 条目；该 patch 只在用户层之后恢复官方 `webStartup → webRuntime → connection` trusted-host 配置链。启动时固定设置嵌入标记，由 DSH 官方 auto picker 选择唯一 browse host/surface，同时固定随机 loopback、Relay 公网 authority 和 `--no-open`；
+- Agent Session Center 在 `<userData>/dsh-runtime/remote-web.patch.yml` 生成自己拥有的最小 YAML patch，不写用户 DSH profile，也不重复插入可能已被 profile 固定的 browse 条目；该 patch 只在用户层之后恢复官方 `webStartup → webRuntime → connection` trusted-host 配置链。启动时固定设置嵌入标记，由 DSH 官方 auto picker 选择唯一 browse host/surface，同时固定随机 loopback、Relay 公网 authority 和 `--no-open`；
 - 产品 ready 门槛真实解析 boot manifest，验证 browse client 唯一且 native/auto 不存在，再调用普通 API、directory browse、4 个 privileged denial、SSE 与两条 event WebSocket；任一步不符只发布 unavailable/failed；
 - `DshTunnelClient` 只消费当前 `DshHostManager` ready `baseUrl`，远端报文不能选择 scheme/host/port；HTTP/WS 路由与 header 均为 allowlist，公网 Host/Origin 保留，Cookie/Authorization/Forwarded/Set-Cookie 不进入另一侧；
 - tunnel 使用独立 `ws` 产品依赖、32 KiB control frame、10-byte binary header、64 KiB payload、sequence、credit、16 MiB request、32 MiB response、512 KiB/stream 与 2 MiB/room buffer、HTTP/SSE/WS 并发上限及 stream generation 防复用；
@@ -519,7 +519,7 @@ D1 已实现桌面端产品链，而不是把 D0 测试脚本直接搬进产品�
 - 通过公网 authority 调用 `host.describe`、`session.list`、`workspace.list`、`host.listDirectory`；
 - 证明 `host.pickDirectory`、`host.openPath`、`settings.describe`、`credentials.describe` 仍为 403 `forbidden`；
 - 在测试拥有的临时 workspace 创建真实空白 DSH session，不提交 prompt、不产生模型费用；
-- 证明 overlay 位于 Grok Build Center userData runtime 目录、开关已落入 `main-prefs.json`，选定 DSH_HOME 没有新增 patch；
+- 证明 overlay 位于 Agent Session Center userData runtime 目录、开关已落入 `main-prefs.json`，选定 DSH_HOME 没有新增 patch；
 - `npm run typecheck`、产品 build、协议/allowlist 门禁、Remote 设置显式 opt-in 回归通过。
 
 真实门禁命令：
@@ -572,7 +572,7 @@ D3 已在 `gbc-remote-app` 完成手机产品控制面与原生 WebView 边界�
 ```text
 Protocol parity passed
 Terminal parity passed
-Grok Build Center UI parity passed
+Agent Session Center UI parity passed
 11 Jest suites / 51 tests passed
 [dsh-d3] app=RemotePhoneClient relay=dist surface=independent ticket=one-use page=82 revoke=cleared logs=clean
 Android assembleRelease: BUILD SUCCESSFUL
@@ -580,7 +580,7 @@ Android assembleRelease: BUILD SUCCESSFUL
 
 `npm run verify:dsh-d3` 不是进程内 mock：它构建并启动 Server 子模块的 `dist/server/cli.js`，用产品 `RemotePhoneClient` 建立 Phone seat，用独立 Desktop tunnel 发布 DSH surface，申请并消费真实一次性 ticket/Cookie，经实际 Relay HTTP/tunnel 路径读取 HTML，重放 ticket 得到 404，随后 revoke 并证明 App DSH state、Cookie session 和 tunnel 一起失效，日志中没有 room/token/ticket/Cookie。Android release 门禁产出约 93 MB 的 `app-release.apk`，原生 WebView patch 编译通过。
 
-D3 的 HTML tunnel 端使用确定性 fixture，只证明 App + 真实 Server carrier，不把它冒充“手机已访问真实 DSH”；真实 DSH 资源/API/SSE/两条 WS 与安全拒绝已在 D1 验证。D4 必须在真实 TLS 公网域名上，用 Android App、真实 Grok Build Center Desktop 和真实 DSH 完成二者的组合链，才能宣称手机远程 DSH 可用。
+D3 的 HTML tunnel 端使用确定性 fixture，只证明 App + 真实 Server carrier，不把它冒充“手机已访问真实 DSH”；真实 DSH 资源/API/SSE/两条 WS 与安全拒绝已在 D1 验证。D4 必须在真实 TLS 公网域名上，用 Android App、真实 Agent Session Center Desktop 和真实 DSH 完成二者的组合链，才能宣称手机远程 DSH 可用。
 
 ## 19. D4 公网 Android 实现与验证记录
 
@@ -654,7 +654,7 @@ invalidation=cookie+websocket+tunnel ptyAfterInvalidation=driven
 
 原先“手机先看到既有历史会话”的验证结果正是错误语义的证据，不计入通过项。勘误后的真实门禁已重新使用
 生产 Remote WSS、正式 DSH TLS origin、最新 Electron dev 与 Android 模拟器执行：连接时电脑保存了多条
-官方历史 session，但 Grok Build Center 监听投影为 0，App 明确显示“暂无会话”；随后从手机 `+` 第一张 DSH 卡进入
+官方历史 session，但 Agent Session Center 监听投影为 0，App 明确显示“暂无会话”；随后从手机 `+` 第一张 DSH 卡进入
 官方 Home 并新建最小任务，`host/session-added` 使桌面只建立该条监听，App 也只出现这一行并显示
 `已完成`、`本轮任务已完成 · 46 tokens`。再次点击该行后，单例 WebView 的官方 `sessions.current` 精确等于
 新 session id。

@@ -84,7 +84,7 @@ export function createTray(
   callbacks: TrayCallbacks
 ): Tray {
   const tray = new Tray(createCenterTrayIcon())
-  tray.setToolTip('Grok Build Center')
+  tray.setToolTip('Agent Session Center')
   rebuildTrayMenu(tray, language, callbacks)
   // Windows/Linux：单击图标切换显示；macOS 点击交给系统弹出菜单。
   if (process.platform !== 'darwin') {

@@ -4,8 +4,8 @@
 
 <div align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./assets/readme/gbc-wordmark-dark.png">
-    <img src="./assets/readme/gbc-wordmark-light.png" width="370" alt="Grok Build Center">
+    <source media="(prefers-color-scheme: dark)" srcset="./assets/readme/asc-wordmark-dark.png">
+    <img src="./assets/readme/asc-wordmark-light.png" width="370" alt="Agent Session Center">
   </picture>
 
   <h3>One rack for every coding agent</h3>
@@ -16,18 +16,18 @@
          `downloads` until this repo actually has its first GitHub Release —
          with 0 releases they render as "No releases" / 0 and advertise an
          empty project. Re-add them right after publishing v1.0.0. -->
-    <a href="./LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/github/license/dragon43pp/grok-build-center?style=flat-square"></a>
-    <a href="https://github.com/dragon43pp/grok-build-center/commits/main"><img alt="Last commit" src="https://img.shields.io/github/last-commit/dragon43pp/grok-build-center?style=flat-square"></a>
-    <a href="https://github.com/dragon43pp/grok-build-center"><img alt="Repository size" src="https://img.shields.io/github/repo-size/dragon43pp/grok-build-center?style=flat-square"></a>
+    <a href="./LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/github/license/dragon43pp/agent-session-center?style=flat-square"></a>
+    <a href="https://github.com/dragon43pp/agent-session-center/commits/main"><img alt="Last commit" src="https://img.shields.io/github/last-commit/dragon43pp/agent-session-center?style=flat-square"></a>
+    <a href="https://github.com/dragon43pp/agent-session-center"><img alt="Repository size" src="https://img.shields.io/github/repo-size/dragon43pp/agent-session-center?style=flat-square"></a>
   </p>
 </div>
 
-**Grok Build Center (GBC)** is a desktop terminal for multi-agent coding workflows. It keeps every CLI's native TUI intact, then adds the layer that is usually missing around it: session status, attention cues, a floating monitor, quick launch, and a read-only workspace viewer.
+**Agent Session Center (ASC)** is a session center for every AI coding agent. It keeps every CLI's native TUI intact, then adds the layer that is usually missing around it: session status, resume, fork and handoff, AI semantic search, Feishu push with mobile approval, attention cues, a floating monitor, quick launch, and a read-only workspace viewer.
 
 The desktop app is the repository root. The Python session tools and Feishu helper are the same product, in [`hub/`](./hub).
 
 <div align="center">
-  <img src="./assets/readme/home-launcher.png" width="1100" alt="Grok Build Center home screen with detected coding CLIs">
+  <img src="./assets/readme/home-launcher.png" width="1100" alt="Agent Session Center home screen with detected coding CLIs">
 </div>
 
 ## The problem
@@ -38,11 +38,11 @@ Different coding agents are useful for different jobs, so one terminal quickly b
 - Once several agents run in parallel, you start hunting through tabs for the one that needs you. The same problem shows up in [multi-agent workflow discussions](https://news.ycombinator.com/item?id=47268777) and tools such as [tmux-claude-session-manager](https://github.com/craftzdog/tmux-claude-session-manager).
 - A notification alone is not enough if it never fires ([Codex #8929](https://github.com/openai/codex/issues/8929)), cannot tell that the agent is waiting for an answer ([Codex #13478](https://github.com/openai/codex/issues/13478)), or misses an interactive shell waiting for input ([Gemini CLI #19527](https://github.com/google-gemini/gemini-cli/issues/19527)).
 
-Grok Build Center keeps those sessions together, tells you which one needs attention, and takes you back to the right place. The original CLI still does all the work; Grok Build Center simply means you do not have to stare at it.
+Agent Session Center keeps those sessions together, tells you which one needs attention, and takes you back to the right place. The original CLI still does all the work; Agent Session Center simply means you do not have to stare at it.
 
 ## How it works
 
-On first launch, Grok Build Center discovers compatible CLIs on the host and in WSL. The result is cached for fast startup and can be rescanned manually. Each supported harness has an adapter that turns its official Hooks, SSE stream, extension API, or runtime events into a small shared vocabulary:
+On first launch, Agent Session Center discovers compatible CLIs on the host and in WSL. The result is cached for fast startup and can be rescanned manually. Each supported harness has an adapter that turns its official Hooks, SSE stream, extension API, or runtime events into a small shared vocabulary:
 
 ```text
 thinking · tool call · needs you · completed · error
@@ -57,7 +57,7 @@ CLI ── PTY ─────────────────────�
 workspace ── read-only access ──────────> file tree and viewer
 ```
 
-If an observer fails, the PTY keeps running. Grok Build Center degrades the status display instead of breaking the CLI session.
+If an observer fails, the PTY keeps running. Agent Session Center degrades the status display instead of breaking the CLI session.
 
 ## Highlights
 
@@ -66,7 +66,7 @@ If an observer fails, the PTY keeps running. Grok Build Center degrades the stat
 Run different agents side by side and see which one is thinking, using a tool, waiting for you, finished, or no longer fully observed.
 
 <div align="center">
-  <img src="./assets/readme/multi-agent-status.png" width="1100" alt="Multiple coding agents and their live statuses in Grok Build Center">
+  <img src="./assets/readme/multi-agent-status.png" width="1100" alt="Multiple coding agents and their live statuses in Agent Session Center">
 </div>
 
 ### Collapse the shell, keep the signal
@@ -74,7 +74,7 @@ Run different agents side by side and see which one is thinking, using a tool, w
 The main sidebar can collapse into a compact rail. The built-in monitor still shows every followed session and brings you back to the correct one.
 
 <div align="center">
-  <img src="./assets/readme/collapsed-sidebar-monitor.png" width="1100" alt="Collapsed Grok Build Center sidebar with the session monitor">
+  <img src="./assets/readme/collapsed-sidebar-monitor.png" width="1100" alt="Collapsed Agent Session Center sidebar with the session monitor">
 </div>
 
 ### Make the floating window yours
@@ -92,7 +92,7 @@ The default floating monitor is itself a built-in renderer. Custom renderers use
 Open a read-only file tree beside the terminal, inspect highlighted source, and preview Markdown while the agent keeps its native TUI.
 
 <div align="center">
-  <img src="./assets/readme/workspace-reader.png" width="1200" alt="Grok Build Center read-only workspace viewer beside OpenCode">
+  <img src="./assets/readme/workspace-reader.png" width="1200" alt="Agent Session Center read-only workspace viewer beside OpenCode">
 </div>
 
 ### Themes, fonts, and layout
@@ -100,20 +100,20 @@ Open a read-only file tree beside the terminal, inspect highlighted source, and 
 Choose independent application and terminal themes, adjust terminal fonts and sizing, switch navigation modes, and configure the floating renderer from one settings page.
 
 <div align="center">
-  <img src="./assets/readme/settings-themes.png" width="1100" alt="Grok Build Center theme and floating renderer settings">
+  <img src="./assets/readme/settings-themes.png" width="1100" alt="Agent Session Center theme and floating renderer settings">
 </div>
 
 ### Fast launch across runtimes
 
-Start a shell or detected coding CLI from the Home screen or quick-launch panel. Grok Build Center supports host installations and compatible WSL distributions. DeepSeek Harness appears only after a local or WSL install is found.
+Start a shell or detected coding CLI from the Home screen or quick-launch panel. Agent Session Center supports host installations and compatible WSL distributions. DeepSeek Harness appears only after a local or WSL install is found.
 
 <div align="center">
-  <img src="./assets/readme/quick-launch.png" width="950" alt="Grok Build Center quick-launch panel">
+  <img src="./assets/readme/quick-launch.png" width="950" alt="Agent Session Center quick-launch panel">
 </div>
 
 ## Supported harnesses
 
-| Harness | Integration | Status available to Grok Build Center | Runtimes |
+| Harness | Integration | Status available to Agent Session Center | Runtimes |
 | --- | --- | --- | --- |
 | DeepSeek Harness | Official Web surface + runtime bridge | Followed session and lifecycle | Host, WSL |
 | Claude Code | Official Hooks | Thinking, tools, approvals, completion | Host, WSL |
@@ -123,7 +123,7 @@ Start a shell or detected coding CLI from the Home screen or quick-launch panel.
 | Kimi Code | Official Hooks | Turns, thinking, tools, approvals | Host, WSL |
 | Grok Build | Official Hooks | Turns, thinking, tools, approvals | Host, WSL |
 
-Grok Build Center can also discover and launch Devin CLI, Cline, Qwen Code, Amp, Aider, Goose, Kiro CLI, GitHub Copilot CLI, and other registered CLIs. Launch-only integrations do not expose the same level of status detail yet.
+Agent Session Center can also discover and launch Devin CLI, Cline, Qwen Code, Amp, Aider, Goose, Kiro CLI, GitHub Copilot CLI, and other registered CLIs. Launch-only integrations do not expose the same level of status detail yet.
 
 ## Session history
 
@@ -140,30 +140,30 @@ Field depth varies by source. Title, time, turn count, and token usage are avail
 
 ## Install
 
-Download the latest build from [GitHub Releases](https://github.com/dragon43pp/grok-build-center/releases):
+Download the latest build from [GitHub Releases](https://github.com/dragon43pp/agent-session-center/releases):
 
-- Windows x64: `GrokBuildCenter-Setup-*.exe`
-- macOS Apple Silicon: `GrokBuildCenter-*-macos-arm64.dmg`
-- Linux x64: `GrokBuildCenter-*-linux-x64.AppImage` or `GrokBuildCenter-*-linux-x64.deb`
+- Windows x64: `AgentSessionCenter-Setup-*.exe`
+- macOS Apple Silicon: `AgentSessionCenter-*-macos-arm64.dmg`
+- Linux x64: `AgentSessionCenter-*-linux-x64.AppImage` or `AgentSessionCenter-*-linux-x64.deb`
 
 The builds are not commercially code-signed yet, so the operating system may show a security prompt on first launch.
 
 ### First run
 
-1. Start Grok Build Center and let the initial CLI scan finish.
+1. Start Agent Session Center and let the initial CLI scan finish.
 2. Pick a terminal or coding CLI.
 3. Choose its runtime and workspace.
-4. Start the session. Grok Build Center keeps the native TUI in the main pane and publishes its status around it.
+4. Start the session. Agent Session Center keeps the native TUI in the main pane and publishes its status around it.
 
-If Codex asks you to review Hooks, open `/hooks`, inspect the Grok Build Center definition, and trust it. For Kimi Code, Grok Build Center maintains a versioned managed block in the effective user `config.toml`; content outside that block is preserved. Grok Build installs a dedicated `gbc-observer.json` under `~/.grok/hooks/` (or `$GROK_HOME/hooks` / the matching WSL home), which Grok treats as a trusted user hook.
+If Codex asks you to review Hooks, open `/hooks`, inspect the Agent Session Center definition, and trust it. For Kimi Code, Agent Session Center maintains a versioned managed block in the effective user `config.toml`; content outside that block is preserved. Grok Build installs a dedicated `gbc-observer.json` under `~/.grok/hooks/` (or `$GROK_HOME/hooks` / the matching WSL home), which Grok treats as a trusted user hook.
 
 ## Development
 
 The desktop app lives in the repository root (`src/` + `electron/`).
 
 ```bash
-git clone https://github.com/dragon43pp/grok-build-center.git
-cd grok-build-center
+git clone https://github.com/dragon43pp/agent-session-center.git
+cd agent-session-center
 npm install
 npm run dev
 ```
@@ -181,7 +181,7 @@ Windows, macOS, and Linux release packages must be built on their matching opera
 
 ## Contributing
 
-Bug reports, reproducible edge cases, and focused pull requests are welcome. Observer changes should include a fixture or runtime test that proves event ordering and fallback behavior. Please open an [issue](https://github.com/dragon43pp/grok-build-center/issues) before starting a large feature.
+Bug reports, reproducible edge cases, and focused pull requests are welcome. Observer changes should include a fixture or runtime test that proves event ordering and fallback behavior. Please open an [issue](https://github.com/dragon43pp/agent-session-center/issues) before starting a large feature.
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for the local setup, branch naming, and commit conventions.
 
@@ -191,7 +191,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for the local setup, branch naming, and
 
 ## License
 
-Grok Build Center is licensed under the [Apache License 2.0](./LICENSE).
+Agent Session Center is licensed under the [Apache License 2.0](./LICENSE).
 
 ---
 

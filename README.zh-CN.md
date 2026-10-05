@@ -4,8 +4,8 @@
 
 <div align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./assets/readme/gbc-wordmark-dark.png">
-    <img src="./assets/readme/gbc-wordmark-light.png" width="370" alt="Grok Build Center">
+    <source media="(prefers-color-scheme: dark)" srcset="./assets/readme/asc-wordmark-dark.png">
+    <img src="./assets/readme/asc-wordmark-light.png" width="370" alt="Agent Session Center">
   </picture>
 
   <h3>把每个 Coding Agent 放进同一个 Rack</h3>
@@ -15,18 +15,18 @@
     <!-- 冷启动期只放 3 个徽章：故意不放 v/release 与 downloads。仓库目前 0 Release，
          放上去会渲染成"No releases" / 0，等于自己对外宣告这是一个空项目。
          等发出第一个 Release（v1.0.0）后再加回来。 -->
-    <a href="./LICENSE"><img alt="开源协议：Apache-2.0" src="https://img.shields.io/github/license/dragon43pp/grok-build-center?style=flat-square"></a>
-    <a href="https://github.com/dragon43pp/grok-build-center/commits/main"><img alt="最近提交" src="https://img.shields.io/github/last-commit/dragon43pp/grok-build-center?style=flat-square"></a>
-    <a href="https://github.com/dragon43pp/grok-build-center"><img alt="仓库体积" src="https://img.shields.io/github/repo-size/dragon43pp/grok-build-center?style=flat-square"></a>
+    <a href="./LICENSE"><img alt="开源协议：Apache-2.0" src="https://img.shields.io/github/license/dragon43pp/agent-session-center?style=flat-square"></a>
+    <a href="https://github.com/dragon43pp/agent-session-center/commits/main"><img alt="最近提交" src="https://img.shields.io/github/last-commit/dragon43pp/agent-session-center?style=flat-square"></a>
+    <a href="https://github.com/dragon43pp/agent-session-center"><img alt="仓库体积" src="https://img.shields.io/github/repo-size/dragon43pp/agent-session-center?style=flat-square"></a>
   </p>
 </div>
 
-**Grok Build Center（GBC）** 是一个面向多 Coding Agent 工作流的桌面终端。它保留每个 CLI 原本的 TUI，在外层补上会话状态、注意力提醒、悬浮监控、快速启动和只读工作区浏览。
+**Agent Session Center（ASC）** 是一个面向所有 AI Coding Agent 的会话中心。它保留每个 CLI 原本的 TUI，在外层补上会话状态、恢复（resume）、分叉与接力、AI 语义查找、飞书推送与手机端放行、注意力提醒、悬浮监控、快速启动和只读工作区浏览。
 
 桌面程序在仓库根目录。Python 会话工具和飞书助手是同一套产品，在 [`hub/`](./hub)。
 
 <div align="center">
-  <img src="./assets/readme/home-launcher.png" width="1100" alt="Grok Build Center 首页与扫描到的 Coding CLI">
+  <img src="./assets/readme/home-launcher.png" width="1100" alt="Agent Session Center 首页与扫描到的 Coding CLI">
 </div>
 
 ## 解决什么问题？
@@ -39,11 +39,11 @@
 
 Vibe Coding 本来就该留点空间给人躺着刷手机、逛 L 站，而不是换一种方式盯进度条。😂
 
-Grok Build Center 想解决的就是这些每天都会碰到的小麻烦：把会话放在一起，告诉你谁需要处理，再把你带回正确的位置。真正干活的仍然是原来的 CLI，Grok Build Center 只是让你不用一直盯着它。
+Agent Session Center 想解决的就是这些每天都会碰到的小麻烦：把会话放在一起，告诉你谁需要处理，再把你带回正确的位置。真正干活的仍然是原来的 CLI，Agent Session Center 只是让你不用一直盯着它。
 
 ## 怎么解决？
 
-第一次启动时，Grok Build Center 会自动扫描主机和 WSL 中兼容的 CLI；之后直接使用缓存快速启动，也可以随时手动重扫。每个已支持的 Harness 都有自己的 Adapter，把官方 Hooks、SSE、Extension API 或运行时事件收敛成一套统一状态：
+第一次启动时，Agent Session Center 会自动扫描主机和 WSL 中兼容的 CLI；之后直接使用缓存快速启动，也可以随时手动重扫。每个已支持的 Harness 都有自己的 Adapter，把官方 Hooks、SSE、Extension API 或运行时事件收敛成一套统一状态：
 
 ```text
 正在思考 · 调用工具 · 需要你 · 本轮完成 · 发生错误
@@ -58,7 +58,7 @@ CLI ── PTY ─────────────────────�
 工作区 ── 只读访问 ─────────────────────> 文件树与阅读器
 ```
 
-即使 Observer 失效，PTY 仍会继续运行。Grok Build Center 只会降级状态显示，不会拖垮 CLI 会话。
+即使 Observer 失效，PTY 仍会继续运行。Agent Session Center 只会降级状态显示，不会拖垮 CLI 会话。
 
 ## 特性
 
@@ -67,7 +67,7 @@ CLI ── PTY ─────────────────────�
 不同 Agent 可以同时运行。侧边栏会告诉你哪个正在思考、正在调用工具、等待你的确认、已经完成，或者监听能力已经降级。
 
 <div align="center">
-  <img src="./assets/readme/multi-agent-status.png" width="1100" alt="Grok Build Center 中多个 Coding Agent 的实时状态">
+  <img src="./assets/readme/multi-agent-status.png" width="1100" alt="Agent Session Center 中多个 Coding Agent 的实时状态">
 </div>
 
 ### 侧边栏收起来，状态仍然看得见
@@ -95,7 +95,7 @@ CLI ── PTY ─────────────────────�
 在终端旁打开只读文件树，查看语法高亮源码并预览 Markdown。Agent 的原生 TUI 仍然保留在左侧。
 
 <div align="center">
-  <img src="./assets/readme/workspace-reader.png" width="1200" alt="OpenCode 旁的 Grok Build Center 只读代码阅读器">
+  <img src="./assets/readme/workspace-reader.png" width="1200" alt="OpenCode 旁的 Agent Session Center 只读代码阅读器">
 </div>
 
 ### 主题、字体和布局都能调整
@@ -103,20 +103,20 @@ CLI ── PTY ─────────────────────�
 应用主题与终端主题彼此独立；终端字体、字号、导航模式、界面缩放和悬浮窗 Renderer 都可以在设置页配置。
 
 <div align="center">
-  <img src="./assets/readme/settings-themes.png" width="1100" alt="Grok Build Center 主题与悬浮窗设置">
+  <img src="./assets/readme/settings-themes.png" width="1100" alt="Agent Session Center 主题与悬浮窗设置">
 </div>
 
 ### 主机、WSL，一个入口快速启动
 
-从 Home 或快速启动面板打开普通 Shell 和扫描到的 Coding CLI。Grok Build Center 支持主机安装和兼容的 WSL 发行版。DeepSeek Harness 只在扫描到本机或 WSL 安装后才显示。
+从 Home 或快速启动面板打开普通 Shell 和扫描到的 Coding CLI。Agent Session Center 支持主机安装和兼容的 WSL 发行版。DeepSeek Harness 只在扫描到本机或 WSL 安装后才显示。
 
 <div align="center">
-  <img src="./assets/readme/quick-launch.png" width="950" alt="Grok Build Center 快速启动面板">
+  <img src="./assets/readme/quick-launch.png" width="950" alt="Agent Session Center 快速启动面板">
 </div>
 
 ## 已支持的 Harness
 
-| Harness | 接入方式 | Grok Build Center 可获得的状态 | 运行环境 |
+| Harness | 接入方式 | Agent Session Center 可获得的状态 | 运行环境 |
 | --- | --- | --- | --- |
 | DeepSeek Harness | 官方 Web 页面 + Runtime Bridge | 已关注会话与生命周期 | 主机、WSL |
 | Claude Code | 官方 Hooks | 思考、工具、审批、完成状态 | 主机、WSL |
@@ -126,7 +126,7 @@ CLI ── PTY ─────────────────────�
 | Kimi Code | 官方 Hooks | 回合、思考、工具、审批 | 主机、WSL |
 | Grok Build | 官方 Hooks | 回合、思考、工具、审批 | 主机、WSL |
 
-Grok Build Center 还可以扫描并启动 Devin CLI、Cline、Qwen Code、Amp、Aider、Goose、Kiro CLI、GitHub Copilot CLI 等注册表入口。仅启动接入的 CLI 暂时不会提供同等级别的状态细节；后续会继续抽象 Adapter 接口，让新的 Harness 可以按需加载。
+Agent Session Center 还可以扫描并启动 Devin CLI、Cline、Qwen Code、Amp、Aider、Goose、Kiro CLI、GitHub Copilot CLI 等注册表入口。仅启动接入的 CLI 暂时不会提供同等级别的状态细节；后续会继续抽象 Adapter 接口，让新的 Harness 可以按需加载。
 
 ## 会话历史
 
@@ -143,30 +143,30 @@ Grok Build Center 还可以扫描并启动 Devin CLI、Cline、Qwen Code、Amp�
 
 ## 安装
 
-从 [GitHub Releases](https://github.com/dragon43pp/grok-build-center/releases) 下载最新版本：
+从 [GitHub Releases](https://github.com/dragon43pp/agent-session-center/releases) 下载最新版本：
 
-- Windows x64：`GrokBuildCenter-Setup-*.exe`
-- macOS Apple Silicon：`GrokBuildCenter-*-macos-arm64.dmg`
-- Linux x64：`GrokBuildCenter-*-linux-x64.AppImage` 或 `GrokBuildCenter-*-linux-x64.deb`
+- Windows x64：`AgentSessionCenter-Setup-*.exe`
+- macOS Apple Silicon：`AgentSessionCenter-*-macos-arm64.dmg`
+- Linux x64：`AgentSessionCenter-*-linux-x64.AppImage` 或 `AgentSessionCenter-*-linux-x64.deb`
 
 安装包暂时没有商业代码签名，首次启动时系统可能显示安全提醒。
 
 ### 第一次启动
 
-1. 启动 Grok Build Center，等待第一次 CLI 扫描完成。
+1. 启动 Agent Session Center，等待第一次 CLI 扫描完成。
 2. 选择普通终端或 Coding CLI。
 3. 选择运行环境和工作区。
-4. 创建会话。原生 TUI 会显示在主区域，Grok Build Center 负责在外围同步状态。
+4. 创建会话。原生 TUI 会显示在主区域，Agent Session Center 负责在外围同步状态。
 
-如果 Codex 提示需要审核 Hooks，请打开 `/hooks`，检查并信任 Grok Build Center 的 Hook 定义。对于 Kimi Code，Grok Build Center 会在当前生效的用户 `config.toml` 中维护一个带版本的托管块，并保留托管块之外的内容。Grok Build 会在 `~/.grok/hooks/`（或 `$GROK_HOME/hooks` / 对应 WSL 家目录）写入专用的 `gbc-observer.json`，属于 Grok 始终信任的用户级 Hook。
+如果 Codex 提示需要审核 Hooks，请打开 `/hooks`，检查并信任 Agent Session Center 的 Hook 定义。对于 Kimi Code，Agent Session Center 会在当前生效的用户 `config.toml` 中维护一个带版本的托管块，并保留托管块之外的内容。Grok Build 会在 `~/.grok/hooks/`（或 `$GROK_HOME/hooks` / 对应 WSL 家目录）写入专用的 `gbc-observer.json`，属于 Grok 始终信任的用户级 Hook。
 
 ## 本地开发
 
 桌面程序在仓库根目录（`src/` + `electron/`）。
 
 ```bash
-git clone https://github.com/dragon43pp/grok-build-center.git
-cd grok-build-center
+git clone https://github.com/dragon43pp/agent-session-center.git
+cd agent-session-center
 npm install
 npm run dev
 ```
@@ -184,7 +184,7 @@ Windows、macOS、Linux 安装包需要在对应系统上通过 `npm run release
 
 ## 参与贡献
 
-欢迎提交 Bug、可复现的边界情况和范围明确的 Pull Request。修改 Observer 时，请补充 fixture 或 Runtime 测试来证明事件顺序和降级行为。大型功能建议先开一个 [Issue](https://github.com/dragon43pp/grok-build-center/issues)。
+欢迎提交 Bug、可复现的边界情况和范围明确的 Pull Request。修改 Observer 时，请补充 fixture 或 Runtime 测试来证明事件顺序和降级行为。大型功能建议先开一个 [Issue](https://github.com/dragon43pp/agent-session-center/issues)。
 
 本地环境、分支命名和 commit 规范见 [CONTRIBUTING.md](./CONTRIBUTING.md)。
 
@@ -194,7 +194,7 @@ Windows、macOS、Linux 安装包需要在对应系统上通过 `npm run release
 
 ## 开源协议
 
-Grok Build Center 使用 [Apache License 2.0](./LICENSE) 开源。
+Agent Session Center 使用 [Apache License 2.0](./LICENSE) 开源。
 
 ---
 

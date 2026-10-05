@@ -54,14 +54,14 @@ CSC_IDENTITY_AUTO_DISCOVERY=false npx electron-builder \
   --linux AppImage deb \
   "--$arch" \
   --publish never \
-  "--config.linux.artifactName=GrokBuildCenter-${version}-linux-${arch}.\${ext}" \
+  "--config.linux.artifactName=AgentSessionCenter-${version}-linux-${arch}.\${ext}" \
   "--config.directories.output=$release_dir"
 
-image_name="GrokBuildCenter-${version}-linux-${arch}.AppImage"
-deb_name="GrokBuildCenter-${version}-linux-${arch}.deb"
+image_name="AgentSessionCenter-${version}-linux-${arch}.AppImage"
+deb_name="AgentSessionCenter-${version}-linux-${arch}.deb"
 image_path="$(find "$release_dir" -maxdepth 1 -type f -name '*.AppImage' -print -quit)"
 deb_path="$(find "$release_dir" -maxdepth 1 -type f -name '*.deb' -print -quit)"
-executable_path="$(find "$release_dir" -maxdepth 3 -type f -name grok-build-center -path '*linux*unpacked*' -print -quit)"
+executable_path="$(find "$release_dir" -maxdepth 3 -type f -name agent-session-center -path '*linux*unpacked*' -print -quit)"
 metadata_path="$release_dir/latest-linux.yml"
 
 if [[ -z "$image_path" || ! -f "$image_path" ]]; then
@@ -73,7 +73,7 @@ if [[ -z "$deb_path" || ! -f "$deb_path" ]]; then
   exit 1
 fi
 if [[ -z "$executable_path" || ! -f "$executable_path" ]]; then
-  echo 'Release output is missing: unpacked Grok Build Center executable.' >&2
+  echo 'Release output is missing: unpacked Agent Session Center executable.' >&2
   exit 1
 fi
 if [[ ! -f "$metadata_path" ]]; then

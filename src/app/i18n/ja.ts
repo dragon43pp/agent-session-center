@@ -40,7 +40,7 @@ export const ja = {
     closeSessionPrompt: (name: string) =>
       `「${name}」を閉じますか？CLI プロセスと子ターミナルも終了します。`,
     closeDshSessionPrompt: (name: string) =>
-      `Grok Build Center で「${name}」の追跡をやめますか？DSH のセッションと履歴は変更されません。`,
+      `Agent Session Center で「${name}」の追跡をやめますか？DSH のセッションと履歴は変更されません。`,
     sessionActions: 'セッション操作',
     createChildTerminal: '子ターミナルを作成',
     cloneSession: 'セッションを複製',
@@ -170,7 +170,7 @@ export const ja = {
     enterTitle: '実行中の Enter',
     enterHint: 'エージェント実行中のみ。Cmd/Ctrl+Enter は別動作です。',
     surfaceScale: 'セッション画面の拡大率',
-    surfaceScaleHint: 'Grok Build Center 内の DSH ページだけに適用され、DSH 設定は変更しません。',
+    surfaceScaleHint: 'Agent Session Center 内の DSH ページだけに適用され、DSH 設定は変更しません。',
     runtimeLabel: 'DSH ランタイム',
     runtimeHint: 'ホストと各 WSL ディストリビューションを検索します。自動ではローカルインストールを優先し、見つからない場合は入口を出しません。',
     runtimeAuto: '自動（ローカル優先）',
@@ -369,7 +369,7 @@ export const ja = {
     targetCursorOff: 'オフ',
     scanFailed: 'スキャンを完了できませんでした',
     scanFound: (clis: number, installations: number) => `${clis} 個の CLI、${installations} 件のインストールを検出`,
-    continue: 'Grok Build Center を始める'
+    continue: 'Agent Session Center を始める'
   },
   settings: {
     title: '設定',

@@ -23,8 +23,8 @@ cd "$workspace"
 npm run typecheck
 npm run release:mac
 
-image_name="GrokBuildCenter-${version}-macos-${arch}.dmg"
-archive_name="GrokBuildCenter-${version}-macos-${arch}.zip"
+image_name="AgentSessionCenter-${version}-macos-${arch}.dmg"
+archive_name="AgentSessionCenter-${version}-macos-${arch}.zip"
 for required in \
   "$workspace/artifacts/$image_name" \
   "$workspace/artifacts/$image_name.blockmap" \

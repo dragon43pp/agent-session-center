@@ -96,7 +96,7 @@ export default function RemoteSettingsSection() {
           {strings.settings.remoteUrlHintBefore}
           <a
             data-testid="settings-remote-create-url"
-            href="https://github.com/dragon43pp/grok-build-center"
+            href="https://github.com/dragon43pp/agent-session-center"
             target="_blank"
             rel="noreferrer"
             className="cursor-target text-text-secondary underline decoration-border-strong underline-offset-2 transition-colors hover:text-text-primary"

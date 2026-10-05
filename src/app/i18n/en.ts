@@ -40,7 +40,7 @@ export const en = {
     closeSessionPrompt: (name: string) =>
       `Close “${name}”? Its CLI process and child terminals will also stop.`,
     closeDshSessionPrompt: (name: string) =>
-      `Stop following “${name}” in Grok Build Center? Its DSH session and history will be unchanged.`,
+      `Stop following “${name}” in Agent Session Center? Its DSH session and history will be unchanged.`,
     sessionActions: 'Session actions',
     createChildTerminal: 'New child terminal',
     cloneSession: 'Clone session',
@@ -173,7 +173,7 @@ export const en = {
     enterTitle: 'Enter while busy',
     enterHint: 'Only while the agent is running. Cmd/Ctrl+Enter uses the other action.',
     surfaceScale: 'Session interface scale',
-    surfaceScaleHint: 'Only affects DSH inside Grok Build Center and does not change DSH settings.',
+    surfaceScaleHint: 'Only affects DSH inside Agent Session Center and does not change DSH settings.',
     runtimeLabel: 'DSH runtime',
     runtimeHint: 'Scans the host and every WSL distribution. Auto prefers a local install; DeepSeek Harness is hidden until one is found.',
     runtimeAuto: 'Auto (local first)',
@@ -373,7 +373,7 @@ export const en = {
     targetCursorOff: 'Off',
     scanFailed: 'The scan did not finish',
     scanFound: (clis: number, installations: number) => `${clis} CLIs found across ${installations} installations`,
-    continue: 'Enter Grok Build Center'
+    continue: 'Enter Agent Session Center'
   },
   settings: {
     title: 'Settings',

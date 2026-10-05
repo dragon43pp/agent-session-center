@@ -1,6 +1,6 @@
 # Bundled theme palette notices
 
-Grok Build Center includes color mappings derived from these upstream theme projects:
+Agent Session Center includes color mappings derived from these upstream theme projects:
 
 - Catppuccin Mocha — Catppuccin contributors, MIT License: https://github.com/catppuccin/catppuccin
 - Catppuccin Latte — Catppuccin contributors, MIT License: https://github.com/catppuccin/catppuccin
@@ -11,5 +11,5 @@ Grok Build Center includes color mappings derived from these upstream theme proj
 - Solarized Light — Ethan Schoonover, MIT License: https://github.com/altercation/solarized
 
 The original palette values remain attributed to their respective projects.
-Grok Build Center-specific semantic GUI token mappings are documented in
+Agent Session Center-specific semantic GUI token mappings are documented in
 `docs/RESEARCH-THEME-PALETTES.md`.

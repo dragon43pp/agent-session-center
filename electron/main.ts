@@ -223,21 +223,21 @@ const controlPlane = new OpenCodeControlPlane({
   requireForegroundWindow: () => {
     const win = winRef && !winRef.isDestroyed() ? winRef : null
     if (!win) {
-      throw BridgeError.unavailable('Grok Build Center window is not available')
+      throw BridgeError.unavailable('Agent Session Center window is not available')
     }
     if (!raiseMainWindow(win)) {
       throw BridgeError.unavailable(
-        'Open the Grok Build Center window first (tray-only is not enough)'
+        'Open the Agent Session Center window first (tray-only is not enough)'
       )
     }
   },
   launchVisible: async (request: BridgeLaunchRequest) => {
     const win = winRef && !winRef.isDestroyed() ? winRef : null
     if (!win || win.webContents.isDestroyed()) {
-      return 'Grok Build Center window is not available'
+      return 'Agent Session Center window is not available'
     }
     if (!raiseMainWindow(win)) {
-      return 'Open the Grok Build Center window first (tray-only is not enough)'
+      return 'Open the Agent Session Center window first (tray-only is not enough)'
     }
     try {
       const started = await agentRuntime.start({
@@ -424,7 +424,7 @@ const feishuRouter = createFeishuRouter({
 const feishu = new FeishuService({
   store: FeishuStore.inUserData(app.getPath('userData')),
   broadcast: (status) => broadcastToAllWindows(FeishuEventChannel.StatusChanged, status),
-  appName: 'Grok Build Center',
+  appName: 'Agent Session Center',
   appDescription: '在这台电脑上跑 AI 编程会话，并从飞书查看 / 继续它们。',
   // 入站应答：消息和卡片按钮 → feishuRouter（空着时连接照活，只是没人应答）。
   handlers: feishuRouter,

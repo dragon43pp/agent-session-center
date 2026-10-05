@@ -242,7 +242,7 @@ export async function beginFeishuRegistration(
 
   const verificationUrl = assertFeishuVerificationUrl(begun.verification_uri_complete)
   verificationUrl.searchParams.set('from', 'sdk')
-  verificationUrl.searchParams.set('source', options.source || 'grok-build-center')
+  verificationUrl.searchParams.set('source', options.source || 'agent-session-center')
   verificationUrl.searchParams.set('tp', 'sdk')
   // 只允许**新建**：绑已有应用等于让我们这个流程悄悄改掉用户正在跑的机器人的回调配置。
   verificationUrl.searchParams.set('createOnly', 'true')

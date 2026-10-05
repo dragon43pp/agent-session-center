@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Grok Build Center · 卸载程序
+Agent Session Center · 卸载程序
 
 被安装到程序目录里，从「设置 → 应用」或直接双击调用。
 
@@ -21,8 +21,8 @@ import os
 import subprocess
 import sys
 
-APP_NAME = "Grok Build Center"
-APP_ID = "GrokBuildCenter"
+APP_NAME = "Agent Session Center"
+APP_ID = "AgentSessionCenter"
 UNINST_KEY = ("Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"
               + APP_ID)
 
@@ -43,13 +43,13 @@ def install_dir() -> str:
 def kill_running() -> int:
     """把本程序的进程收掉，不然文件被占着删不掉。
 
-    两个都要收：`GrokBuildCenter.exe` 是图形前台（双击那个），
-    `GrokBuildCenter-cli.exe` 是命令行那个。前台还开着的时候卸载，
+    两个都要收：`AgentSessionCenter.exe` 是图形前台（双击那个），
+    `AgentSessionCenter-cli.exe` 是命令行那个。前台还开着的时候卸载，
     最容易「卸了一半」——目录删不掉，但快捷方式和注册表已经没了。
     """
     me = os.getpid()
     killed = 0
-    for image in ("GrokBuildCenter.exe", "GrokBuildCenter-cli.exe"):
+    for image in ("AgentSessionCenter.exe", "AgentSessionCenter-cli.exe"):
         out = subprocess.run(
             ["tasklist", "/FI", f"IMAGENAME eq {image}", "/FO", "CSV", "/NH"],
             capture_output=True, text=True, errors="replace")

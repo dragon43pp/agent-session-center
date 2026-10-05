@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-把 Grok Build Center 装进开始菜单。
+把 Agent Session Center 装进开始菜单。
 
 **只有一个入口**，不放一排图标让人挑 —— 用户点开就该直接干活，
 「该走哪条路」是 `start.cmd` + `tools/config_ready.py` 自己判断的事：
@@ -25,7 +25,7 @@ from make_lnk import make_shortcut  # noqa: E402
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MENU = os.path.expandvars(r"%APPDATA%\Microsoft\Windows\Start Menu\Programs")
 # 当前入口
-LNK = os.path.join(MENU, "Grok Build Center.lnk")
+LNK = os.path.join(MENU, "Agent Session Center.lnk")
 
 # 自己的图标，不借别人的 —— tools/make_icon.py 生成
 ICON = os.path.join(ROOT, "assets", "icon", "center.ico")

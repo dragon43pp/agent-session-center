@@ -1,11 +1,11 @@
 ---
 name: create-gbc-floating-renderer
-description: Create, modify, debug, or package Grok Build Center floating-window renderers, including HTML/CSS widgets, animated desktop mascots, irregular transparent windows, and Live2D companions. Use when implementing a built-in or user-installed floating renderer, connecting visuals to real CLI turn/session state, adding renderer controls or resize behavior, or adapting licensed character assets for Grok Build Center's sandbox.
+description: Create, modify, debug, or package Agent Session Center floating-window renderers, including HTML/CSS widgets, animated desktop mascots, irregular transparent windows, and Live2D companions. Use when implementing a built-in or user-installed floating renderer, connecting visuals to real CLI turn/session state, adding renderer controls or resize behavior, or adapting licensed character assets for Agent Session Center's sandbox.
 ---
 
-# Create an Grok Build Center Floating Renderer
+# Create an Agent Session Center Floating Renderer
 
-Produce a local, offline renderer driven by Grok Build Center's authoritative session snapshots. Preserve the sandbox and treat built-in and user renderers as implementations of the same contract.
+Produce a local, offline renderer driven by Agent Session Center's authoritative session snapshots. Preserve the sandbox and treat built-in and user renderers as implementations of the same contract.
 
 ## Start from the repository
 
@@ -120,7 +120,7 @@ Restart a one-shot animation only when `status`, `lastSeq`, or `attention.sequen
 
 ## Size and coordinates
 
-Author layout in the manifest's unscaled CSS pixels. Grok Build Center applies the user's 60%–160% scale uniformly to the native window, web-content zoom, and native shape.
+Author layout in the manifest's unscaled CSS pixels. Agent Session Center applies the user's 60%–160% scale uniformly to the native window, web-content zoom, and native shape.
 
 - Call `resizeToContent()` with intrinsic, unscaled content height.
 - Pass unscaled CSS-pixel rectangles to `setShape()`.
@@ -139,7 +139,7 @@ Follow this lifecycle:
 1. Initialize WebGL and load Core before the framework bundle.
 2. Wait for a model-ready signal before invoking motion or expression APIs.
 3. Keep the model's native idle motion running.
-4. Map Grok Build Center state transitions to named motions/expressions through public runtime APIs. If the bundled runtime does not expose stable controls, animate the Canvas element with Web Animations instead.
+4. Map Agent Session Center state transitions to named motions/expressions through public runtime APIs. If the bundled runtime does not expose stable controls, animate the Canvas element with Web Animations instead.
 5. Pause or reduce work while `document.hidden` and honor `prefers-reduced-motion`.
 6. Release animation handles, listeners, textures, and WebGL resources on unload.
 
@@ -156,15 +156,15 @@ Windows and Linux clip both pixels and pointer hit-testing outside the shape. ma
 - Provide an obvious drag region with `-webkit-app-region: drag`.
 - Mark buttons and other controls `-webkit-app-region: no-drag`.
 - Keep controls keyboard accessible and labelled.
-- Use `focusSession(sessionId)` to return to the real Grok Build Center session.
+- Use `focusSession(sessionId)` to return to the real Agent Session Center session.
 - Use `disable()` only for an explicit close action.
-- Apply `snapshot.appearance` when the design should follow Grok Build Center's current theme.
+- Apply `snapshot.appearance` when the design should follow Agent Session Center's current theme.
 
 ## Validate and deliver
 
 1. Validate manifest paths and JavaScript syntax.
-2. Type-check Grok Build Center after changing TypeScript or the public bridge.
-3. Build Grok Build Center when registering or packaging a built-in renderer.
+2. Type-check Agent Session Center after changing TypeScript or the public bridge.
+3. Build Agent Session Center when registering or packaging a built-in renderer.
 4. Run targeted `e2e/floating-window.spec.ts` cases first. After a failure, rerun only the failed case until fixed; do not repeatedly run the full E2E suite.
 5. Verify empty, working, needs-you, done, error, effect-disabled, and scale states.
 6. For Live2D, verify Core exists, WebGL initializes, local `.moc3` loads, frames visibly change, and `pageErrors()` stays empty.

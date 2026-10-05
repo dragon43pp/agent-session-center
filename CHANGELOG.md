@@ -1,10 +1,14 @@
 # Changelog
 
-本文件记录 Grok Build Center 各公开版本的重要变化。版本号遵循 [Semantic Versioning](https://semver.org/)。
+本文件记录 Agent Session Center 各公开版本的重要变化。版本号遵循 [Semantic Versioning](https://semver.org/)。
 
 > 说明：0.4.7 及更早的条目记录的是本项目的早期工作名 **HRack**（Harness Rack）。这些条目按历史事实原样保留，未做改写。
 
 ## [Unreleased]
+
+### Changed
+
+- 项目更名 Agent Session Center（原 Grok Build Center）：仓库名 `grok-build-center` → `agent-session-center`，安装包产物名 `GrokBuildCenter-*` → `AgentSessionCenter-*`，resume 能力进入核心简介。
 
 ## [0.4.7] - 2026-09-18
 

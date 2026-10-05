@@ -1432,7 +1432,7 @@ def test_flow_shared() -> None:
 
 def main() -> int:
     print("=" * 68)
-    print("Grok Build Center · 离线冒烟测试（不联网、不建飞书应用）")
+    print("Agent Session Center · 离线冒烟测试（不联网、不建飞书应用）")
     print("=" * 68)
 
     test_snapshot()

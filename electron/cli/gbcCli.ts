@@ -27,7 +27,7 @@ export interface GbcCliIo {
 }
 
 const GBC_NOT_RUNNING =
-  'Grok Build Center is not running. Open Grok Build Center first, then retry this command.'
+  'Agent Session Center is not running. Open Agent Session Center first, then retry this command.'
 
 function defaultUserDataCandidates(): string[] {
   if (process.env.GBC_USER_DATA_DIR) return [process.env.GBC_USER_DATA_DIR]
@@ -37,6 +37,7 @@ function defaultUserDataCandidates(): string[] {
     process.env.APPDATA ||
     process.env.XDG_CONFIG_HOME ||
     join(homedir(), process.platform === 'darwin' ? 'Library/Application Support' : '.config')
+  // userData 目录名沿用历史产品名，避免迁移用户本地配置（飞书 token、LLM key）；如需改名必须附带迁移逻辑
   return [join(appData, 'Grok Build Center Dev'), join(appData, 'Grok Build Center')]
 }
 
@@ -103,7 +104,7 @@ function readMessages(
         try {
           push(JSON.parse(line) as BridgeSocketMessage)
         } catch {
-          failure = new BridgeError('invalid', 'Invalid response from Grok Build Center')
+          failure = new BridgeError('invalid', 'Invalid response from Agent Session Center')
           notify?.()
           return
         }
@@ -221,7 +222,7 @@ export async function runGbcCli(
       }
     }
     if (watching) return process.exitCode === 130 ? 130 : 0
-    io.stderr.write('Grok Build Center closed the bridge connection\n')
+    io.stderr.write('Agent Session Center closed the bridge connection\n')
     return 2
   } catch (error) {
     if (process.exitCode === 130) return 130

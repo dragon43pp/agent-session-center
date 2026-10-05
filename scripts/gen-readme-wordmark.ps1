@@ -35,7 +35,7 @@ function Write-Wordmark {
 
   $wordmark = [System.Drawing.Drawing2D.GraphicsPath]::new()
   $wordmark.AddString(
-    'gbc',
+    'asc',
     $fontFamily,
     [int][System.Drawing.FontStyle]::Regular,
     200,
@@ -70,11 +70,11 @@ function Write-Wordmark {
 }
 
 Write-Wordmark `
-  -Path (Join-Path $outputRoot 'gbc-wordmark-light.png') `
+  -Path (Join-Path $outputRoot 'asc-wordmark-light.png') `
   -Color ([System.Drawing.Color]::FromArgb(255, 26, 26, 26))
 Write-Wordmark `
-  -Path (Join-Path $outputRoot 'gbc-wordmark-dark.png') `
+  -Path (Join-Path $outputRoot 'asc-wordmark-dark.png') `
   -Color ([System.Drawing.Color]::FromArgb(255, 232, 232, 232))
 
 $fontCollection.Dispose()
-Write-Host 'Generated Ammonite gbc README wordmarks.'
+Write-Host 'Generated Ammonite asc README wordmarks.'

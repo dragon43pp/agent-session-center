@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Talk to the Grok Build Center bridge from outside the app.
+"""Talk to the Agent Session Center bridge from outside the app.
 
 This is two things at once:
 
@@ -20,7 +20,7 @@ Protocol (newline-delimited JSON, both directions):
     <- {"kind": "event", "id": "...", "event": {...}}      # only for session.watch
 
 Transport is a Windows named pipe, `\\\\.\\pipe\\gbc-bridge-<username>`. On
-POSIX it is a unix socket, `$XDG_RUNTIME_DIR/grok-build-center/bridge.sock`.
+POSIX it is a unix socket, `$XDG_RUNTIME_DIR/agent-session-center/bridge.sock`.
 The pipe only exists while the app is running; a missing pipe is the
 "app is not open" signal, not an error to retry in a loop.
 
@@ -75,7 +75,7 @@ def socket_path() -> str:
         return rf"\\.\pipe\gbc-bridge-{user}"
     runtime = os.environ.get("XDG_RUNTIME_DIR", "").strip()
     if runtime:
-        return str(Path(runtime) / "grok-build-center" / "bridge.sock")
+        return str(Path(runtime) / "agent-session-center" / "bridge.sock")
     return str(Path.home() / ".gbc" / "bridge.sock")
 
 
@@ -144,7 +144,7 @@ class Bridge:
                 raise SystemExit(
                     f"Cannot open {self.path}: {error}\n"
                     "The pipe only exists while the app is running - open "
-                    "Grok Build Center and retry."
+                    "Agent Session Center and retry."
                 ) from error
             self._read = handle.read
             self._write = handle.write
@@ -158,7 +158,7 @@ class Bridge:
             except OSError as error:
                 raise SystemExit(
                     f"Cannot connect to {self.path}: {error}\n"
-                    "Open Grok Build Center and retry."
+                    "Open Agent Session Center and retry."
                 ) from error
             self._read = sock.recv
             self._write = sock.sendall

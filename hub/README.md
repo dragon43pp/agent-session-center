@@ -1,11 +1,11 @@
 <div align="center">
-  <img src="assets/banner.svg" alt="Grok Build Center" width="100%">
+  <img src="assets/banner.svg" alt="Agent Session Center" width="100%">
 </div>
 
-<h1 align="center">Grok Build Center</h1>
+<h1 align="center">Agent Session Center</h1>
 
 <p align="center">
-  <b>这部分在仓库的 <code>hub/</code>。桌面程序在仓库根目录，是同一个 Grok Build Center。</b><br>
+  <b>这部分在仓库的 <code>hub/</code>。桌面程序在仓库根目录，是同一个 Agent Session Center。</b><br>
   <b>Grok Build 会话管理中心 —— 卡住了它主动找你，几百场旧会话也找得回、接得上。</b><br>
   跨项目索引 · 分叉与接续继承 · 带代码漂移检测的恢复。<br>
   哪个会话在等你确认，一眼看到；手机上也能当场放行。
@@ -207,8 +207,8 @@ python -m feishu_hub.scan --out session-history.html  :: 全文检索页
 ## 快速开始
 
 ```cmd
-git clone https://github.com/dragon43pp/grok-build-center.git
-cd grok-build-center\hub
+git clone https://github.com/dragon43pp/agent-session-center.git
+cd agent-session-center\hub
 pip install -r requirements.txt
 
 python tools\setup.py        :: 向导：验凭证 → 建多维表格 → 拿 open_id → 写 config.json
@@ -479,7 +479,7 @@ run.cmd
 | | 开发 / 本机自用 | 交付 / 装到别人机器 |
 | --- | --- | --- |
 | 需要 Python | 要（3.10+） | **不要** |
-| 入口 | `start.cmd`（或开始菜单那条快捷方式） | `GrokBuildCenter.exe`（双击） |
+| 入口 | `start.cmd`（或开始菜单那条快捷方式） | `AgentSessionCenter.exe`（双击） |
 | 界面 | 控制台 | **图形前台**（浏览器里的一个面板） |
 | 配置在哪 | 仓库根目录 | **exe 旁边** |
 | 怎么来 | `python tools\make_start_menu.py` | `python tools\build_exe.py` |
@@ -491,7 +491,7 @@ python tools\make_icon.py             :: 先生成我们自己的图标（零依
 python tools\make_start_menu.py       :: 装进开始菜单（--remove 卸载）
 ```
 
-点开「**Grok Build Center**」就行，**不用你判断该走哪条路**：
+点开「**Agent Session Center**」就行，**不用你判断该走哪条路**：
 
 ```
 config.json 没配好  →  体检模式（离线，不需要任何配置）
@@ -557,9 +557,9 @@ python tools\build_exe.py --setup-only  :: 只改了 installer\ 的话用这个�
 
 | 产物 | 体积 | 怎么用 |
 | --- | --- | --- |
-| `GrokBuildCenter\`（整个目录） | 60 MB | 免安装：整个目录拷走就能跑 |
-| `GrokBuildCenter-Setup.exe` | 59 MB | 安装包：双击就装，也能静默 |
-| `GrokBuildCenter-portable.zip` | 50 MB | 上面那个目录的压缩包，方便传 |
+| `AgentSessionCenter\`（整个目录） | 60 MB | 免安装：整个目录拷走就能跑 |
+| `AgentSessionCenter-Setup.exe` | 59 MB | 安装包：双击就装，也能静默 |
+| `AgentSessionCenter-portable.zip` | 50 MB | 上面那个目录的压缩包，方便传 |
 
 **为什么是两个 exe，不是一个**：
 
@@ -571,14 +571,14 @@ Windows 的图形界面和命令行是两套子系统（GUI / CUI），**一个 
 
 | exe | 子系统 | 谁用 |
 | --- | --- | --- |
-| `GrokBuildCenter.exe` | GUI | **双击**。图形前台，全程没有黑窗口 |
-| `GrokBuildCenter-cli.exe` | CUI | **敲命令**。README 里那一串子命令 |
+| `AgentSessionCenter.exe` | GUI | **双击**。图形前台，全程没有黑窗口 |
+| `AgentSessionCenter-cli.exe` | CUI | **敲命令**。README 里那一串子命令 |
 
 它们**共用同一份 `_internal`**（`build_exe.py` 生成 `.spec`，用 `COLLECT` 同时收两个
 `EXE(exclude_binaries=True)` —— PyInstaller 的命令行做不到这件事，这是必须用 spec 的唯一理由）。
 
 图形版收到子命令会**自动转交**给命令行版（`tools/app.py::_relaunch_cli`），
-所以别人敲 `GrokBuildCenter.exe check` 也不会一片空白 —— 只是会另开一个控制台窗口。
+所以别人敲 `AgentSessionCenter.exe check` 也不会一片空白 —— 只是会另开一个控制台窗口。
 
 > 代价是体积：PyInstaller 会把那个 18 MB 的 PYZ 塞进**每一个** exe，
 > 所以目录从 40 MB 变成 60 MB。刻意接受 —— 反过来省这 20 MB，要么让双击出黑窗口，
@@ -593,17 +593,17 @@ Windows 的图形界面和命令行是两套子系统（GUI / CUI），**一个 
 安装包支持静默：
 
 ```cmd
-GrokBuildCenter-Setup.exe --silent                        :: 默认目录，不问任何问题
-GrokBuildCenter-Setup.exe --silent --dir D:\tools\gbc      :: 指定目录
-GrokBuildCenter-Setup.exe --silent --no-shortcuts         :: 不建快捷方式
+AgentSessionCenter-Setup.exe --silent                        :: 默认目录，不问任何问题
+AgentSessionCenter-Setup.exe --silent --dir D:\tools\gbc      :: 指定目录
+AgentSessionCenter-Setup.exe --silent --no-shortcuts         :: 不建快捷方式
 ```
 
 **配置在 exe 旁边，不在包里。** 打包后 `paths.data_root()` 就是 exe 所在目录，装完长这样：
 
 ```
-%LOCALAPPDATA%\Programs\Grok Build Center\
-├─ GrokBuildCenter.exe      图形前台 —— 双击这个
-├─ GrokBuildCenter-cli.exe  命令行版 —— README 里那些命令用这个
+%LOCALAPPDATA%\Programs\Agent Session Center\
+├─ AgentSessionCenter.exe      图形前台 —— 双击这个
+├─ AgentSessionCenter-cli.exe  命令行版 —— README 里那些命令用这个
 ├─ README.md                说明书（面板右下角那个链接也是开它）
 ├─ config.json.example      复制成 config.json 再填
 ├─ uninstall.exe            卸载（也可以在「设置 → 应用」里卸）
@@ -615,14 +615,14 @@ GrokBuildCenter-Setup.exe --silent --no-shortcuts         :: 不建快捷方式
 命令行版的子命令跟 `.cmd` 那套一一对应（少了一步 `4/5 自检`，那个是给开发者的，单独有 `doctor`）：
 
 ```cmd
-GrokBuildCenter-cli.exe                 自动判断：没配飞书 → 体检；配好了 → 面板
-GrokBuildCenter-cli.exe ui              开图形前台（想从命令行开的时候用）
-GrokBuildCenter-cli.exe check           离线体检（4 步）
-GrokBuildCenter-cli.exe panel           启动飞书面板
-GrokBuildCenter-cli.exe history         生成可搜索的历史会话网页并打开
-GrokBuildCenter-cli.exe sessions list   会话管理，跟 tools\sessions.py 同一套命令
-GrokBuildCenter-cli.exe doctor          338 项离线自检
-GrokBuildCenter-cli.exe version         版本与目录（排查「配置到底读的哪儿」最有用）
+AgentSessionCenter-cli.exe                 自动判断：没配飞书 → 体检；配好了 → 面板
+AgentSessionCenter-cli.exe ui              开图形前台（想从命令行开的时候用）
+AgentSessionCenter-cli.exe check           离线体检（4 步）
+AgentSessionCenter-cli.exe panel           启动飞书面板
+AgentSessionCenter-cli.exe history         生成可搜索的历史会话网页并打开
+AgentSessionCenter-cli.exe sessions list   会话管理，跟 tools\sessions.py 同一套命令
+AgentSessionCenter-cli.exe doctor          338 项离线自检
+AgentSessionCenter-cli.exe version         版本与目录（排查「配置到底读的哪儿」最有用）
 ```
 
 > **打包必须用项目自带的 `.venv`**：PyInstaller 会把**当前解释器里装的东西**一起打进去。
@@ -668,7 +668,7 @@ python tools\report.py --cli grok  --status done
 ## 目录结构
 
 ```
-grok-build-center/
+agent-session-center/
 ├─ run.cmd                    一键启动
 ├─ start.cmd                  Windows 开始菜单入口（自动判断体检 / 面板）
 ├─ offline-check.cmd          体检模式本体：5 步，离线可跑（纯 ASCII + CRLF）
@@ -903,4 +903,5 @@ GUI、多 CLI 覆盖、全文搜索上都比这里强，我不跟它们比这些
 
 ## License
 
-MIT
+Apache-2.0（与仓库根目录保持一致；hub 目录 2026-10 起从本地留存的 MIT 统一为 Apache-2.0，作者同为 dragon43pp）
+

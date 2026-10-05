@@ -44,7 +44,7 @@ from urllib.parse import parse_qs, urlparse
 from . import flow, paths
 from . import __version__ as VERSION
 
-APP_TAG = "grok-build-center"          # 单实例认亲用
+APP_TAG = "agent-session-center"          # 单实例认亲用
 DEFAULT_PORT = 8770
 IDLE_EXIT = 30 * 60.0                  # 页面关掉后，服务最多再活半小时
 OUTPUT_NAME = "session-history.html"
@@ -241,7 +241,7 @@ HTML = r"""<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Grok Build Center</title>
+<title>Agent Session Center</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230B0E13'/><circle cx='16' cy='16' r='5' fill='%23FF6B4A'/></svg>">
 <style>
   :root{
@@ -337,7 +337,7 @@ HTML = r"""<!DOCTYPE html>
 <div class="wrap">
 
   <div class="plate">
-    <div class="kicker">GROK BUILD</div>
+    <div class="kicker">AGENT SESSION</div>
     <h1 class="brand">Center</h1>
     <div class="rule"></div>
     <div class="claim">
@@ -530,7 +530,7 @@ document.addEventListener("click", async (e) => {
   else if(act === "quit"){
     try { await fetch("/api/quit", {method:"POST"}); } catch(err){}
     document.body.innerHTML =
-      '<div class="wrap"><div class="plate"><div class="kicker">GROK BUILD</div>'
+      '<div class="wrap"><div class="plate"><div class="kicker">AGENT SESSION</div>'
       + '<h1 class="brand">Center</h1><div class="rule"></div>'
       + '<div class="claim">已经退出了。想再打开就再双击一次桌面上的图标。</div>'
       + '</div></div>';
@@ -545,7 +545,7 @@ tick();
 
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "GrokBuildCenter"
+    server_version = "AgentSessionCenter"
     protocol_version = "HTTP/1.1"
 
     panel: Panel = None            # 由 create_server 注入
@@ -719,7 +719,7 @@ def _watchdog(srv: Server, panel: Panel, idle: float) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description="Grok Build Center · 图形前台")
+    ap = argparse.ArgumentParser(description="Agent Session Center · 图形前台")
     ap.add_argument("--config", default=None, help="config.json 路径")
     ap.add_argument("--out", default=None, help="产物 HTML 路径")
     ap.add_argument("--port", type=int, default=DEFAULT_PORT)

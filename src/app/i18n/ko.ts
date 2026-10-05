@@ -40,7 +40,7 @@ export const ko = {
     closeSessionPrompt: (name: string) =>
       `“${name}” 세션을 닫을까요? CLI 프로세스와 하위 터미널도 함께 종료됩니다.`,
     closeDshSessionPrompt: (name: string) =>
-      `Grok Build Center에서 “${name}” 세션 추적을 중지할까요? DSH 세션과 기록은 변경되지 않습니다.`,
+      `Agent Session Center에서 “${name}” 세션 추적을 중지할까요? DSH 세션과 기록은 변경되지 않습니다.`,
     sessionActions: '세션 작업',
     createChildTerminal: '하위 터미널 만들기',
     cloneSession: '세션 복제',
@@ -171,7 +171,7 @@ export const ko = {
     enterTitle: '작업 중 Enter',
     enterHint: '에이전트 실행 중에만 적용됩니다. Cmd/Ctrl+Enter 는 다른 동작입니다.',
     surfaceScale: '세션 화면 배율',
-    surfaceScaleHint: 'Grok Build Center 안의 DSH 페이지만 조정하며 DSH 설정은 변경하지 않습니다.',
+    surfaceScaleHint: 'Agent Session Center 안의 DSH 페이지만 조정하며 DSH 설정은 변경하지 않습니다.',
     runtimeLabel: 'DSH 런타임',
     runtimeHint: '호스트와 각 WSL 배포판을 검색합니다. 자동 모드는 로컬 설치를 우선하며, 없으면 항목을 표시하지 않습니다.',
     runtimeAuto: '자동(로컬 우선)',
@@ -370,7 +370,7 @@ export const ko = {
     targetCursorOff: '끄기',
     scanFailed: '검색을 완료하지 못했습니다',
     scanFound: (clis: number, installations: number) => `CLI ${clis}개, 설치 ${installations}개 발견`,
-    continue: 'Grok Build Center 시작'
+    continue: 'Agent Session Center 시작'
   },
   settings: {
     title: '설정',

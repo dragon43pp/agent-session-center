@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Grok Build Center · 安装程序
+Agent Session Center · 安装程序
 ============================
 
 为什么自己写而不用 Inno Setup / NSIS：本机两个都没装，引一个进来还要占
@@ -11,7 +11,7 @@ Grok Build Center · 安装程序
 
 装到哪：
 
-    %LOCALAPPDATA%\\Programs\\Grok Build Center      ← 默认，**不需要管理员**
+    %LOCALAPPDATA%\\Programs\\Agent Session Center      ← 默认，**不需要管理员**
 
 刻意不往 Program Files 装：那要 UAC 提权，而这个工具是给单个用户用的，
 `config.json` 就在程序目录里，放用户目录下也更好改。
@@ -20,10 +20,10 @@ Grok Build Center · 安装程序
 
 命令行：
 
-    GrokBuildCenter-Setup.exe                    交互安装
-    GrokBuildCenter-Setup.exe --silent           静默装到默认目录
-    GrokBuildCenter-Setup.exe --silent --dir D:\\x
-    GrokBuildCenter-Setup.exe --silent --no-shortcuts
+    AgentSessionCenter-Setup.exe                    交互安装
+    AgentSessionCenter-Setup.exe --silent           静默装到默认目录
+    AgentSessionCenter-Setup.exe --silent --dir D:\\x
+    AgentSessionCenter-Setup.exe --silent --no-shortcuts
 """
 
 from __future__ import annotations
@@ -34,13 +34,13 @@ import shutil
 import sys
 import time
 
-APP_NAME = "Grok Build Center"
-APP_ID = "GrokBuildCenter"
-EXE_NAME = "GrokBuildCenter.exe"
-CLI_EXE_NAME = "GrokBuildCenter-cli.exe"
+APP_NAME = "Agent Session Center"
+APP_ID = "AgentSessionCenter"
+EXE_NAME = "AgentSessionCenter.exe"
+CLI_EXE_NAME = "AgentSessionCenter-cli.exe"
 UNINST_EXE = "uninstall.exe"
 PUBLISHER = "dragon43pp"
-HOMEPAGE = "https://github.com/dragon43pp/grok-build-center"
+HOMEPAGE = "https://github.com/dragon43pp/agent-session-center"
 
 
 def _version() -> str:
@@ -91,7 +91,7 @@ def payload_dir() -> str:
         return os.path.join(getattr(sys, "_MEIPASS", ""), "payload")
     # 开发时直接拿 dist/ 里那份
     here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    return os.path.join(here, "dist", "GrokBuildCenter")
+    return os.path.join(here, "dist", "AgentSessionCenter")
 
 
 # ------------------------------------------------------------------ 步骤

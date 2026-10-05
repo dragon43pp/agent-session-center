@@ -306,7 +306,7 @@ try {
   qrParams = null
 }
 check('带 createOnly=true（不绑已有应用）', qrParams?.get('createOnly') === 'true')
-check('带 source 标识', qrParams?.get('source') === 'grok-build-center', String(qrParams?.get('source')))
+check('带 source 标识', qrParams?.get('source') === 'agent-session-center', String(qrParams?.get('source')))
 check('带已编码的 addons', (qrParams?.get('addons')?.length ?? 0) > 40)
 
 // ★ 回归：二维码必须**真的画出来**。

@@ -58,7 +58,7 @@ for (const [label, url] of [
 }
 
 console.log('\n[3] 打到飞书线上：begin')
-const begun = await beginFeishuRegistration({ appName: 'Grok Build Center 机器人' })
+const begun = await beginFeishuRegistration({ appName: 'Agent Session Center 机器人' })
 ok('拿到 sessionKey', begun.sessionKey.slice(0, 8) + '…')
 ok('二维码链接', begun.verificationUri.slice(0, 96))
 ok('有效期 / 轮询间隔', `${begun.expiresInSeconds}s / ${begun.intervalSeconds}s`)
@@ -68,7 +68,7 @@ const checks = [
   ['user_code 在里面', uri.searchParams.has('user_code')],
   ['createOnly=true（只新建，不碰已有应用）', uri.searchParams.get('createOnly') === 'true'],
   ['addons 已带上', (uri.searchParams.get('addons') || '').length > 20],
-  ['source 标识正确', uri.searchParams.get('source') === 'grok-build-center']
+  ['source 标识正确', uri.searchParams.get('source') === 'agent-session-center']
 ]
 for (const [label, pass] of checks) (pass ? ok : bad)(label)
 

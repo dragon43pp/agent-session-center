@@ -1,17 +1,17 @@
 ---
 name: gbc-opencode-bridge
-description: Drive a visible OpenCode tab through Grok Build Center's local Bridge CLI. Use when another local harness must list models, create an OpenCode session, send, watch, approve, deny, answer questions, or close via `gbc`. Use when the user mentions Grok Build Center Bridge, gbc session, opencode create, watch/wait blocked, or collaborating with OpenCode through Grok Build Center.
+description: Drive a visible OpenCode tab through Agent Session Center's local Bridge CLI. Use when another local harness must list models, create an OpenCode session, send, watch, approve, deny, answer questions, or close via `gbc`. Use when the user mentions Agent Session Center Bridge, gbc session, opencode create, watch/wait blocked, or collaborating with OpenCode through Agent Session Center.
 ---
 
-# Grok Build Center OpenCode Bridge
+# Agent Session Center OpenCode Bridge
 
-通过本机 `gbc` CLI 控制 **Grok Build Center 已经打开的那条可见 OpenCode tab**。人和 TUI 看见的是同一条会话。不要另起 `opencode serve`，不要抓 PTY，不要在 Grok Build Center 未运行时自己拉 GUI。
+通过本机 `gbc` CLI 控制 **Agent Session Center 已经打开的那条可见 OpenCode tab**。人和 TUI 看见的是同一条会话。不要另起 `opencode serve`，不要抓 PTY，不要在 Agent Session Center 未运行时自己拉 GUI。
 
 ## 前提
 
-1. **Grok Build Center 主窗口必须已经打开**（不能只剩托盘）。未运行时 CLI 退出码 `2`。
-2. 只控制 Grok Build Center 自己拉起的 OpenCode。Windows 安装和某个 WSL 发行版是不同安装，必须显式选 `--installation`，禁止猜默认 WSL。
-3. 对外只认 Grok Build Center 的 `sessionId`，以及 watch 事件里的 `requestId`。不要拼 OpenCode 端口或 native id。
+1. **Agent Session Center 主窗口必须已经打开**（不能只剩托盘）。未运行时 CLI 退出码 `2`。
+2. 只控制 Agent Session Center 自己拉起的 OpenCode。Windows 安装和某个 WSL 发行版是不同安装，必须显式选 `--installation`，禁止猜默认 WSL。
+3. 对外只认 Agent Session Center 的 `sessionId`，以及 watch 事件里的 `requestId`。不要拼 OpenCode 端口或 native id。
 
 ## 怎么调用
 
@@ -21,7 +21,7 @@ description: Drive a visible OpenCode tab through Grok Build Center's local Brid
 gbc <subcommand>
 ```
 
-开发仓库（Grok Build Center 已在跑）：
+开发仓库（Agent Session Center 已在跑）：
 
 ```text
 npm run gbc -- --gbc-cli <subcommand>
@@ -29,7 +29,7 @@ npm run gbc -- --gbc-cli <subcommand>
 
 PowerShell 里带空格或 JSON 的参数要加引号。`answer` 的 `--json` 建议整段单引号包住，或先写到文件再读进参数。
 
-短请求：成功把 JSON 打到 stdout，退出 `0`；参数/状态不允许退出 `1`；Grok Build Center 不在退出 `2`。
+短请求：成功把 JSON 打到 stdout，退出 `0`；参数/状态不允许退出 `1`；Agent Session Center 不在退出 `2`。
 
 ## 命令
 
@@ -109,4 +109,4 @@ gbc session send <id> "按这个继续"
 - 把 watch 当心跳
 - 默认带 `--remember`
 - 改用户的 `opencode.json`、加 `--auto`、另起无头 `opencode serve`
-- 给 Grok Build Center 新建会话再做一套模型 / plan / build 选择器（人进 TUI 自己调）
+- 给 Agent Session Center 新建会话再做一套模型 / plan / build 选择器（人进 TUI 自己调）

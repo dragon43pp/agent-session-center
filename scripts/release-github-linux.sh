@@ -24,8 +24,8 @@ cd "$workspace"
 npm run typecheck
 npm run release:linux
 
-image_name="GrokBuildCenter-${version}-linux-${arch}.AppImage"
-deb_name="GrokBuildCenter-${version}-linux-${arch}.deb"
+image_name="AgentSessionCenter-${version}-linux-${arch}.AppImage"
+deb_name="AgentSessionCenter-${version}-linux-${arch}.deb"
 for required in \
   "$workspace/artifacts/$image_name" \
   "$workspace/artifacts/$image_name.sha256" \
