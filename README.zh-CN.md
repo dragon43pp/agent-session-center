@@ -128,6 +128,19 @@ CLI ── PTY ─────────────────────�
 
 Grok Build Center 还可以扫描并启动 Devin CLI、Cline、Qwen Code、Amp、Aider、Goose、Kiro CLI、GitHub Copilot CLI 等注册表入口。仅启动接入的 CLI 暂时不会提供同等级别的状态细节；后续会继续抽象 Adapter 接口，让新的 Harness 可以按需加载。
 
+## 会话历史
+
+上表列的是**实时观测**接入。读取历史会话是另一套能力，来源也不一样：
+
+| 来源 | 实时状态 | 会话历史 |
+| --- | --- | --- |
+| Grok Build、Claude Code、Codex CLI、OpenCode、Kimi Code、Pi | 有 | 有 |
+| Antigravity、WorkBuddy | 暂无 | 有 |
+
+八个来源都能读历史会话：浏览、搜索、token 用量，以及在该 Agent 提供可恢复会话时的恢复。这两层是分开的 —— 能读历史，不代表能读到它的运行时事件流。
+
+字段深度因来源而异。标题、时间、轮数、token 用量八个来源都有。费用只在算得出时显示 —— 要么是 Agent 自己记的，要么按模型价目表估算；模型不在价目表里时宁可空着也不猜。逐轮 recap 与代码漂移检测目前只有 Grok Build 支撑，因为它来自 `summary.json`；其他几家的会话文件里根本没记这些数据，无从读起。这是上游数据格式的限制，不是待办事项。
+
 ## 安装
 
 从 [GitHub Releases](https://github.com/dragon43pp/grok-build-center/releases) 下载最新版本：

@@ -125,6 +125,19 @@ Start a shell or detected coding CLI from the Home screen or quick-launch panel.
 
 Grok Build Center can also discover and launch Devin CLI, Cline, Qwen Code, Amp, Aider, Goose, Kiro CLI, GitHub Copilot CLI, and other registered CLIs. Launch-only integrations do not expose the same level of status detail yet.
 
+## Session history
+
+The table above lists **live observation** integrations. Reading past sessions is a separate capability with a different set of sources:
+
+| Source | Live status | Session history |
+| --- | --- | --- |
+| Grok Build, Claude Code, Codex CLI, OpenCode, Kimi Code, Pi | Yes | Yes |
+| Antigravity, WorkBuddy | Not yet | Yes |
+
+Session history is available for all eight: browse, search, token usage, and resume where the agent exposes a resumable session. The two layers are separate on purpose — a source can be readable without exposing its runtime event stream.
+
+Field depth varies by source. Title, time, turn count, and token usage are available for all eight. Cost is shown when it is known — either recorded by the agent itself or priced from the model catalogue, and left out rather than guessed when the model is not in that catalogue. Per-turn recaps and git-drift detection are currently backed by Grok Build's `summary.json`; the other agents' session files do not record that data, so there is nothing to read. That is a limit of the upstream formats, not a queued feature.
+
 ## Install
 
 Download the latest build from [GitHub Releases](https://github.com/dragon43pp/grok-build-center/releases):
