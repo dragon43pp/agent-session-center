@@ -8,8 +8,8 @@
     <img src="./assets/readme/asc-wordmark-light.png" width="370" alt="Agent Session Center">
   </picture>
 
-  <h3>把每个 Coding Agent 放进同一个 Rack</h3>
-  <p>保留原生 TUI，不再守着终端标签页。</p>
+  <h3>一个中心管 8 个 Coding Agent</h3>
+  <p>查找、恢复、分叉、接力每场会话——审批直接推到手机上。</p>
 
   <p>
     <!-- 冷启动期只放 3 个徽章：故意不放 v/release 与 downloads。仓库目前 0 Release，
@@ -21,13 +21,17 @@
   </p>
 </div>
 
-**Agent Session Center（ASC）** 是一个面向所有 AI Coding Agent 的会话中心。它保留每个 CLI 原本的 TUI，在外层补上会话状态、恢复（resume）、分叉与接力、AI 语义查找、飞书推送与手机端放行、注意力提醒、悬浮监控、快速启动和只读工作区浏览。
+**Agent Session Center（ASC）** 是一个面向 **8 个 AI Coding Agent** 的桌面会话中心——Claude Code、Codex CLI、OpenCode、Grok Build、Kimi Code、Pi、Antigravity 和 WorkBuddy。浏览并搜索每个 CLI 写到磁盘的会话，一键恢复；当 Agent 停在审批上时，飞书推送把它送到你的手机上——点一下就放行。
 
-桌面程序在仓库根目录。Python 会话工具和飞书助手是同一套产品，在 [`hub/`](./hub)。
+干活的原生 TUI 一点不动，ASC 补上的正是外围缺失的那一层：实时状态、注意力提醒、悬浮监控、快速启动和只读工作区浏览。Python 会话工具和飞书助手是同一套产品，在 [`hub/`](./hub)。
 
 <div align="center">
-  <img src="./assets/readme/home-launcher.png" width="1100" alt="Agent Session Center 首页与扫描到的 Coding CLI">
+  <img src="./docs/shots/03-session-history.png" width="1100" alt="Agent Session Center 汇总 8 个 Coding Agent 的会话历史">
 </div>
+
+## 上游
+
+早期原型源自 [UniRound-Tec/hrack](https://github.com/UniRound-Tec/hrack)（Apache-2.0）。Agent Session Center 是一个独立维护的硬分叉（hard fork）——拥有自己的身份、路线图和发布渠道，不跟随上游的代码或 Release。署名与改动摘要见 [NOTICE](./NOTICE)。
 
 ## 解决什么问题？
 
@@ -36,8 +40,6 @@
 - 切去做别的事，过一会儿回来，才发现 Agent 一直停在权限确认上白等。Codex 和 Gemini CLI 的用户都提出过类似的提醒需求（[Codex](https://github.com/openai/codex/issues/10081)、[Gemini CLI](https://github.com/google-gemini/gemini-cli/issues/14696)）。
 - 同时跑几个 Agent 以后，人又开始在终端标签页之间来回找：“到底哪个在等我？”类似问题也出现在 [HN 的多 Agent 工作流讨论](https://news.ycombinator.com/item?id=47268777) 和 [tmux-claude-session-manager](https://github.com/craftzdog/tmux-claude-session-manager) 这类工具里。
 - 有通知也不一定管用：它可能根本没触发（[Codex #8929](https://github.com/openai/codex/issues/8929)），不知道 Agent 正在等回答（[Codex #13478](https://github.com/openai/codex/issues/13478)），或者漏掉交互式 Shell 的输入等待（[Gemini CLI #19527](https://github.com/google-gemini/gemini-cli/issues/19527)）。
-
-Vibe Coding 本来就该留点空间给人躺着刷手机、逛 L 站，而不是换一种方式盯进度条。😂
 
 Agent Session Center 想解决的就是这些每天都会碰到的小麻烦：把会话放在一起，告诉你谁需要处理，再把你带回正确的位置。真正干活的仍然是原来的 CLI，Agent Session Center 只是让你不用一直盯着它。
 
@@ -62,57 +64,41 @@ CLI ── PTY ─────────────────────�
 
 ## 特性
 
-### 一眼看懂每个 Agent 的状态
+### 每场会话，一张表
 
-不同 Agent 可以同时运行。侧边栏会告诉你哪个正在思考、正在调用工具、等待你的确认、已经完成，或者监听能力已经降级。
-
-<div align="center">
-  <img src="./assets/readme/multi-agent-status.png" width="1100" alt="Agent Session Center 中多个 Coding Agent 的实时状态">
-</div>
-
-### 侧边栏收起来，状态仍然看得见
-
-主侧边栏可以折叠成紧凑图标栏。内置监控窗仍会汇总所有已关注会话，点击即可回到正确位置。
+会话历史读取的是每个 CLI 自己写到磁盘上的记录——八个来源全覆盖。浏览、一句话语义搜索、隐藏或移入回收站；底层文件永远不会被碰。
 
 <div align="center">
-  <img src="./assets/readme/collapsed-sidebar-monitor.png" width="1100" alt="折叠侧边栏与会话监控窗">
+  <img src="./docs/shots/06-session-resume.png" width="1100" alt="Agent Session Center 会话历史：可恢复标记与一键恢复">
 </div>
 
-### 悬浮窗也可以完全自定义
+### 原地恢复
 
-默认悬浮窗本身就是一个内置 Renderer。自定义 Renderer 通过同一套公开接口接收真实会话状态，可以使用 HTML、CSS、JavaScript、动画库、Canvas，甚至 Live2D。设置页内置了一份简短 Skill，复制后交给你的 Coding Agent，就能帮你实现并安装自己的悬浮窗。
+Agent 提供可恢复会话时，ASC 支持一键在原工作目录恢复——哪些能恢复、哪些不能、为什么，如实分开标注。
 
-<p align="center">
-  <img src="./assets/readme/live2d-floating-window.png" width="32%" alt="Live2D 悬浮窗 Renderer">
-  &nbsp;&nbsp;
-  <img src="./assets/readme/custom-floating-window.png" width="31%" alt="自定义吉祥物悬浮窗 Renderer">
-</p>
+<div align="center">
+  <img src="./docs/shots/04-usage.png" width="1100" alt="Agent Session Center 按 Agent 统计的 token 用量与费用">
+</div>
 
-二次元有福了。
+### Token 与费用，按 Agent 分列
+
+用量从每个 CLI 自己的记录聚合而来。Grok Build 自己记账；其余家的费用在模型已知时按模型价目表估算，模型不在价目表里时宁可空着也不猜。
+
+### 悬浮窗由你定义
+
+默认悬浮监控本身就是一个内置 Renderer。自定义 Renderer 通过同一套公开接口接收真实会话状态，可以用 HTML、CSS、JavaScript、动画库、Canvas，甚至 Live2D 构建。设置页内置一份简短 Skill，复制后交给你的 Coding Agent，就能帮你创建并安装自己的悬浮窗。
 
 ### 不离开会话也能阅读代码
 
-在终端旁打开只读文件树，查看语法高亮源码并预览 Markdown。Agent 的原生 TUI 仍然保留在左侧。
+在终端旁打开只读文件树，查看语法高亮的源码并预览 Markdown，Agent 的原生 TUI 仍然保留在左侧。
 
-<div align="center">
-  <img src="./assets/readme/workspace-reader.png" width="1200" alt="OpenCode 旁的 Agent Session Center 只读代码阅读器">
-</div>
+### 主题、字体和布局
 
-### 主题、字体和布局都能调整
+应用主题与终端主题彼此独立；调整终端字体与字号、切换导航模式、在同一个设置页配置悬浮窗 Renderer。
 
-应用主题与终端主题彼此独立；终端字体、字号、导航模式、界面缩放和悬浮窗 Renderer 都可以在设置页配置。
+### 跨运行环境快速启动
 
-<div align="center">
-  <img src="./assets/readme/settings-themes.png" width="1100" alt="Agent Session Center 主题与悬浮窗设置">
-</div>
-
-### 主机、WSL，一个入口快速启动
-
-从 Home 或快速启动面板打开普通 Shell 和扫描到的 Coding CLI。Agent Session Center 支持主机安装和兼容的 WSL 发行版。DeepSeek Harness 只在扫描到本机或 WSL 安装后才显示。
-
-<div align="center">
-  <img src="./assets/readme/quick-launch.png" width="950" alt="Agent Session Center 快速启动面板">
-</div>
+从 Home 或快速启动面板打开 Shell 或扫描到的 Coding CLI。Agent Session Center 支持主机安装和兼容的 WSL 发行版。DeepSeek Harness 只在扫描到本机或 WSL 安装后才显示。
 
 ## 已支持的 Harness
 

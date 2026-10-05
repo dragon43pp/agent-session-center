@@ -8,8 +8,8 @@
     <img src="./assets/readme/asc-wordmark-light.png" width="370" alt="Agent Session Center">
   </picture>
 
-  <h3>One rack for every coding agent</h3>
-  <p>Keep the native TUI. Stop babysitting terminal tabs.</p>
+  <h3>One center for 8 coding agents</h3>
+  <p>Find, resume, fork and hand off every session — and approve from your phone.</p>
 
   <p>
     <!-- Cold start: only 3 badges on purpose. Do NOT re-add `v/release` or
@@ -22,13 +22,17 @@
   </p>
 </div>
 
-**Agent Session Center (ASC)** is a session center for every AI coding agent. It keeps every CLI's native TUI intact, then adds the layer that is usually missing around it: session status, resume, fork and handoff, AI semantic search, Feishu push with mobile approval, attention cues, a floating monitor, quick launch, and a read-only workspace viewer.
+**Agent Session Center (ASC)** is a desktop session center for **8 AI coding agents** — Claude Code, Codex CLI, OpenCode, Grok Build, Kimi Code, Pi, Antigravity and WorkBuddy. Browse and search every session a CLI has written to disk, resume it in one click, and when an agent stalls on an approval, a Feishu push brings it to your phone — one tap to approve.
 
-The desktop app is the repository root. The Python session tools and Feishu helper are the same product, in [`hub/`](./hub).
+The CLI keeps its native TUI and does all the work. ASC adds the layer that is usually missing around it: live status, attention cues, a floating monitor, quick launch, and a read-only workspace viewer. The Python session tools and Feishu helper are the same product, in [`hub/`](./hub).
 
 <div align="center">
-  <img src="./assets/readme/home-launcher.png" width="1100" alt="Agent Session Center home screen with detected coding CLIs">
+  <img src="./docs/shots/03-session-history.png" width="1100" alt="Agent Session Center session history across 8 coding agents">
 </div>
+
+## Upstream
+
+The early prototype was derived from [UniRound-Tec/hrack](https://github.com/UniRound-Tec/hrack) (Apache-2.0). Agent Session Center is an independently maintained hard fork — its own identity, roadmap, and release channel; no code or releases are tracked from upstream. Attribution and the change summary live in [NOTICE](./NOTICE).
 
 ## The problem
 
@@ -61,55 +65,41 @@ If an observer fails, the PTY keeps running. Agent Session Center degrades the s
 
 ## Highlights
 
-### Know what every agent is doing
+### Every session, one table
 
-Run different agents side by side and see which one is thinking, using a tool, waiting for you, finished, or no longer fully observed.
-
-<div align="center">
-  <img src="./assets/readme/multi-agent-status.png" width="1100" alt="Multiple coding agents and their live statuses in Agent Session Center">
-</div>
-
-### Collapse the shell, keep the signal
-
-The main sidebar can collapse into a compact rail. The built-in monitor still shows every followed session and brings you back to the correct one.
+Session history reads what each CLI itself wrote to disk — across all eight sources. Browse, semantic-search in one sentence, hide, or send to the recycle bin; the underlying files are never touched.
 
 <div align="center">
-  <img src="./assets/readme/collapsed-sidebar-monitor.png" width="1100" alt="Collapsed Agent Session Center sidebar with the session monitor">
+  <img src="./docs/shots/06-session-resume.png" width="1100" alt="Session history with resumable sessions and one-click resume in Agent Session Center">
 </div>
+
+### Resume in place
+
+Where the agent exposes a resumable session, ASC offers one-click resume in the original working directory — with an honest split of what is resumable and why the rest is not.
+
+<div align="center">
+  <img src="./docs/shots/04-usage.png" width="1100" alt="Per-agent token usage and recorded cost in Agent Session Center">
+</div>
+
+### Tokens and cost, per agent
+
+Usage is aggregated from each CLI's own records. Grok Build records its own bill; cost for the others is priced from the model catalogue when the model is known, and left out rather than guessed when it is not.
 
 ### Make the floating window yours
 
 The default floating monitor is itself a built-in renderer. Custom renderers use the same public interface and can be built with HTML, CSS, JavaScript, animation libraries, canvas, or Live2D. Settings include a short built-in skill that you can copy and give to your coding agent to create and install a renderer.
 
-<p align="center">
-  <img src="./assets/readme/live2d-floating-window.png" width="32%" alt="Live2D floating renderer">
-  &nbsp;&nbsp;
-  <img src="./assets/readme/custom-floating-window.png" width="31%" alt="Custom mascot floating renderer">
-</p>
-
 ### Read the workspace without leaving the session
 
 Open a read-only file tree beside the terminal, inspect highlighted source, and preview Markdown while the agent keeps its native TUI.
-
-<div align="center">
-  <img src="./assets/readme/workspace-reader.png" width="1200" alt="Agent Session Center read-only workspace viewer beside OpenCode">
-</div>
 
 ### Themes, fonts, and layout
 
 Choose independent application and terminal themes, adjust terminal fonts and sizing, switch navigation modes, and configure the floating renderer from one settings page.
 
-<div align="center">
-  <img src="./assets/readme/settings-themes.png" width="1100" alt="Agent Session Center theme and floating renderer settings">
-</div>
-
 ### Fast launch across runtimes
 
 Start a shell or detected coding CLI from the Home screen or quick-launch panel. Agent Session Center supports host installations and compatible WSL distributions. DeepSeek Harness appears only after a local or WSL install is found.
-
-<div align="center">
-  <img src="./assets/readme/quick-launch.png" width="950" alt="Agent Session Center quick-launch panel">
-</div>
 
 ## Supported harnesses
 
