@@ -25,7 +25,9 @@ import { findDefaultShell, type CliOption } from './launchOptions'
 import { statusDot, statusLabel, statusTone, type SessionStatus } from './sessionStatus'
 import { useStrings } from './i18n'
 
-const WELCOME_LAUNCH_PAGE_SIZE = 8
+/** 首页启动卡每页数量：一行 4 张（max-w-620 + w-142），12 = 3 行，
+ *  覆盖 终端 + DSH + 10 个 CLI，Kimi/Pi/Antigravity 这类不再被挤到第二页。 */
+const WELCOME_LAUNCH_PAGE_SIZE = 12
 
 const EMPTY_STATS: AllTimeStats = {
   sessions: 0,
