@@ -4,11 +4,34 @@
 
 > 说明：0.4.7 及更早的条目记录的是本项目早期阶段（当时产品名与现在不同）。为避免旧名残留，文中产品名统一写作「本应用」。条目按历史事实原样保留，未做改写。
 
-## [Unreleased]
+## [1.0.0] - 2026-10-06
+
+First public release. Agent Session Center (ASC) is a desktop session center for eight AI coding agents — Claude Code, Codex CLI, OpenCode, Grok Build, Kimi Code, Pi, Antigravity and WorkBuddy. The CLIs keep their native TUI and do all the work; ASC adds the layer usually missing around them.
+
+### Added
+
+- **One table for every session.** Session history reads what each CLI itself wrote to disk, across all eight sources: browse, semantic search, hide, or send to the recycle bin. The underlying session files are never modified.
+- **Resume in place.** Where an agent exposes a resumable session, ASC offers one-click resume in the original working directory, with an honest split of what is resumable and why the rest is not.
+- **Ask AI to find a session.** Describe what you are looking for in one sentence and ASC returns the matching sessions together with its answer. The assistant endpoint is configured by you and called directly from the desktop app.
+- **Live status for six harnesses.** Claude Code, Codex CLI, OpenCode, Grok Build, Kimi Code and Pi report thinking, tool calls, approvals and completion through their official Hooks, SSE or extension APIs. DeepSeek Harness is followed through its official web surface.
+- **Attention push and mobile approval.** When an agent stalls on an approval, a Feishu push brings it to your phone — one tap to approve.
+- **Tokens and cost per agent**, aggregated from each CLI's own records. Cost is shown when it is known — recorded by the agent itself or priced from the model catalogue — and left blank rather than guessed when it is not.
+- **Custom floating renderers** built with HTML, CSS, JavaScript, animation libraries, canvas or Live2D, through the same public interface the built-in monitor uses.
+- **Read-only workspace viewer** beside the terminal: file tree, syntax-highlighted source, and Markdown preview.
+- **Five UI languages** (English, 简体中文, 繁體中文, 日本語, 한국어), independent application and terminal themes, configurable terminal fonts, and two navigation modes.
+- **Built-in updater.** This is the first release whose packaged clients check the GitHub Release feed at startup. Updates are announced, never installed silently; `ASC_DISABLE_UPDATES=1` skips the check entirely.
 
 ### Changed
 
-- 项目更名 Agent Session Center（原 Agent Session Center）：仓库名 `grok-build-center` → `agent-session-center`，安装包产物名 `GrokBuildCenter-*` → `AgentSessionCenter-*`，resume 能力进入核心简介。
+- Project renamed to Agent Session Center: repository `grok-build-center` → `agent-session-center`, installer artifacts `GrokBuildCenter-*` → `AgentSessionCenter-*`. Resume moved into the core pitch.
+
+### Notes
+
+- v1.0.0 ships **Windows x64** artifacts. The macOS (arm64 dmg/zip) and Linux (AppImage/deb) targets are configured and validated by their own guarded release scripts, but those packages must be built on their matching operating systems and are not part of this release.
+- Builds are not commercially code-signed yet, so Windows may show a security prompt on first launch.
+- The early prototype was derived from [UniRound-Tec/hrack](https://github.com/UniRound-Tec/hrack) (Apache-2.0). ASC is an independently maintained hard fork; attribution and the change summary live in [NOTICE](./NOTICE).
+
+## [Unreleased]
 
 ## [0.4.7] - 2026-09-18
 

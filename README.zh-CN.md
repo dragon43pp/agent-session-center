@@ -12,22 +12,20 @@
   <p>查找、恢复、分叉、接力每场会话——审批直接推到手机上。</p>
 
   <p>
-    <!-- 冷启动期只放 3 个徽章：故意不放 v/release 与 downloads。仓库目前 0 Release，
-         放上去会渲染成"No releases" / 0，等于自己对外宣告这是一个空项目。
-         等发出第一个 Release（v1.0.0）后再加回来。 -->
     <a href="./LICENSE"><img alt="开源协议：Apache-2.0" src="https://img.shields.io/github/license/fatedawn/agent-session-center?style=flat-square"></a>
+    <a href="https://github.com/fatedawn/agent-session-center/releases"><img alt="最新版本" src="https://img.shields.io/github/v/release/fatedawn/agent-session-center?style=flat-square&label=release"></a>
+    <a href="https://github.com/fatedawn/agent-session-center/releases"><img alt="下载量" src="https://img.shields.io/github/downloads/fatedawn/agent-session-center/total?style=flat-square"></a>
+    <a href="https://github.com/fatedawn/agent-session-center/stargazers"><img alt="Star 数" src="https://img.shields.io/github/stars/fatedawn/agent-session-center?style=flat-square"></a>
     <a href="https://github.com/fatedawn/agent-session-center/commits/main"><img alt="最近提交" src="https://img.shields.io/github/last-commit/fatedawn/agent-session-center?style=flat-square"></a>
-    <a href="https://github.com/fatedawn/agent-session-center"><img alt="仓库体积" src="https://img.shields.io/github/repo-size/fatedawn/agent-session-center?style=flat-square"></a>
   </p>
+
+  <img src="./docs/demo/asc-demo-zh.gif" width="1100" alt="Agent Session Center：8 个 Coding Agent 的会话历史、AI 会话查找、一键恢复、按 Agent 统计用量，以及飞书推送到手机审批">
+  <p><sub>会话历史 → AI 查找 → 一键恢复 → 用量与费用 → 飞书审批。 <a href="./docs/demo/asc-demo-zh.mp4">看完整 46 秒视频</a>。</sub></p>
 </div>
 
 **Agent Session Center（ASC）** 是一个面向 **8 个 AI Coding Agent** 的桌面会话中心——Claude Code、Codex CLI、OpenCode、Grok Build、Kimi Code、Pi、Antigravity 和 WorkBuddy。浏览并搜索每个 CLI 写到磁盘的会话，一键恢复；当 Agent 停在审批上时，飞书推送把它送到你的手机上——点一下就放行。
 
 干活的原生 TUI 一点不动，ASC 补上的正是外围缺失的那一层：实时状态、注意力提醒、悬浮监控、快速启动和只读工作区浏览。Python 会话工具和飞书助手是同一套产品，在 [`hub/`](./hub)。
-
-<div align="center">
-  <img src="./docs/shots/03-session-history.png" width="1100" alt="Agent Session Center 汇总 8 个 Coding Agent 的会话历史">
-</div>
 
 ## 上游
 
@@ -69,7 +67,7 @@ CLI ── PTY ─────────────────────�
 会话历史读取的是每个 CLI 自己写到磁盘上的记录——八个来源全覆盖。浏览、一句话语义搜索、隐藏或移入回收站；底层文件永远不会被碰。
 
 <div align="center">
-  <img src="./docs/shots/06-session-resume.png" width="1100" alt="Agent Session Center 会话历史：可恢复标记与一键恢复">
+  <img src="./docs/shots/03-session-history.png" width="1100" alt="Agent Session Center 会话历史：汇总 8 个 Coding Agent 的会话">
 </div>
 
 ### 原地恢复
@@ -77,12 +75,21 @@ CLI ── PTY ─────────────────────�
 Agent 提供可恢复会话时，ASC 支持一键在原工作目录恢复——哪些能恢复、哪些不能、为什么，如实分开标注。
 
 <div align="center">
-  <img src="./docs/shots/04-usage.png" width="1100" alt="Agent Session Center 按 Agent 统计的 token 用量与费用">
+  <img src="./docs/shots/06-session-resume.png" width="1100" alt="Agent Session Center 一键恢复可恢复会话">
+  <img src="./docs/shots/07-resume-missing-cwd.png" width="1100" alt="Agent Session Center 说明某个会话因原工作目录已不存在而无法恢复">
 </div>
+
+### 一句话让 AI 帮你找会话
+
+用一句话描述你要找什么——「把飞书审批卡片接起来的那场会话」——ASC 会把命中的会话和它的回答一起给你。助手端点由你自己配置，桌面端直连，不经第三方服务中转。
 
 ### Token 与费用，按 Agent 分列
 
 用量从每个 CLI 自己的记录聚合而来。Grok Build 自己记账；其余家的费用在模型已知时按模型价目表估算，模型不在价目表里时宁可空着也不猜。
+
+<div align="center">
+  <img src="./docs/shots/04-usage.png" width="1100" alt="Agent Session Center 按 Agent 统计的 token 用量与费用">
+</div>
 
 ### 悬浮窗由你定义
 
@@ -131,9 +138,8 @@ Agent Session Center 还可以扫描并启动 Devin CLI、Cline、Qwen Code、Am
 
 从 [GitHub Releases](https://github.com/fatedawn/agent-session-center/releases) 下载最新版本：
 
-- Windows x64：`AgentSessionCenter-Setup-*.exe`
-- macOS Apple Silicon：`AgentSessionCenter-*-macos-arm64.dmg`
-- Linux x64：`AgentSessionCenter-*-linux-x64.AppImage` 或 `AgentSessionCenter-*-linux-x64.deb`
+- **Windows x64** —— `AgentSessionCenter-Setup-1.0.0.exe`，引导式 NSIS 安装包，可选安装目录。
+- macOS Apple Silicon（`AgentSessionCenter-*-macos-arm64.dmg`）与 Linux x64（`AgentSessionCenter-*-linux-x64.AppImage` / `.deb`）目标已配置，并由各自的发版脚本校验，但这些包必须在对应系统上构建。**v1.0.0 只发 Windows x64。**
 
 安装包暂时没有商业代码签名，首次启动时系统可能显示安全提醒。
 
@@ -166,7 +172,7 @@ npm run build
 
 端到端测试不在 GitHub CI 里跑 —— 它需要真实的 DeepSeek Harness 宿主和桌面会话。改到 observer 或终端层时，可以在本地用 `npm run e2e:only` 跑。
 
-Windows、macOS、Linux 安装包需要在对应系统上通过 `npm run release:win`、`npm run release:mac` 和 `npm run release:linux` 构建。DSH e2e 会通过 `npm run ensure:dsh` 安装隔离且不入库的 `dsh-runtime` 夹具，它不会打进发行包。
+Windows、macOS、Linux 安装包需要在对应系统上通过 `npm run release:win`、`npm run release:mac` 和 `npm run release:linux` 构建。DSH e2e 会通过 `npm run ensure:dsh` 安装隔离且不入库的 `dsh-runtime` 夹具，它不会打进发行包。完整的发版门禁见 [docs/RELEASING.md](./docs/RELEASING.md)。
 
 ## 参与贡献
 

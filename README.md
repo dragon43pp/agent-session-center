@@ -12,23 +12,20 @@
   <p>Find, resume, fork and hand off every session — and approve from your phone.</p>
 
   <p>
-    <!-- Cold start: only 3 badges on purpose. Do NOT re-add `v/release` or
-         `downloads` until this repo actually has its first GitHub Release —
-         with 0 releases they render as "No releases" / 0 and advertise an
-         empty project. Re-add them right after publishing v1.0.0. -->
     <a href="./LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/github/license/fatedawn/agent-session-center?style=flat-square"></a>
+    <a href="https://github.com/fatedawn/agent-session-center/releases"><img alt="Latest release" src="https://img.shields.io/github/v/release/fatedawn/agent-session-center?style=flat-square&label=release"></a>
+    <a href="https://github.com/fatedawn/agent-session-center/releases"><img alt="Downloads" src="https://img.shields.io/github/downloads/fatedawn/agent-session-center/total?style=flat-square"></a>
+    <a href="https://github.com/fatedawn/agent-session-center/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/fatedawn/agent-session-center?style=flat-square"></a>
     <a href="https://github.com/fatedawn/agent-session-center/commits/main"><img alt="Last commit" src="https://img.shields.io/github/last-commit/fatedawn/agent-session-center?style=flat-square"></a>
-    <a href="https://github.com/fatedawn/agent-session-center"><img alt="Repository size" src="https://img.shields.io/github/repo-size/fatedawn/agent-session-center?style=flat-square"></a>
   </p>
+
+  <img src="./docs/demo/asc-demo-en.gif" width="1100" alt="Agent Session Center: session history across 8 coding agents, AI session search, one-click resume, per-agent usage, and Feishu approval on your phone">
+  <p><sub>Session history → AI search → one-click resume → usage and cost → Feishu approval. <a href="./docs/demo/asc-demo-en.mp4">Watch the full 46-second video</a>.</sub></p>
 </div>
 
 **Agent Session Center (ASC)** is a desktop session center for **8 AI coding agents** — Claude Code, Codex CLI, OpenCode, Grok Build, Kimi Code, Pi, Antigravity and WorkBuddy. Browse and search every session a CLI has written to disk, resume it in one click, and when an agent stalls on an approval, a Feishu push brings it to your phone — one tap to approve.
 
 The CLI keeps its native TUI and does all the work. ASC adds the layer that is usually missing around it: live status, attention cues, a floating monitor, quick launch, and a read-only workspace viewer. The Python session tools and Feishu helper are the same product, in [`hub/`](./hub).
-
-<div align="center">
-  <img src="./docs/shots/03-session-history.png" width="1100" alt="Agent Session Center session history across 8 coding agents">
-</div>
 
 ## Upstream
 
@@ -70,7 +67,7 @@ If an observer fails, the PTY keeps running. Agent Session Center degrades the s
 Session history reads what each CLI itself wrote to disk — across all eight sources. Browse, semantic-search in one sentence, hide, or send to the recycle bin; the underlying files are never touched.
 
 <div align="center">
-  <img src="./docs/shots/06-session-resume.png" width="1100" alt="Session history with resumable sessions and one-click resume in Agent Session Center">
+  <img src="./docs/shots/03-session-history.png" width="1100" alt="Session history listing sessions from eight coding agents in Agent Session Center">
 </div>
 
 ### Resume in place
@@ -78,12 +75,21 @@ Session history reads what each CLI itself wrote to disk — across all eight so
 Where the agent exposes a resumable session, ASC offers one-click resume in the original working directory — with an honest split of what is resumable and why the rest is not.
 
 <div align="center">
-  <img src="./docs/shots/04-usage.png" width="1100" alt="Per-agent token usage and recorded cost in Agent Session Center">
+  <img src="./docs/shots/06-session-resume.png" width="1100" alt="One-click resume of a resumable session in Agent Session Center">
+  <img src="./docs/shots/07-resume-missing-cwd.png" width="1100" alt="Agent Session Center explaining why a session cannot be resumed because its working directory is gone">
 </div>
+
+### Ask AI to find a session
+
+Describe what you are looking for in one sentence — "the session where the Feishu approval card was wired up" — and ASC returns the matching sessions along with its answer. The assistant endpoint is configured by you and called directly from the desktop app.
 
 ### Tokens and cost, per agent
 
 Usage is aggregated from each CLI's own records. Grok Build records its own bill; cost for the others is priced from the model catalogue when the model is known, and left out rather than guessed when it is not.
+
+<div align="center">
+  <img src="./docs/shots/04-usage.png" width="1100" alt="Per-agent token usage and recorded cost in Agent Session Center">
+</div>
 
 ### Make the floating window yours
 
@@ -132,9 +138,8 @@ Field depth varies by source. Title, time, turn count, and token usage are avail
 
 Download the latest build from [GitHub Releases](https://github.com/fatedawn/agent-session-center/releases):
 
-- Windows x64: `AgentSessionCenter-Setup-*.exe`
-- macOS Apple Silicon: `AgentSessionCenter-*-macos-arm64.dmg`
-- Linux x64: `AgentSessionCenter-*-linux-x64.AppImage` or `AgentSessionCenter-*-linux-x64.deb`
+- **Windows x64** — `AgentSessionCenter-Setup-1.0.0.exe`, a guided NSIS installer, so you can choose the installation directory.
+- macOS Apple Silicon (`AgentSessionCenter-*-macos-arm64.dmg`) and Linux x64 (`AgentSessionCenter-*-linux-x64.AppImage` / `.deb`) targets are configured and validated by their own guarded release scripts, but those packages must be built on their matching operating systems. **v1.0.0 ships Windows x64 only.**
 
 The builds are not commercially code-signed yet, so the operating system may show a security prompt on first launch.
 
@@ -167,7 +172,7 @@ npm run build
 
 End-to-end tests are not part of the GitHub CI pipeline — they need a real DeepSeek Harness host and a desktop session. Run them locally with `npm run e2e:only` if you touch an observer or the terminal layer.
 
-Windows, macOS, and Linux release packages must be built on their matching operating systems through `npm run release:win`, `npm run release:mac`, and `npm run release:linux`. DSH e2e tests install an isolated, gitignored `dsh-runtime` fixture via `npm run ensure:dsh`; it is not packaged into releases.
+Windows, macOS, and Linux release packages must be built on their matching operating systems through `npm run release:win`, `npm run release:mac`, and `npm run release:linux`. DSH e2e tests install an isolated, gitignored `dsh-runtime` fixture via `npm run ensure:dsh`; it is not packaged into releases. See [docs/RELEASING.md](./docs/RELEASING.md) for the full list of release gates.
 
 ## Contributing
 
