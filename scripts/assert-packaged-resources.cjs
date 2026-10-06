@@ -21,26 +21,67 @@ function assertNoBundledDshRuntime(context) {
   }
 }
 
+// The packaged app only loads `out/` (bundled main + preload + renderer),
+// `resources/`, the licence files and the production node_modules. Everything
+// listed here is a development tree or a build leftover that must never reach a
+// release artifact. Keep this list in sync with `build.files` in package.json:
+// the exclusion saves ~50 MiB, and this gate is what stops it coming back.
+const FORBIDDEN_ROOTS = new Set([
+  '.claude',
+  '.dev-run',
+  '.dev-shots',
+  '.theme-check',
+  'dist',
+  'e2e',
+  'electron',
+  'examples',
+  'logs',
+  'preload',
+  'prototype',
+  'remotes',
+  'scripts',
+  'shared',
+  'src',
+  'tools'
+])
+
+const FORBIDDEN_ROOT_FILES = new Set([
+  'AGENTS.md',
+  'CONTRIBUTING.md',
+  'electron.vite.config.ts',
+  'index.html',
+  'playwright.config.ts',
+  'renovate.json',
+  'tsconfig.json',
+  'tsconfig.node.json',
+  'tsconfig.node.tsbuildinfo',
+  'tsconfig.web.json',
+  'tsconfig.web.tsbuildinfo'
+])
+
+/** Stale renderer builds kept next to the live one by the dev build script. */
+const STALE_RENDERER_BUILD = /^out\/renderer\.stale-/
+
+/** Returns the offending path when it must not ship, otherwise null. */
+function findForbiddenEntry(normalized) {
+  const root = normalized.split('/')[0]
+  if (FORBIDDEN_ROOTS.has(root)) return normalized
+  if (root.startsWith('release-')) return normalized
+  if (root.toLowerCase().endsWith('.dsh')) return normalized
+  if (FORBIDDEN_ROOT_FILES.has(normalized)) return normalized
+  if (/^electron\.vite\.config\..+\.mjs$/.test(normalized)) return normalized
+  if (STALE_RENDERER_BUILD.test(normalized)) return normalized
+  return null
+}
+
 function assertNoDevelopmentTrees(context) {
   const archivePath = join(packagedResourcesDir(context), 'app.asar')
   if (!existsSync(archivePath)) {
     throw new Error(`Packaged app archive was not found: ${archivePath}`)
   }
-  const forbidden = listPackage(archivePath).filter((entry) => {
-    const normalized = entry.replaceAll('\\', '/').replace(/^\/+/, '')
-    const root = normalized.split('/')[0]
-    return (
-      root === 'remotes' ||
-      root === '.dev-run' ||
-      root === '.dev-shots' ||
-      root === '.theme-check' ||
-      root === '.claude' ||
-      root === 'dist' ||
-      root === 'logs' ||
-      root.startsWith('release-') ||
-      root.toLowerCase().endsWith('.dsh')
-    )
-  })
+  const forbidden = listPackage(archivePath)
+    .map((entry) => findForbiddenEntry(entry.replaceAll('\\', '/').replace(/^\/+/, '')))
+    .filter(Boolean)
   if (forbidden.length > 0) {
     throw new Error(
       `Packaged app contains development or local-data trees: ${forbidden

@@ -13,6 +13,12 @@ $metadataName = 'latest.yml'
 $metadataPath = Join-Path $releaseDir $metadataName
 $unpackedExe = Join-Path $releaseDir 'win-unpacked\Agent Session Center.exe'
 $packagedUpdateConfig = Join-Path $releaseDir 'win-unpacked\resources\app-update.yml'
+# electron-builder 自己的发行版缓存（%LOCALAPPDATA%\electron-builder\Cache\electron）
+# 为空时它会去 GitHub Releases 下载 ~144 MB 的 Electron zip；这条链路在受限网络下
+# 会静默挂住（实测 >10 分钟零输出，打包永远不产出 win-unpacked）。所以直接复用
+# node_modules/electron/dist —— postinstall 已经下载并解包好，且版本与 devDependencies
+# 里的 electron 严格一致，打包因此不依赖网络。
+$electronDist = Join-Path $workspace 'node_modules\electron\dist'
 $succeeded = $false
 
 function Assert-ReleaseConfig {
@@ -29,6 +35,9 @@ function Assert-ReleaseConfig {
   $afterPack = Join-Path $workspace ([string]$package.build.afterPack)
   if (-not (Test-Path -LiteralPath $afterPack -PathType Leaf)) {
     throw "afterPack validation hook is missing: $afterPack"
+  }
+  if (-not (Test-Path -LiteralPath (Join-Path $electronDist 'electron.exe') -PathType Leaf)) {
+    throw "Electron distribution is missing: $electronDist. Run npm install before packaging."
   }
   $trayMapping = @($package.build.extraResources) | Where-Object {
     $_.from -eq 'resources/tray' -and $_.to -eq 'tray'
@@ -83,7 +92,15 @@ try {
 
     # A pushed tag makes electron-builder default to onTagOrDraft publishing.
     # GitHub Releases are created by the workflow only after all gates pass.
-    & npx.cmd electron-builder --win nsis --x64 --publish never "--config.directories.output=$releaseDir"
+    #
+    # --config.npmRebuild=false: node-pty 1.1.0 是 N-API 插件（node-addon-api ^7），
+    # 仓库里自带 ABI 稳定的 win32-x64 预编译产物（node_modules/node-pty/prebuilds/），
+    # 运行时按 build/Release -> build/Debug -> prebuilds/<platform>-<arch> 的顺序回落加载。
+    # Windows 上重编纯属多余，而且会直接失败：node-gyp 生成的 vcxproj 里写死了
+    # <SpectreMitigation>Spectre</SpectreMitigation>，机器上没装 Spectre 缓解库就报
+    # MSB8040，整个打包中止。注意只在 Windows 关——node-pty 不提供 linux 预编译产物，
+    # Linux 打包仍然必须真编。
+    & npx.cmd electron-builder --win nsis --x64 --publish never "--config.npmRebuild=false" "--config.electronDist=$electronDist" "--config.directories.output=$releaseDir"
     if ($LASTEXITCODE -ne 0) { throw 'Windows packaging failed.' }
   } finally {
     Pop-Location

@@ -32,7 +32,27 @@ The Windows release fails before delivery when any of these conditions is not me
 - The installer product version matches `package.json`.
 - The installer, blockmap, and `latest.yml` all exist.
 - `latest.yml` matches `package.json`, references the exact installer filename, and contains SHA-512 metadata.
+- `latest.yml` carries the `## [<version>]` section of `CHANGELOG.md` as `releaseNotes`.
 - The packaged `app-update.yml` points to the public `fatedawn/agent-session-center` GitHub repository and contains no credentials.
+
+### Why the Windows packager passes `--config.npmRebuild=false`
+
+`node-pty` 1.1.0 is an N-API addon (`node-addon-api ^7`), so its bundled prebuilt binaries
+are ABI-stable and load under any Electron version. At runtime `node-pty/lib/utils.js`
+resolves the addon in this order:
+
+```text
+build/Release → build/Debug → prebuilds/<platform>-<arch>
+```
+
+Rebuilding on Windows is therefore unnecessary, and on a machine without the Visual Studio
+Spectre-mitigation libraries it is fatal: the generated `.vcxproj` files hard-code
+`<SpectreMitigation>Spectre</SpectreMitigation>`, `MSBuild` fails with **MSB8040**, and
+packaging aborts before any artifact is produced.
+
+This applies to **Windows only**. `node-pty` ships prebuilds for `win32-x64`, `win32-arm64`,
+`darwin-arm64` and `darwin-x64` — but **none for Linux**, so the Linux release script must
+keep rebuilding from source.
 
 `scripts/assert-packaged-tray-assets.cjs` runs inside electron-builder's `afterPack` phase, so even direct packaging cannot silently omit tray assets. `scripts/verify-packaged-tray.cjs` performs the runtime Tray check. `scripts/release-win.ps1` composes all release checks and copies the verified artifacts.
 

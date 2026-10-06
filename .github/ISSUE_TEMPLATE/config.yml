@@ -1,11 +1,12 @@
 blank_issues_enabled: false
 contact_links:
-  - name: 提问 / 讨论（非 bug 非需求）
+  - name: Questions & discussion 提问 / 讨论（非 bug 非需求）
     url: https://github.com/fatedawn/agent-session-center/discussions
-    about: 不确定这算 bug 还是需求、想先问清楚用法，请到这里提问。
-  - name: 安全漏洞报告
+    about: |
+      Not sure whether it is a bug or a feature, or just want to ask how something works — start here.
+      不确定这算 bug 还是需求、想先问清楚用法，请到这里提问。
+  - name: Report a security vulnerability 安全漏洞报告
     url: https://github.com/fatedawn/agent-session-center/security/advisories/new
     about: |
-      请不要用公开 issue 报告安全漏洞。
-      走私下渠道（GitHub Private Vulnerability Reporting），
-      修复发布后我们会在 advisory 里致谢。
+      Please do NOT report security vulnerabilities in a public issue. Use GitHub Private Vulnerability Reporting instead; we will credit you in the advisory once a fix ships.
+      请不要用公开 issue 报告安全漏洞。走私下渠道（GitHub Private Vulnerability Reporting），修复发布后我们会在 advisory 里致谢。
