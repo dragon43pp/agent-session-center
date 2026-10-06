@@ -70,7 +70,7 @@ test('embeds raw changelog Markdown in updater metadata', () => {
     const updateInfo = parseUpdateInfo(
       readFileSync(metadataPath, 'utf8'),
       'latest.yml',
-      new URL('https://github.com/dragon43pp/agent-session-center/releases/download/v1.0.0/latest.yml')
+      new URL('https://github.com/fatedawn/agent-session-center/releases/download/v1.0.0/latest.yml')
     )
 
     expect(updateInfo.releaseNotes).toBe(

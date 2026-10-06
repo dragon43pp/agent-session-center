@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        建议先读一遍 [README](https://github.com/dragon43pp/agent-session-center#readme)，
+        建议先读一遍 [README](https://github.com/fatedawn/agent-session-center#readme)，
         确认这个需求目前确实还没有被实现。
 
   - type: textarea

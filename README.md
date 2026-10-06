@@ -16,9 +16,9 @@
          `downloads` until this repo actually has its first GitHub Release —
          with 0 releases they render as "No releases" / 0 and advertise an
          empty project. Re-add them right after publishing v1.0.0. -->
-    <a href="./LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/github/license/dragon43pp/agent-session-center?style=flat-square"></a>
-    <a href="https://github.com/dragon43pp/agent-session-center/commits/main"><img alt="Last commit" src="https://img.shields.io/github/last-commit/dragon43pp/agent-session-center?style=flat-square"></a>
-    <a href="https://github.com/dragon43pp/agent-session-center"><img alt="Repository size" src="https://img.shields.io/github/repo-size/dragon43pp/agent-session-center?style=flat-square"></a>
+    <a href="./LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/github/license/fatedawn/agent-session-center?style=flat-square"></a>
+    <a href="https://github.com/fatedawn/agent-session-center/commits/main"><img alt="Last commit" src="https://img.shields.io/github/last-commit/fatedawn/agent-session-center?style=flat-square"></a>
+    <a href="https://github.com/fatedawn/agent-session-center"><img alt="Repository size" src="https://img.shields.io/github/repo-size/fatedawn/agent-session-center?style=flat-square"></a>
   </p>
 </div>
 
@@ -130,7 +130,7 @@ Field depth varies by source. Title, time, turn count, and token usage are avail
 
 ## Install
 
-Download the latest build from [GitHub Releases](https://github.com/dragon43pp/agent-session-center/releases):
+Download the latest build from [GitHub Releases](https://github.com/fatedawn/agent-session-center/releases):
 
 - Windows x64: `AgentSessionCenter-Setup-*.exe`
 - macOS Apple Silicon: `AgentSessionCenter-*-macos-arm64.dmg`
@@ -152,7 +152,7 @@ If Codex asks you to review Hooks, open `/hooks`, inspect the Agent Session Cent
 The desktop app lives in the repository root (`src/` + `electron/`).
 
 ```bash
-git clone https://github.com/dragon43pp/agent-session-center.git
+git clone https://github.com/fatedawn/agent-session-center.git
 cd agent-session-center
 npm install
 npm run dev
@@ -171,7 +171,7 @@ Windows, macOS, and Linux release packages must be built on their matching opera
 
 ## Contributing
 
-Bug reports, reproducible edge cases, and focused pull requests are welcome. Observer changes should include a fixture or runtime test that proves event ordering and fallback behavior. Please open an [issue](https://github.com/dragon43pp/agent-session-center/issues) before starting a large feature.
+Bug reports, reproducible edge cases, and focused pull requests are welcome. Observer changes should include a fixture or runtime test that proves event ordering and fallback behavior. Please open an [issue](https://github.com/fatedawn/agent-session-center/issues) before starting a large feature.
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for the local setup, branch naming, and commit conventions.
 

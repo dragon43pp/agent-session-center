@@ -1,7 +1,7 @@
 Agent Session Center
 
 曾用名：SessionDeck → grok-build-pager → Grok Build Center → Agent Session Center
-Copyright 2026 dragon43pp
+Copyright 2026 fatedawn
 
 This product includes software developed as a derivative work of an Apache
 License 2.0 licensed project.
@@ -52,7 +52,7 @@ License 2.0 licensed project.
 许可沿革 / License history
 ---------------------------------------------------------------------------
 
-本项目全部代码（含 `hub/` 目录的 Python 工具链）由 dragon43pp 独立开发。
+本项目全部代码（含 `hub/` 目录的 Python 工具链）由 fatedawn 独立开发。
 `hub/` 目录曾以 MIT 许可（署名「龙 (tianji.cc.cd)」，系同一作者）于本地留存，
 该 MIT 版本从未对外发布；自 2026-10 起，`hub/` 目录与仓库其余部分统一按
 Apache License 2.0 发布。
@@ -62,7 +62,7 @@ Apache License 2.0 发布。
 ---------------------------------------------------------------------------
 
 本项目（以 Agent Session Center 名义发布的全部代码与资产）版权归
-dragon43pp 所有，并按 Apache License 2.0 发布。
+fatedawn 所有，并按 Apache License 2.0 发布。
 
 原项目 UniRound-Tec/hrack 的著作权与许可声明完整保留，
 详见上文「上游项目」一节与仓库根目录的 LICENSE 文件。

@@ -39,8 +39,8 @@ APP_ID = "AgentSessionCenter"
 EXE_NAME = "AgentSessionCenter.exe"
 CLI_EXE_NAME = "AgentSessionCenter-cli.exe"
 UNINST_EXE = "uninstall.exe"
-PUBLISHER = "dragon43pp"
-HOMEPAGE = "https://github.com/dragon43pp/agent-session-center"
+PUBLISHER = "fatedawn"
+HOMEPAGE = "https://github.com/fatedawn/agent-session-center"
 
 
 def _version() -> str:

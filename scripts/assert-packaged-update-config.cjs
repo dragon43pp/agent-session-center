@@ -12,7 +12,7 @@ if (!config || typeof config !== 'object') {
 }
 if (
   config.provider !== 'github' ||
-  config.owner !== 'dragon43pp' ||
+  config.owner !== 'fatedawn' ||
   config.repo !== 'agent-session-center'
 ) {
   throw new Error(

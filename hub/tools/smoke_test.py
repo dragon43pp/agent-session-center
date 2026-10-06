@@ -1200,7 +1200,7 @@ def test_session_store() -> None:
             num_chat_messages=135, body_bytes=gs.HEAVY_BYTES,
             last_turn="贴图话题文案已备好，待发布。",
             recap="把精选选段扩成十四段长原文。",
-            git_root="", git_remotes=["https://github.com/dragon43pp/zaoshuchengju.git"],
+            git_root="", git_remotes=["https://github.com/fatedawn/zaoshuchengju.git"],
             head_commit="4" * 40, head_branch="codex/writer-dream-v7")
         p = gs.handoff_prompt(src, ask="把发布流程补完")
         for must in ("造书成剧缺陷修复", "贴图话题文案已备好", "把精选选段扩成十四段",
@@ -1212,7 +1212,7 @@ def test_session_store() -> None:
               "## 接下来要做的" not in gs.handoff_prompt(src))
         check("能不塞 recap", "把精选选段扩成十四段" not in
               gs.handoff_prompt(src, include_recap=False))
-        check("能不塞 git", "github.com/dragon43pp" not in
+        check("能不塞 git", "github.com/fatedawn" not in
               gs.handoff_prompt(src, include_git=False))
         # 提示词不能太长 —— 接续的意义就是短，长了自己也变成要重放的历史
         check("提示词 < 2000 字（长会话才划算）", len(p) < 2000, f"{len(p)} 字")

@@ -207,7 +207,7 @@ python -m feishu_hub.scan --out session-history.html  :: 全文检索页
 ## 快速开始
 
 ```cmd
-git clone https://github.com/dragon43pp/agent-session-center.git
+git clone https://github.com/fatedawn/agent-session-center.git
 cd agent-session-center\hub
 pip install -r requirements.txt
 
@@ -903,5 +903,5 @@ GUI、多 CLI 覆盖、全文搜索上都比这里强，我不跟它们比这些
 
 ## License
 
-Apache-2.0（与仓库根目录保持一致；hub 目录 2026-10 起从本地留存的 MIT 统一为 Apache-2.0，作者同为 dragon43pp）
+Apache-2.0（与仓库根目录保持一致；hub 目录 2026-10 起从本地留存的 MIT 统一为 Apache-2.0，作者同为 fatedawn）
 

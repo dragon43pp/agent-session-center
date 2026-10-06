@@ -29,14 +29,15 @@
     "record:cli-demo": "node scripts/recording/01-create-cli-sessions.cjs",
     "e2e": "npm run ensure:dsh && npm run build && playwright test",
     "e2e:only": "playwright test",
-    "asc": "electron ./out/main/index.js"
+    "asc": "electron ./out/main/index.js",
+    "check:dsh-session-api": "node node_modules/esbuild/bin/esbuild tools/dsh_session_api_check.ts --bundle --platform=node --format=esm --outfile=tools/_dsh_session_api_check.mjs --log-level=warning && node tools/_dsh_session_api_check.mjs"
   },
-  "author": "dragon43pp",
+  "author": "fatedawn",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/dragon43pp/agent-session-center#readme",
+  "homepage": "https://github.com/fatedawn/agent-session-center#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dragon43pp/agent-session-center.git"
+    "url": "git+https://github.com/fatedawn/agent-session-center.git"
   },
   "build": {
     "appId": "com.agentsessioncenter.app",
@@ -149,7 +150,7 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "dragon43pp",
+        "owner": "fatedawn",
         "name": "agent-session-center"
       }
     ]

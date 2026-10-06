@@ -7,7 +7,7 @@
 
 | 想做什么 | 怎么做 |
 | --- | --- |
-| 报bug | 提 [issue](https://github.com/dragon43pp/agent-session-center/issues/new/choose)，用Bug 模板。描述里请贴上复现步骤。 |
+| 报bug | 提 [issue](https://github.com/fatedawn/agent-session-center/issues/new/choose)，用Bug 模板。描述里请贴上复现步骤。 |
 | 提需求 | 提 issue，用 Feature 模板。重点写**使用场景**，不要只写功能名。 |
 | 提 PR |  fork → 建分支 → 改 → 提 PR。大型功能请先开 issue 讨论，避免白做。 |
 
@@ -16,7 +16,7 @@
 需要 Node.js 与 npm。仓库没有 `.nvmrc`，CI 用的是 Node 20；本机装 20 LTS 最稳。
 
 ```bash
-git clone https://github.com/dragon43pp/agent-session-center.git
+git clone https://github.com/fatedawn/agent-session-center.git
 cd agent-session-center
 npm install
 npm run dev

@@ -15,9 +15,9 @@
     <!-- 冷启动期只放 3 个徽章：故意不放 v/release 与 downloads。仓库目前 0 Release，
          放上去会渲染成"No releases" / 0，等于自己对外宣告这是一个空项目。
          等发出第一个 Release（v1.0.0）后再加回来。 -->
-    <a href="./LICENSE"><img alt="开源协议：Apache-2.0" src="https://img.shields.io/github/license/dragon43pp/agent-session-center?style=flat-square"></a>
-    <a href="https://github.com/dragon43pp/agent-session-center/commits/main"><img alt="最近提交" src="https://img.shields.io/github/last-commit/dragon43pp/agent-session-center?style=flat-square"></a>
-    <a href="https://github.com/dragon43pp/agent-session-center"><img alt="仓库体积" src="https://img.shields.io/github/repo-size/dragon43pp/agent-session-center?style=flat-square"></a>
+    <a href="./LICENSE"><img alt="开源协议：Apache-2.0" src="https://img.shields.io/github/license/fatedawn/agent-session-center?style=flat-square"></a>
+    <a href="https://github.com/fatedawn/agent-session-center/commits/main"><img alt="最近提交" src="https://img.shields.io/github/last-commit/fatedawn/agent-session-center?style=flat-square"></a>
+    <a href="https://github.com/fatedawn/agent-session-center"><img alt="仓库体积" src="https://img.shields.io/github/repo-size/fatedawn/agent-session-center?style=flat-square"></a>
   </p>
 </div>
 
@@ -129,7 +129,7 @@ Agent Session Center 还可以扫描并启动 Devin CLI、Cline、Qwen Code、Am
 
 ## 安装
 
-从 [GitHub Releases](https://github.com/dragon43pp/agent-session-center/releases) 下载最新版本：
+从 [GitHub Releases](https://github.com/fatedawn/agent-session-center/releases) 下载最新版本：
 
 - Windows x64：`AgentSessionCenter-Setup-*.exe`
 - macOS Apple Silicon：`AgentSessionCenter-*-macos-arm64.dmg`
@@ -151,7 +151,7 @@ Agent Session Center 还可以扫描并启动 Devin CLI、Cline、Qwen Code、Am
 桌面程序在仓库根目录（`src/` + `electron/`）。
 
 ```bash
-git clone https://github.com/dragon43pp/agent-session-center.git
+git clone https://github.com/fatedawn/agent-session-center.git
 cd agent-session-center
 npm install
 npm run dev
@@ -170,7 +170,7 @@ Windows、macOS、Linux 安装包需要在对应系统上通过 `npm run release
 
 ## 参与贡献
 
-欢迎提交 Bug、可复现的边界情况和范围明确的 Pull Request。修改 Observer 时，请补充 fixture 或 Runtime 测试来证明事件顺序和降级行为。大型功能建议先开一个 [Issue](https://github.com/dragon43pp/agent-session-center/issues)。
+欢迎提交 Bug、可复现的边界情况和范围明确的 Pull Request。修改 Observer 时，请补充 fixture 或 Runtime 测试来证明事件顺序和降级行为。大型功能建议先开一个 [Issue](https://github.com/fatedawn/agent-session-center/issues)。
 
 本地环境、分支命名和 commit 规范见 [CONTRIBUTING.md](./CONTRIBUTING.md)。
 
