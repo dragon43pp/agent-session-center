@@ -26,11 +26,15 @@ electron.vite.config.*.mjs
 #   shots/        构建/隔离验证的截图证据
 #   demo/         README 首屏 demo（GIF + mp4，中英各一份）
 #   RELEASING.md  发版门禁与手工发版流程，README 里有链接，必须入库否则 404
+#   SIGNPATH-APPLICATION.md
+#                 代码签名政策与申请材料的完整说明，RELEASING.md 里有链接，
+#                 同时也是 SignPath 审查要看的公开证据，必须入库否则 404
 docs/*
 !docs/SPEC-REMOTE-DSH-WEB-TUNNEL.md
 !docs/brand.md
 !docs/DESIGN-SPEC.md
 !docs/RELEASING.md
+!docs/SIGNPATH-APPLICATION.md
 !docs/shots
 !docs/shots/**
 !docs/demo
