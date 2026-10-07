@@ -77,6 +77,12 @@ jobs:
           test -n "$(find "node_modules/node-pty/prebuilds/$arch_dir" -name '*.node' -print -quit)" \
             || { echo "No prebuilt node-pty binary for $arch_dir" >&2; exit 1; }
 
+      # release-github-mac.sh 内部也会跑一次 typecheck。这里提前单独跑，是为了让
+      # 「类型检查挂了」和「打包挂了」在步骤列表里就能分开看见 —— 受限网络下
+      # 原始日志有可能取不回来，但步骤状态总是拿得到。
+      - name: Typecheck
+        run: npm run typecheck
+
       # manual 触发时用输入值，tag 触发时用被推的 tag；两者都不为空，
       # 交给 release-github-mac.sh 做「tag 必须等于 package.json 版本」的门禁。
       - name: Resolve release tag

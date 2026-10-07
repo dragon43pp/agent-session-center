@@ -39,10 +39,25 @@ fi
 cd "$workspace"
 npm run build
 
+# --config.npmRebuild=false: node-pty 1.1.0 是 N-API 插件（node-addon-api ^7），npm 包里
+#   自带 ABI 稳定的 darwin-arm64 / darwin-x64 预编译产物（node_modules/node-pty/prebuilds/），
+#   运行时按 build/Release -> build/Debug -> prebuilds/<platform>-<arch> 的顺序回落加载。
+#   macOS 上重编纯属多余。这与 release-win.ps1 的处理一致（那里同样关掉重编，因为
+#   node-gyp 生成的 vcxproj 写死 SpectreMitigation，机器上没装缓解库就报 MSB8040）。
+#   **注意只在 Windows 和 macOS 关** —— node-pty 不提供 linux 预编译产物，
+#   Linux 打包仍然必须真编，所以 release-linux.sh 里没有这个开关。
+#
+# --config.electronDist: 直接复用 node_modules/electron/dist。electron-builder 自己的
+#   发行版缓存为空时它会去 GitHub Releases 下一份 Electron 发行包；这里已经装好了
+#   （workflow 里显式跑过 electron/install.js），没有理由再下一遍。
+#   release-win.ps1 出于同样的理由传了这个参数。
+electron_dist="$workspace/node_modules/electron/dist"
 CSC_IDENTITY_AUTO_DISCOVERY=false npx electron-builder \
   --mac dmg zip \
   "--$arch" \
   --publish never \
+  "--config.npmRebuild=false" \
+  "--config.electronDist=$electron_dist" \
   "--config.directories.output=$release_dir"
 
 image_path="$release_dir/$image_name"
