@@ -67,3 +67,43 @@ npm run build
 ## 行为准则
 
 保持友善即可。这是给一群陌生人协作用的开源项目，不接受人身攻击、刷屏和无关广告。
+
+## 安全政策
+
+### 报告漏洞
+
+**不要**用公开 issue 报告安全问题。请走 GitHub 的私下渠道：
+
+[打开一条 Security Advisory](https://github.com/fatedawn/agent-session-center/security/advisories/new)
+
+请附上：受影响的版本、复现步骤或 PoC、影响面（本地提权 / 数据外泄 / 远程执行），以及你希望怎么署名（默认匿名）。首次响应同样按 **72 小时内**。修复发布后会在 advisory 里致谢，除非你要求匿名。
+
+支持范围与处理流程见 [`.github/SECURITY.md`](./.github/SECURITY.md)。
+
+### 代码签名角色
+
+本项目通过 [SignPath Foundation](https://signpath.org) 的免费计划对 Windows 安装包做代码签名。按该计划的要求，团队角色划分如下（单人维护期间三个角色由同一人兼任）：
+
+| 角色 | 职责 | 成员 |
+| --- | --- | --- |
+| Authors（提交者） | 可不经额外评审直接改源码 | [`@fatedawn`](https://github.com/fatedawn) |
+| Reviewers（评审者） | 评审一切由无提交权限者提出的改动 —— 即所有来自 fork 的 PR 都必须有人看过才能合并 | [`@fatedawn`](https://github.com/fatedawn) |
+| Approvers（审批者） | 逐次审批发签请求，判断某个版本是否可以签名 | [`@fatedawn`](https://github.com/fatedawn) |
+
+约束：
+
+1. **所有成员必须对 GitHub 与 SignPath 开启 MFA。** 没有例外；这项不满足就失去权限。
+2. **签名请求必须人工审批。** 构建工作流只能产出未签名的安装包；签名是在 SignPath 门户里由 Approver 手动批准的，工作流无法自行触发。
+3. **只签自己的东西。** 只能签由本仓库流水线构建出的产物；上游开源项目的二进制不得用本项目的证书重签。
+4. **构建脚本与 CI 配置按代码同等标准评审。** 它们决定了「签名最终签的是什么东西」，改这两类文件时不能图快。
+5. 若之后有新的维护者加入，第三个角色改为双人流程 —— **该版本的提交者不能同时审批该版本的发签请求**。
+
+签名政策全文（英文为主）见 [README 的 Code signing policy 一节](./README.md#code-signing-policy)。
+
+### 隐私与数据流
+
+改动如果新增了任何出网行为，或改变了发往用户未指定系统的数据，**必须同步更新 [PRIVACY.md](./PRIVACY.md)**，并在 PR 描述里单独说明。PRIVACY.md 里那张联网表是逐条对照源码写出来的 —— 加一个 `fetch` 就要加一行。
+
+### 上游沿革
+
+本仓库是对 [`UniRound-Tec/hrack`](https://github.com/UniRound-Tec/hrack)（Apache-2.0）的二次开发，已做品牌更名与功能重做；沿革与改动范围记录在 [NOTICE](./NOTICE) 里。提 PR 时如果改动落在与上游同路径的文件上，请在描述里提一句，便于评审时对照。

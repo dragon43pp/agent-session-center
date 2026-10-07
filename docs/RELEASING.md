@@ -66,12 +66,63 @@ keep rebuilding from source.
 
 The guarded macOS and Linux commands perform equivalent runtime/resource and update-metadata checks. macOS artifacts are currently unsigned, so signing/notarization is still required before production auto-install can be considered supported there.
 
+## Code signing
+
+Windows installers are signed through the [SignPath Foundation](https://signpath.org) free
+program for open source projects. The terms of that program are what the
+[Code signing policy](../README.md#code-signing-policy) section in the README documents; this
+section covers the mechanics.
+
+**One rule shapes everything else: the installer must be built by CI, not by hand.** SignPath
+verifies the origin of each artifact, so an installer produced on a maintainer's laptop cannot
+be signed even though it passes every local gate.
+
+```text
+push tag vX.Y.Z
+      │
+      ▼
+.github/workflows/release-windows.yml   ← runs the same scripts/*.ps1 gates as a local release
+      │
+      ▼
+asc-windows-unsigned-<sha> (workflow artifact, UNSIGNED, nothing published)
+      │
+      ▼
+SignPath signing request  ──► manual approval by an Approver
+      │
+      ▼
+signed installer (+ latest.yml, + blockmap, + SHA-256)
+      │
+      ▼
+GitHub Release
+```
+
+So the release flow becomes:
+
+1. Bump the version, add the matching `## [x.y.z]` section to `CHANGELOG.md`, commit, push.
+2. Tag and push the tag.
+3. Let `release-windows.yml` finish and check its summary for the unsigned SHA-256.
+4. Submit that artifact for signing and approve the request. The first signing request needs the
+   `signpath/github-action-submit-signing-request` workflow; see the application notes in
+   `docs/SIGNPATH-APPLICATION.md` for the template and the slug values to fill in.
+5. Verify the returned installer (`Get-AuthenticodeSignature`, see the README), then create the
+   Release with the **signed** installer, its blockmap, its `.sha256`, and `latest.yml` all
+   attached together.
+
+Local builds stay useful for wiring and for gate debugging, but they are **not** what gets
+signed. If `npm run release:win` and CI disagree, CI is right.
+
+The signature only covers the Windows installer. macOS and Linux stay outside the SignPath
+policy; macOS still needs its own signing and notarization before auto-install can be trusted
+there.
+
 ## GitHub Release workflow
 
-There is **no automatic release workflow**. `.github/workflows/ci.yml` only runs
-`npm run typecheck` and `npm run build` on push and pull request; publishing is a
-manual, maintainer-confirmed step because it is irreversible and because the e2e
-suite needs a real DeepSeek Harness host that GitHub runners cannot provide.
+There is **no automatic publishing**. `.github/workflows/ci.yml` runs `npm run typecheck` and
+`npm run build` on push and pull request; `.github/workflows/release-windows.yml` additionally
+builds and packages the Windows installer and uploads it as an **unsigned** workflow artifact.
+Neither workflow creates a Release. Publishing stays a manual, maintainer-confirmed step because
+it is irreversible, because a signing request needs a human approval, and because the e2e suite
+needs a real DeepSeek Harness host that GitHub runners cannot provide.
 
 Rehearse the whole Windows chain (tag/version gate + guarded packaging + checksum)
 without touching GitHub:

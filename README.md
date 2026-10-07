@@ -29,7 +29,9 @@ The CLI keeps its native TUI and does all the work. ASC adds the layer that is u
 
 ## Upstream
 
-The early prototype was derived from [UniRound-Tec/hrack](https://github.com/UniRound-Tec/hrack) (Apache-2.0). Agent Session Center is an independently maintained hard fork — its own identity, roadmap, and release channel; no code or releases are tracked from upstream. Attribution and the change summary live in [NOTICE](./NOTICE).
+The early prototype was derived from [UniRound-Tec/hrack](https://github.com/UniRound-Tec/hrack) (Apache-2.0), a project with no affiliation to this one. Agent Session Center is an independently maintained hard fork — its own identity, roadmap, and release channel; no code, branch, or release is tracked from upstream. Every file in this repository is maintained here. Attribution, the change summary, and the measured extent of the inheritance live in [NOTICE](./NOTICE).
+
+No upstream build is signed. The upstream project publishes unsigned builds only, and no upstream binary is ever signed with this project's certificate or redistributed under this project's name.
 
 ## The problem
 
@@ -93,7 +95,7 @@ Usage is aggregated from each CLI's own records. Grok Build records its own bill
 
 ### Make the floating window yours
 
-The default floating monitor is itself a built-in renderer. Custom renderers use the same public interface and can be built with HTML, CSS, JavaScript, animation libraries, canvas, or Live2D. Settings include a short built-in skill that you can copy and give to your coding agent to create and install a renderer.
+The default floating monitor is itself a built-in renderer. Custom renderers use the same public interface and can be built with HTML, CSS, JavaScript, animation libraries, or canvas. Settings include a short built-in skill that you can copy and give to your coding agent to create and install a renderer.
 
 ### Read the workspace without leaving the session
 
@@ -141,7 +143,7 @@ Download the latest build from [GitHub Releases](https://github.com/fatedawn/age
 - **Windows x64** — `AgentSessionCenter-Setup-1.0.0.exe`, a guided NSIS installer, so you can choose the installation directory.
 - macOS Apple Silicon (`AgentSessionCenter-*-macos-arm64.dmg`) and Linux x64 (`AgentSessionCenter-*-linux-x64.AppImage` / `.deb`) targets are configured and validated by their own guarded release scripts, but those packages must be built on their matching operating systems. **v1.0.0 ships Windows x64 only.**
 
-The builds are not commercially code-signed yet, so the operating system may show a security prompt on first launch.
+Windows releases are currently **unsigned**, so the operating system may show a security prompt on first launch. Every release ships a SHA-256 checksum next to the installer, and a free code signing certificate has been applied for — see [Code signing policy](#code-signing-policy).
 
 ### First run
 
@@ -179,6 +181,58 @@ Windows, macOS, and Linux release packages must be built on their matching opera
 Bug reports, reproducible edge cases, and focused pull requests are welcome. Observer changes should include a fixture or runtime test that proves event ordering and fallback behavior. Please open an [issue](https://github.com/fatedawn/agent-session-center/issues) before starting a large feature.
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for the local setup, branch naming, and commit conventions.
+
+## Code signing policy
+
+Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org).
+
+An Authenticode signature on a release asset means one specific thing: **this file is an automated build produced from this public repository by the release workflow in it.** It is not a claim about the publisher's identity and it is not a warranty. To check that guarantee for yourself, see [Verifying a download](#verifying-a-download).
+
+### Team roles
+
+Agent Session Center is maintained by one person, so the three roles that [SignPath Foundation's policy](https://signpath.org/terms.html) requires are currently held by the same maintainer. If more maintainers join, this table is updated and signing approval becomes a two-person step — the committer of a release cannot also approve that release's signing request.
+
+| Role | Responsibility | Members |
+| --- | --- | --- |
+| Authors (committers) | May modify source in this repository without additional review | [`@fatedawn`](https://github.com/fatedawn) |
+| Reviewers | Reviews every change proposed by someone without commit access | [`@fatedawn`](https://github.com/fatedawn) |
+| Approvers | Approves each individual code signing request | [`@fatedawn`](https://github.com/fatedawn) |
+
+Every team member has multi-factor authentication enabled on both GitHub and SignPath. Signing is only enabled while that remains true.
+
+### What may be signed
+
+- Only the Windows NSIS installer built from this repository by the release workflow, and only after an Approver approves that specific request by hand in the SignPath portal. A workflow run cannot sign itself.
+- The `latest.yml` update metadata and the `.blockmap` that belong to that same release.
+- macOS and Linux packages are built and published by their own scripts but are **not** signed through SignPath Foundation.
+
+Nothing from an upstream project may be signed. The one upstream this codebase derives from — [UniRound-Tec/hrack](https://github.com/UniRound-Tec/hrack) — publishes unsigned builds and is unaffiliated with this project; no binary originating there is signed with our certificate or redistributed under our name. Electron, `node-pty`, and the other bundled libraries keep their own signatures or stay unsigned inside our installer.
+
+### Release build process
+
+1. The maintainer commits the version bump and the matching `## [x.y.z]` section in `CHANGELOG.md`, then pushes a `vX.Y.Z` tag.
+2. The [release workflow](./.github/workflows/release-windows.yml) runs on a GitHub-hosted Windows runner: `npm ci`, `npm run build`, then the repository's own packaging script, which runs every release gate (packaged-resource assertions, update-metadata assertions, a launch test of the packaged app, and an icon check).
+3. The workflow uploads the unsigned installer as a build artifact. Nothing is published by this step.
+4. An Approver reviews the diff between the previous tag and the new one, then approves the signing request in SignPath, which returns the signed installer.
+5. The signed installer, the SHA-256 checksum, `latest.yml`, and the blockmap are attached to the GitHub Release.
+
+Everything that can influence what gets signed — the build scripts, the CI workflow, the packaging configuration, and the release gates — lives in this repository and is reviewed with the same care as the application code itself.
+
+### Verifying a download
+
+```powershell
+# 1. The hash must match the one published in the release notes.
+Get-FileHash .\AgentSessionCenter-Setup-x.y.z.exe -Algorithm SHA256
+
+# 2. The signature must be present and must validate.
+Get-AuthenticodeSignature .\AgentSessionCenter-Setup-x.y.z.exe | Format-List Status, SignerCertificate
+```
+
+`Status` should be `Valid` and the signer should be **SignPath Foundation**. A hash alone only proves the download was not corrupted; it is the signature that ties the file to a build of this repository.
+
+### Privacy
+
+Agent Session Center does not transfer any information to other networked systems unless specifically requested by the user. The one automatic request — an update check against this repository's own releases — can be switched off with `ASC_DISABLE_UPDATES=1`. Every outbound request the application is capable of making, what triggers it, what it carries, and how to turn it off is listed in [PRIVACY.md](./PRIVACY.md).
 
 ## Friends
 

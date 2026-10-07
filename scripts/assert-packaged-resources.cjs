@@ -30,6 +30,7 @@ const FORBIDDEN_ROOTS = new Set([
   '.claude',
   '.dev-run',
   '.dev-shots',
+  '.github',
   '.theme-check',
   'dist',
   'e2e',

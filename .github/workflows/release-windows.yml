@@ -1,0 +1,153 @@
+name: Windows release build
+
+# 这个工作流**只构建、不上传发布**。
+#
+# 存在的理由：代码签名要求「被签名的产物确实由 CI 从本仓库源码构建出来」。
+# 本仓库的发版仍是维护者手动确认的动作（见 docs/RELEASING.md），所以这里止步于
+# 把未签名安装包 + 校验值上传为构建产物 —— 既能人工下载验收，也能作为 SignPath
+# 签名请求的输入。签名本身必须在 SignPath 门户里人工批准，工作流无法自行触发。
+#
+# 本地复现同一条链（含 tag 与 package.json 版本一致性校验）：
+#   npm run release:github:win -- -TagName vX.Y.Z
+on:
+  workflow_dispatch:
+    inputs:
+      expected_tag:
+        description: '要构建的 tag（如 v1.0.0）。必须等于 package.json 的版本，脚本会拒绝不一致的输入。'
+        required: true
+        type: string
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-windows-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # --ignore-scripts 有意识地跳过两类 postinstall：
+      #
+      #   1. electron 的二进制下载 —— 下一步显式执行，这样失败时能看见是网络问题，
+      #      而不是被埋在 npm 的输出里。
+      #
+      #   2. 本仓库 package.json 里的 `electron-rebuild -f -w node-pty` ——
+      #      Windows 上重编纯属多余，且必然失败：node-gyp 生成的 vcxproj 里写死了
+      #      <SpectreMitigation>Spectre</SpectreMitigation>，Runner 没装 Spectre
+      #      缓解库就报 MSB8040，整个 npm ci 中止。
+      #
+      #      不重编是安全的，逐条核实过：
+      #      - node-pty 1.1.0 是 N-API 插件，ABI 稳定；预编译产物
+      #        （pty.node / conpty.node / conpty_console_list.node / winpty.dll /
+      #        winpty-agent.exe）随 npm 包一起解出，无需编译。
+      #      - 运行时按 build/Release -> build/Debug -> prebuilds/<platform>-<arch>
+      #        的顺序回落加载（node-pty/lib/utils.js loadNativeModule）。跳过脚本后
+      #        build/ 不存在，正好落到 prebuilds/win32-x64/。
+      #      - node-pty 的 postinstall 只做两件事：清理 build/Release，以及把
+      #        third_party/conpty 的 conpty.dll 拷进 build/Release/conpty/。那份 DLL
+      #        只在 `useConptyDll: true` 时才会被加载，而本仓库从不传这个选项
+      #        （默认 false = 用操作系统自带的 ConPTY），所以跳过它不影响终端。
+      #      （node-pty 不提供 linux 预编译产物，所以 Linux 打包仍然必须真编 ——
+      #        这也是 release-win.ps1 里 --config.npmRebuild=false 只加在 Windows 的原因。）
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Install Electron binary
+        run: node node_modules/electron/install.js
+
+      # manual 触发时用输入值，tag 触发时用被推的 tag；两者都不为空，
+      # 交给 release-github-win.ps1 做「tag 必须等于 package.json 版本」的门禁。
+      - name: Resolve release tag
+        id: tag
+        shell: pwsh
+        env:
+          INPUT_TAG: ${{ inputs.expected_tag }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          $tag = if ($env:INPUT_TAG) { $env:INPUT_TAG } else { $env:REF_NAME }
+          if ([string]::IsNullOrWhiteSpace($tag)) { throw 'A release tag is required.' }
+          Write-Output "Building for tag: $tag"
+          "tag=$tag" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      # 这个脚本 = tag/版本门禁 + npm run typecheck + npm run release:win + 写 .sha256。
+      # release-win.ps1 内含全部门禁：产物资源断言、更新元数据断言、打包后应用启动
+      # 测试（Playwright 直接拉起打包好的 exe，不下载浏览器）与图标校验。
+      - name: Build, package and checksum
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ steps.tag.outputs.tag }}
+        run: npm run release:github:win -- -TagName $env:RELEASE_TAG
+
+      - name: Summarise artifacts
+        shell: pwsh
+        run: |
+          Get-ChildItem -LiteralPath artifacts -File |
+            Where-Object { $_.Name -like 'AgentSessionCenter-Setup-*' -or $_.Name -eq 'latest.yml' } |
+            Select-Object Name, @{ n = 'MiB'; e = { [math]::Round($_.Length / 1MB, 2) } } |
+            Format-Table -AutoSize
+
+      - name: Read installer digest
+        id: digest
+        shell: pwsh
+        run: |
+          $installer = Get-ChildItem -LiteralPath artifacts -File -Filter 'AgentSessionCenter-Setup-*.exe'
+          if (-not $installer) { throw 'No installer was produced.' }
+          $checksumFile = "$($installer.FullName).sha256"
+          if (-not (Test-Path -LiteralPath $checksumFile -PathType Leaf)) {
+            throw "Checksum file is missing: $checksumFile"
+          }
+          $hash = (Get-Content -LiteralPath $checksumFile -Raw).Split(' ')[0].Trim().ToLowerInvariant()
+          $actual = (Get-FileHash -LiteralPath $installer.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($hash -ne $actual) { throw "Published checksum does not match the installer ($hash vs $actual)." }
+          "installer=$($installer.Name)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          "sha256=$hash" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          Write-Output "UNSIGNED $($installer.Name) sha256=$hash"
+
+      # 产物不含任何签名。这是 SignPath 签名请求的输入，也是人工验收的对象。
+      - name: Upload unsigned installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: asc-windows-unsigned-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            artifacts/AgentSessionCenter-Setup-*.exe
+            artifacts/AgentSessionCenter-Setup-*.exe.blockmap
+            artifacts/AgentSessionCenter-Setup-*.exe.sha256
+            artifacts/latest.yml
+
+      - name: Job summary
+        shell: pwsh
+        env:
+          INSTALLER: ${{ steps.digest.outputs.installer }}
+          SHA256: ${{ steps.digest.outputs.sha256 }}
+          COMMIT: ${{ github.sha }}
+        run: |
+          @(
+            '### Windows build (unsigned)'
+            ''
+            '| | |'
+            '| --- | --- |'
+            "| Installer | ``$env:INSTALLER`` |"
+            "| SHA-256 | ``$env:SHA256`` |"
+            "| Commit | ``$env:COMMIT`` |"
+            ''
+            'This artifact is **not signed**. Attach it to a SignPath signing request and approve'
+            'it manually; the signature is what makes it a release asset. See docs/RELEASING.md.'
+          ) | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append

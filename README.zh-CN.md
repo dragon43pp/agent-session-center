@@ -29,7 +29,9 @@
 
 ## 上游
 
-早期原型源自 [UniRound-Tec/hrack](https://github.com/UniRound-Tec/hrack)（Apache-2.0）。Agent Session Center 是一个独立维护的硬分叉（hard fork）——拥有自己的身份、路线图和发布渠道，不跟随上游的代码或 Release。署名与改动摘要见 [NOTICE](./NOTICE)。
+早期原型源自 [UniRound-Tec/hrack](https://github.com/UniRound-Tec/hrack)（Apache-2.0），该项目与本项目无隶属关系。Agent Session Center 是一个独立维护的硬分叉（hard fork）——拥有自己的身份、路线图和发布渠道，不跟随上游的代码、分支或 Release。本仓库内的全部文件均由本项目维护。署名、改动摘要与继承范围的实测数据见 [NOTICE](./NOTICE)。
+
+上游不发布任何已签名的构建；本项目也不会用本项目的证书去签上游的二进制，更不会以上游名义或本项目名义再分发上游二进制。
 
 ## 解决什么问题？
 
@@ -93,7 +95,7 @@ Agent 提供可恢复会话时，ASC 支持一键在原工作目录恢复——�
 
 ### 悬浮窗由你定义
 
-默认悬浮监控本身就是一个内置 Renderer。自定义 Renderer 通过同一套公开接口接收真实会话状态，可以用 HTML、CSS、JavaScript、动画库、Canvas，甚至 Live2D 构建。设置页内置一份简短 Skill，复制后交给你的 Coding Agent，就能帮你创建并安装自己的悬浮窗。
+默认悬浮监控本身就是一个内置 Renderer。自定义 Renderer 通过同一套公开接口接收真实会话状态，可以用 HTML、CSS、JavaScript、动画库或 Canvas 构建。设置页内置一份简短 Skill，复制后交给你的 Coding Agent，就能帮你创建并安装自己的悬浮窗。
 
 ### 不离开会话也能阅读代码
 
@@ -141,7 +143,7 @@ Agent Session Center 还可以扫描并启动 Devin CLI、Cline、Qwen Code、Am
 - **Windows x64** —— `AgentSessionCenter-Setup-1.0.0.exe`，引导式 NSIS 安装包，可选安装目录。
 - macOS Apple Silicon（`AgentSessionCenter-*-macos-arm64.dmg`）与 Linux x64（`AgentSessionCenter-*-linux-x64.AppImage` / `.deb`）目标已配置，并由各自的发版脚本校验，但这些包必须在对应系统上构建。**v1.0.0 只发 Windows x64。**
 
-安装包暂时没有商业代码签名，首次启动时系统可能显示安全提醒。
+Windows 版目前**尚未签名**，首次启动时系统可能显示安全提醒。每个版本都会在安装包旁附上 SHA-256 校验值；免费代码签名证书已提交申请 —— 见 [代码签名政策](#代码签名政策)。
 
 ### 第一次启动
 
@@ -179,6 +181,58 @@ Windows、macOS、Linux 安装包需要在对应系统上通过 `npm run release
 欢迎提交 Bug、可复现的边界情况和范围明确的 Pull Request。修改 Observer 时，请补充 fixture 或 Runtime 测试来证明事件顺序和降级行为。大型功能建议先开一个 [Issue](https://github.com/fatedawn/agent-session-center/issues)。
 
 本地环境、分支命名和 commit 规范见 [CONTRIBUTING.md](./CONTRIBUTING.md)。
+
+## 代码签名政策
+
+Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org)。
+
+安装包上的 Authenticode 签名只说明一件事：**这个文件是由本仓库里的发布流水线、基于本仓库的源码自动构建出来的。** 它不代表发布者身份，也不构成任何担保。想自己验证这一点，见 [验证下载](#验证下载)。
+
+### 团队角色
+
+Agent Session Center 目前由一人维护，因此 [SignPath Foundation 政策](https://signpath.org/terms.html)要求的三个角色由同一位维护者兼任。若之后有新的维护者加入，本表会同步更新，且签名审批改为双人流程 —— 该版本的提交者不能同时审批该版本的发签请求。
+
+| 角色 | 职责 | 成员 |
+| --- | --- | --- |
+| Authors（提交者） | 可不经额外评审直接修改本仓库源码 | [`@fatedawn`](https://github.com/fatedawn) |
+| Reviewers（评审者） | 评审一切由无提交权限者提出的改动 | [`@fatedawn`](https://github.com/fatedawn) |
+| Approvers（审批者） | 逐次审批每个代码签名请求 | [`@fatedawn`](https://github.com/fatedawn) |
+
+全体成员均已对 GitHub 与 SignPath 开启多因素认证（MFA）。仅在该前提成立期间启用签名。
+
+### 可签名的范围
+
+- 只有由本仓库发布流水线构建出的 Windows NSIS 安装包，且每次都必须经 Approver 在 SignPath 门户中**人工审批**。工作流本身无法自行触发签名。
+- 与该版本配套的 `latest.yml` 更新元数据与 `.blockmap`。
+- macOS 与 Linux 包由各自的脚本构建发布，但**不**通过 SignPath Foundation 签名。
+
+任何来自上游项目的东西都不在可签名范围内。本代码库所源自的上游 [UniRound-Tec/hrack](https://github.com/UniRound-Tec/hrack) 只发布未签名构建，且与本项目无隶属关系；不存在任何源自它的二进制会被我们的证书签名，或以我们的名义再分发。Electron、`node-pty` 等随包分发的库保留其自身签名，或在我们安装包内保持未签名状态。
+
+### 发布构建流程
+
+1. 维护者提交版本号变更，并在 `CHANGELOG.md` 中写入对应的 `## [x.y.z]` 段落，然后推送 `vX.Y.Z` 标签。
+2. [发布工作流](./.github/workflows/release-windows.yml)在 GitHub 托管的 Windows Runner 上运行：`npm ci` → `npm run build` → 仓库自带的打包脚本。打包脚本会跑完全部门禁（产物资源断言、更新元数据断言、打包后应用启动测试、图标校验）。
+3. 工作流把**未签名**的安装包上传为构建产物。这一步不发布任何东西。
+4. Approver 审阅上一个标签到新标签之间的 diff，然后在 SignPath 中批准该次签名请求，取回已签名的安装包。
+5. 已签名安装包、SHA-256 校验值、`latest.yml` 与 blockmap 一并附到 GitHub Release。
+
+一切能影响签名结果的东西 —— 构建脚本、CI 工作流、打包配置、发布门禁 —— 都在本仓库内，并与应用代码同等对待评审。
+
+### 验证下载
+
+```powershell
+# 1. 哈希值必须与发行说明里公布的一致
+Get-FileHash .\AgentSessionCenter-Setup-x.y.z.exe -Algorithm SHA256
+
+# 2. 签名必须存在且校验通过
+Get-AuthenticodeSignature .\AgentSessionCenter-Setup-x.y.z.exe | Format-List Status, SignerCertificate
+```
+
+`Status` 应为 `Valid`，签名者应为 **SignPath Foundation**。仅凭哈希只能证明下载过程没有损坏；只有签名才能把文件与「本仓库的一次构建」绑定起来。
+
+### 隐私
+
+Agent Session Center 不会把任何信息传输到用户未指定的其他联网系统。唯一会自动发起的请求是向本仓库自身的 Release 检查更新，可用 `ASC_DISABLE_UPDATES=1` 关闭。应用可能发起的每一个网络请求、触发条件、携带内容与关闭方式，全部列在 [PRIVACY.md](./PRIVACY.md)。
 
 ## 友情链接
 
