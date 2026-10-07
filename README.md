@@ -140,10 +140,10 @@ Field depth varies by source. Title, time, turn count, and token usage are avail
 
 > **Status: early 1.x.** Stable for daily use, but configuration keys and the `hub/` layout may still change within the 1.x line. Pin a version if you need that guarantee.
 
-Download the latest build from [GitHub Releases](https://github.com/fatedawn/agent-session-center/releases):
+Download the latest build from [GitHub Releases](https://github.com/fatedawn/agent-session-center/releases/latest):
 
-- **Windows x64** — `AgentSessionCenter-Setup-1.0.0.exe`, a guided NSIS installer, so you can choose the installation directory.
-- macOS Apple Silicon (`AgentSessionCenter-*-macos-arm64.dmg`) and Linux x64 (`AgentSessionCenter-*-linux-x64.AppImage` / `.deb`) targets are configured and validated by their own guarded release scripts, but those packages must be built on their matching operating systems. **v1.0.0 ships Windows x64 only.**
+- **Windows x64** — `AgentSessionCenter-Setup-x.y.z.exe`, a guided NSIS installer, so you can choose the installation directory.
+- macOS Apple Silicon (`AgentSessionCenter-*-macos-arm64.dmg`) and Linux x64 (`AgentSessionCenter-*-linux-x64.AppImage` / `.deb`) targets are configured and validated by their own guarded release scripts, but those packages must be built on their matching operating systems. **Releases currently ship Windows x64 only.**
 
 Windows releases are currently **unsigned**, so the operating system may show a security prompt on first launch. Every release publishes a SHA-256 checksum next to the installer; see [Verifying a download](#verifying-a-download) for what that does and does not prove.
 
