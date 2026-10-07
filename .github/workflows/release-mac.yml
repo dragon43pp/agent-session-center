@@ -83,6 +83,24 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      # electron-builder 对 macOS 应用图标有 512×512 的下限（Windows 走 .ico、
+      # Linux 没有这条限制，所以只有 mac 构建会因此失败）。在这里显式断言，
+      # 免得将来有人把 build/icon.png 换小之后，收到的是打包器抛出的晦涩错误。
+      # 重新生成：python scripts/make-app-icon.py
+      - name: Assert the app icon is macOS-sized
+        run: |
+          python3 - <<'PY'
+          import struct, sys
+          with open("build/icon.png", "rb") as fh:
+              head = fh.read(24)
+          if head[:8] != b"\x89PNG\r\n\x1a\n":
+              sys.exit("build/icon.png is not a PNG")
+          width, height = struct.unpack(">II", head[16:24])
+          print(f"build/icon.png is {width}x{height}")
+          if width < 512 or height < 512:
+              sys.exit("macOS requires an app icon of at least 512x512")
+          PY
+
       # manual 触发时用输入值，tag 触发时用被推的 tag；两者都不为空，
       # 交给 release-github-mac.sh 做「tag 必须等于 package.json 版本」的门禁。
       - name: Resolve release tag
