@@ -1,0 +1,159 @@
+name: macOS release build
+
+# 与 release-windows.yml / release-linux.yml 对称：只构建、不上传发布。
+# 发布由 publish-release.yml 在人工确认后完成（见 docs/RELEASING.md）。
+#
+# **产物未签名、未公证。** 这是有意识的决定（2026-10-08）：不买 Apple Developer
+# Program，全部走免费路线。后果必须在 README 里如实告诉用户 —— macOS 15/26 上
+# 双击会被 Gatekeeper 拦下，需要「系统设置 → 隐私与安全性 → 仍要打开」，
+# 右键→打开这个老办法在新系统上已经不适用。
+#
+# 两个架构都要出：mac.target 在 package.json 里只声明了 arm64，但苹果用户里
+# Intel 仍占一部分。GitHub 免费 runner 两种架构都有 —— macos-latest 是 Apple
+# Silicon，macos-15-intel 是 Intel —— 所以一次跑两个 job，各自只构建本机架构。
+# 跨架构打包在 macOS 上不可靠，不碰。
+#
+# 本地复现同一条链（含 tag 与 package.json 版本一致性校验）：
+#   npm run release:github:mac -- vX.Y.Z
+on:
+  workflow_dispatch:
+    inputs:
+      expected_tag:
+        description: '要构建的 tag（如 v1.0.1）。必须等于 package.json 的版本，脚本会拒绝不一致的输入。'
+        required: true
+        type: string
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-mac-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-macos:
+    # 3 核 / 7 GB 的 Apple Silicon 机器 + 一个 Intel 机器。dmg 构建之外还要挂载
+    # dmg 并真实拉起打包好的 .app 做 tray 校验，所以给足时间。
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 90
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-latest
+            arch: arm64
+          - runner: macos-15-intel
+            arch: x64
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # 与 Windows 一致：跳过 lifecycle 脚本，避开 package.json 里的
+      # `electron-rebuild -f -w node-pty`。node-pty 1.1.0 自带
+      # prebuilds/darwin-arm64 与 prebuilds/darwin-x64（随 npm 包发布，不需要联网取），
+      # 运行时按 build/Release → build/Debug → prebuilds/<platform>-<arch> 回落加载，
+      # 所以不重编是安全的。electron 二进制下一步显式安装，这样失败时看得见。
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Install Electron binary
+        run: node node_modules/electron/install.js
+
+      - name: Confirm the bundled node-pty prebuild is present
+        run: |
+          arch_dir="darwin-${{ matrix.arch }}"
+          ls -la "node_modules/node-pty/prebuilds/$arch_dir"
+          test -n "$(find "node_modules/node-pty/prebuilds/$arch_dir" -name '*.node' -print -quit)" \
+            || { echo "No prebuilt node-pty binary for $arch_dir" >&2; exit 1; }
+
+      # manual 触发时用输入值，tag 触发时用被推的 tag；两者都不为空，
+      # 交给 release-github-mac.sh 做「tag 必须等于 package.json 版本」的门禁。
+      - name: Resolve release tag
+        id: tag
+        env:
+          INPUT_TAG: ${{ inputs.expected_tag }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          tag="${INPUT_TAG:-$REF_NAME}"
+          if [ -z "$tag" ]; then echo 'A release tag is required.' >&2; exit 1; fi
+          echo "Building for tag: $tag"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      # 这个脚本 = tag/版本门禁 + npm run typecheck + npm run release:mac + 写 .sha256。
+      # release-mac.sh 内含全部门禁：dmg 与 zip 及各自 blockmap 存在、Info.plist 的
+      # bundle id / 版本 / 图标、可执行文件架构匹配、hdiutil verify + 挂载后确认
+      # Agent Session Center.app 可执行、真实拉起做 tray 校验、dsh-runtime 必须不存在，
+      # 以及更新元数据断言。
+      #
+      # CSC_IDENTITY_AUTO_DISCOVERY=false 写在脚本里 —— 仓库没有签名证书，
+      # 这样 electron-builder 不会去钥匙串里翻证书，产物就是明确的未签名件。
+      - name: Build, package and checksum
+        env:
+          ASC_MAC_ARCH: ${{ matrix.arch }}
+        run: npm run release:github:mac -- "${{ steps.tag.outputs.tag }}"
+
+      - name: Summarise artifacts
+        run: |
+          ls -lh artifacts | awk 'NR==1 || /macos/ || /latest-mac/ {print}'
+
+      - name: Read dmg digest
+        id: digest
+        run: |
+          dmg="$(find artifacts -maxdepth 1 -type f -name '*.dmg' -print -quit)"
+          if [ -z "$dmg" ]; then echo 'No dmg was produced.' >&2; exit 1; fi
+          published="$(awk '{print $1}' "$dmg.sha256")"
+          actual="$(shasum -a 256 "$dmg" | awk '{print $1}')"
+          if [ "$published" != "$actual" ]; then
+            echo "Published checksum does not match the dmg ($published vs $actual)." >&2
+            exit 1
+          fi
+          echo "dmg=$(basename "$dmg")" >> "$GITHUB_OUTPUT"
+          echo "sha256=$published" >> "$GITHUB_OUTPUT"
+          echo "UNSIGNED $(basename "$dmg") sha256=$published"
+
+      - name: Upload unsigned packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: asc-macos-unsigned-${{ matrix.arch }}-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            artifacts/AgentSessionCenter-*-macos-*.dmg
+            artifacts/AgentSessionCenter-*-macos-*.dmg.sha256
+            artifacts/AgentSessionCenter-*-macos-*.zip
+            artifacts/AgentSessionCenter-*-macos-*.zip.sha256
+            artifacts/latest-mac.yml
+
+      - name: Job summary
+        env:
+          DMG: ${{ steps.digest.outputs.dmg }}
+          SHA256: ${{ steps.digest.outputs.sha256 }}
+          ARCH: ${{ matrix.arch }}
+          RUNNER: ${{ matrix.runner }}
+          COMMIT: ${{ github.sha }}
+        run: |
+          {
+            echo "### macOS build (unsigned) — $ARCH"
+            echo ''
+            echo '| | |'
+            echo '| --- | --- |'
+            echo "| dmg | \`$DMG\` |"
+            echo "| SHA-256 | \`$SHA256\` |"
+            echo "| Runner | \`$RUNNER\` |"
+            echo "| Commit | \`$COMMIT\` |"
+            echo ''
+            echo 'This build is **unsigned and not notarized**. It is expected to open only'
+            echo 'after the user allows it in System Settings → Privacy & Security.'
+            echo 'See docs/RELEASING.md.'
+          } >> "$GITHUB_STEP_SUMMARY"
