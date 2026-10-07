@@ -111,7 +111,9 @@ export const ja = {
     openingWorkbuddy: '開いています…',
     openWorkbuddyHint: '直前の国内 WorkBuddy セッションを開きます',
     openWorkbuddyFailed: (reason: string) => `開けませんでした：${reason}`,
-    openWorkbuddyNotLatest: '開けるのは直前の国内 WorkBuddy セッションだけです'
+    openWorkbuddyNotLatest: '開けるのは直前の国内 WorkBuddy セッションだけです',
+    openDshSession: 'DSH で開く',
+    openDshSessionHint: 'ASC 内の DSH 画面でこのセッションを開きます'
   },
   usageStats: {
     title: '使用量',
@@ -434,7 +436,7 @@ export const ja = {
     floatingWindow: 'フローティングウィンドウ',
     floatingWindowHint: 'AI CLI セッションの状態を常に手前に表示',
     floatingRenderer: 'フローティング表示',
-    floatingRendererHint: 'HTML・アニメーション・Live2D で作成可能。Skill をコピーして AI に渡せます',
+    floatingRendererHint: 'HTML・CSS・アニメーションで作成可能。Skill をコピーして AI に渡せます',
     floatingRendererRefresh: 'フローティング表示を再スキャン',
     floatingRendererFolder: 'フォルダーを開く',
     floatingRendererSkillCopy: 'Skill をコピー',

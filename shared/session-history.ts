@@ -27,6 +27,7 @@ export type AgentId =
   | 'pi'
   | 'antigravity'
   | 'workbuddy'
+  | 'dsh'
 
 export const AGENT_IDS: readonly AgentId[] = [
   'grok',
@@ -36,7 +37,8 @@ export const AGENT_IDS: readonly AgentId[] = [
   'kimi',
   'pi',
   'antigravity',
-  'workbuddy'
+  'workbuddy',
+  'dsh'
 ]
 
 /**

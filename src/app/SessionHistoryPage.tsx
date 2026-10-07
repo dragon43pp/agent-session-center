@@ -36,6 +36,11 @@ interface SessionHistoryPageProps {
    * 返回非空字符串表示失败原因。
    */
   onResumeSession: (session: HistorySession, option: LaunchableCli) => Promise<string | null>
+  /**
+   * dsh 没有终端恢复命令：恢复 = 把这一场交给 ASC 的 DSH 界面打开。
+   * 纯导航，失败由 DshPage 自己的 failed 态负责。
+   */
+  onOpenDshSession: (session: HistorySession) => void
 }
 
 /** `2026-09-30T02:20:22Z` -> `2026-09-30`. Undefined keeps the list in one group. */
@@ -52,7 +57,11 @@ function baseName(path: string): string {
   return cut >= 0 ? trimmed.slice(cut + 1) || trimmed : trimmed
 }
 
-export default function SessionHistoryPage({ clis, onResumeSession }: SessionHistoryPageProps) {
+export default function SessionHistoryPage({
+  clis,
+  onResumeSession,
+  onOpenDshSession
+}: SessionHistoryPageProps) {
   const strings = useStrings()
   const t = strings.sessionHistory
   const { result, scanning, error, scan } = useSessions()
@@ -95,6 +104,7 @@ export default function SessionHistoryPage({ clis, onResumeSession }: SessionHis
    * 会话 → 能不能恢复、为什么不能。
    * CLI 看 planResume、安装扫描和有没有安装项。
    * WorkBuddy 不走这条：只有最近一场国内会话能在客户端里打开。
+   * dsh 也不走这条：它没有终端恢复命令，恢复 = 在 ASC 的 DSH 界面里打开这一场。
    * 理由要拼成人话塞进 title，否则用户只能看到一个不明所以的灰按钮。
    */
   const resumeAffordance = useCallback(
@@ -102,13 +112,28 @@ export default function SessionHistoryPage({ clis, onResumeSession }: SessionHis
       option: LaunchableCli | null
       blocked: string | null
       workbuddy: boolean
+      dsh: boolean
     } => {
       // WorkBuddy 不走 CLI。只有最近一场能在客户端里打开。
       if (session.agent === 'workbuddy') {
         if (session.id === latestWorkbuddyId) {
-          return { option: null, blocked: null, workbuddy: true }
+          return { option: null, blocked: null, workbuddy: true, dsh: false }
         }
-        return { option: null, blocked: t.openWorkbuddyNotLatest, workbuddy: false }
+        return {
+          option: null,
+          blocked: t.openWorkbuddyNotLatest,
+          workbuddy: false,
+          dsh: false
+        }
+      }
+      // dsh：没有终端恢复命令，但每一场都能在 ASC 的 DSH 界面里打开
+      // （官方 sessions 服务按 id 认场次）。子会话除外——它不是用户开的，
+      // 打开它没有意义，和 CLI 侧的 subagent 禁令保持一致。
+      if (session.agent === 'dsh') {
+        if (session.subagent) {
+          return { option: null, blocked: t.resumeBlockedSubagent, workbuddy: false, dsh: false }
+        }
+        return { option: null, blocked: null, workbuddy: false, dsh: true }
       }
       const plan = planResume(session)
       if (!plan.ok) {
@@ -118,17 +143,18 @@ export default function SessionHistoryPage({ clis, onResumeSession }: SessionHis
             : plan.blocker === 'no-session-id'
               ? t.resumeBlockedNoId
               : t.resumeBlockedUnverified
-        return { option: null, blocked, workbuddy: false }
+        return { option: null, blocked, workbuddy: false, dsh: false }
       }
       const option = clis.find((candidate) => candidate.definition.id === plan.cliId) ?? null
       if (!option || option.installations.length === 0) {
         return {
           option: null,
           blocked: t.resumeBlockedCliMissing(getAdapterName(session.agent)),
-          workbuddy: false
+          workbuddy: false,
+          dsh: false
         }
       }
-      return { option, blocked: null, workbuddy: false }
+      return { option, blocked: null, workbuddy: false, dsh: false }
     },
     [clis, latestWorkbuddyId, t]
   )
@@ -163,6 +189,18 @@ export default function SessionHistoryPage({ clis, onResumeSession }: SessionHis
         .finally(() => setResumingId(null))
     },
     [latestWorkbuddyId, t]
+  )
+
+  /**
+   * dsh：把这一场交给 DSH 界面打开。纯导航，没有 IPC —— 真打开失败由
+   * DshPage 自己的 snapshot 报（那边有 failed 态的 UI）。
+   */
+  const handleOpenDshSession = useCallback(
+    (session: HistorySession): void => {
+      setResumeError(null)
+      onOpenDshSession(session)
+    },
+    [onOpenDshSession]
   )
 
   /** 行 key，与 AI 返回的 sessionKeys、墓碑 store 同构。 */
@@ -626,6 +664,7 @@ export default function SessionHistoryPage({ clis, onResumeSession }: SessionHis
                 onTrash={trashable(session) ? trashSession : null}
                 onResume={handleResume}
                 onOpenWorkbuddy={handleOpenWorkbuddy}
+                onOpenDsh={handleOpenDshSession}
               />
               )
             })}</ul>
@@ -649,10 +688,16 @@ function SessionRow({
   trashing,
   onTrash,
   onResume,
-  onOpenWorkbuddy
+  onOpenWorkbuddy,
+  onOpenDsh
 }: {
   session: HistorySession
-  affordance: { option: LaunchableCli | null; blocked: string | null; workbuddy: boolean }
+  affordance: {
+    option: LaunchableCli | null
+    blocked: string | null
+    workbuddy: boolean
+    dsh: boolean
+  }
   resuming: boolean
   /** AI 查找命中：左侧 2px 珊瑚条 + 标题点亮。 */
   highlighted: boolean
@@ -661,6 +706,7 @@ function SessionRow({
   onTrash: ((session: HistorySession) => void) | null
   onResume: (session: HistorySession, option: LaunchableCli) => void
   onOpenWorkbuddy: (session: HistorySession) => void
+  onOpenDsh: (session: HistorySession) => void
 }) {
   const strings = useStrings()
   const t = strings.sessionHistory
@@ -676,22 +722,26 @@ function SessionRow({
 
   const option = affordance.option
   const openWorkbuddy = affordance.workbuddy
-  const canResume = (Boolean(option) || openWorkbuddy) && !resuming
+  const openDsh = affordance.dsh
+  const canResume = (Boolean(option) || openWorkbuddy || openDsh) && !resuming
   const actionLabel = resuming
     ? openWorkbuddy
       ? t.openingWorkbuddy
       : t.resuming
     : openWorkbuddy
       ? `${t.openWorkbuddy} · ${t.openWorkbuddyHint}`
-      : (affordance.blocked ?? `${t.resume} · ${t.resumeHint}`)
+      : openDsh
+        ? `${t.openDshSession} · ${t.openDshSessionHint}`
+        : (affordance.blocked ?? `${t.resume} · ${t.resumeHint}`)
 
   return (
     <li
       data-testid="session-history-row"
       data-agent={session.agent}
       data-subagent={session.subagent ? 'true' : 'false'}
-      data-resumable={option || openWorkbuddy ? 'true' : 'false'}
+      data-resumable={option || openWorkbuddy || openDsh ? 'true' : 'false'}
       data-workbuddy-open={openWorkbuddy ? 'true' : 'false'}
+      data-dsh-open={openDsh ? 'true' : 'false'}
       // 行里只显示 cwd 的**基名**（`baseName(session.cwd)`），完整路径在 DOM 里
       // 根本没露面。而「恢复时预填的是不是这条会话自己的老目录」恰好只能靠完整
       // 路径判死 —— 比基名会漏（同名目录就算过）。所以这里把原值挂出来，
@@ -702,6 +752,7 @@ function SessionRow({
       // 看起来像卡住了。
       onDoubleClick={() => {
         if (openWorkbuddy) onOpenWorkbuddy(session)
+        else if (openDsh) onOpenDsh(session)
         else if (option) onResume(session, option)
       }}
       className={`group relative cursor-target flex items-center gap-3 rounded-md px-2 py-1.5 transition-colors hover:bg-surface-hover ${
@@ -779,6 +830,7 @@ function SessionRow({
           onClick={(event) => {
             event.stopPropagation()
             if (openWorkbuddy) onOpenWorkbuddy(session)
+            else if (openDsh) onOpenDsh(session)
             else if (option) onResume(session, option)
           }}
           className={`flex size-5 items-center justify-center rounded transition-opacity ${

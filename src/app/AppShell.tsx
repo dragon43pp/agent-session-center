@@ -439,11 +439,33 @@ export default function AppShell() {
     navigate(dshSlotPage(crypto.randomUUID()))
   }, [navigate])
 
+  /**
+   * 会话历史页里点 dsh 场次：直接导航到它的 DSH 跟踪位。
+   * 页面 id 里的就是 dsh 自己的 session id（`dshSlotIdFromPage` 原样取出），
+   * 于是 DshPage 会用 `intent: 'resume'` 让官方界面打开这一场。
+   */
+  const openDshHistorySession = useCallback(
+    (session: { id: string }): void => {
+      if (!session.id) return
+      navigate(dshSlotPage(session.id))
+    },
+    [navigate]
+  )
+
   const openDshFromNewSession = useCallback((): void => {
     setNewSessionOpen(false)
     setNewSessionIntent({ kind: 'sheet' })
     openDshSlot()
   }, [openDshSlot])
+
+  // 飞书 /dsh：在 DSH 界面打开指定的一场 dsh 会话。
+  useEffect(() => {
+    return window.appApi.onOpenDshSession((payload) => {
+      // 飞书推过来的是 { sessionId }，而历史页用的是 HistorySession（字段名 id），
+      // 这里做个显式映射，别让两种 payload 形状在半路打架。
+      openDshHistorySession({ id: payload.sessionId })
+    })
+  }, [openDshHistorySession])
 
   // 托盘「新建会话」菜单：与 Ctrl+Shift+T 同路径。
   useEffect(() => {
@@ -1198,6 +1220,7 @@ export default function AppShell() {
               <SessionHistoryPage
                 clis={cliReport?.launchable ?? []}
                 onResumeSession={resumeSession}
+                onOpenDshSession={openDshHistorySession}
               />
             )}
             {pageId === 'stats' && <UsagePage />}

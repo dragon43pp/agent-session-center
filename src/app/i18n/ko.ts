@@ -112,7 +112,9 @@ export const ko = {
     openingWorkbuddy: '여는 중…',
     openWorkbuddyHint: '마지막 국내 WorkBuddy 세션을 엽니다',
     openWorkbuddyFailed: (reason: string) => `열지 못했습니다: ${reason}`,
-    openWorkbuddyNotLatest: '가장 최근의 국내 WorkBuddy 세션만 열 수 있습니다'
+    openWorkbuddyNotLatest: '가장 최근의 국내 WorkBuddy 세션만 열 수 있습니다',
+    openDshSession: 'DSH에서 열기',
+    openDshSessionHint: 'ASC 안의 DSH 화면에서 이 세션을 엽니다'
   },
   usageStats: {
     title: '사용량',
@@ -435,7 +437,7 @@ export const ko = {
     floatingWindow: '플로팅 창',
     floatingWindowHint: '현재 AI CLI 세션 상태를 항상 위에 표시',
     floatingRenderer: '플로팅 렌더러',
-    floatingRendererHint: 'HTML, 애니메이션 또는 Live2D로 만들고 Skill을 복사해 AI에 전달하세요',
+    floatingRendererHint: 'HTML, CSS 또는 애니메이션으로 만들고 Skill을 복사해 AI에 전달하세요',
     floatingRendererRefresh: '플로팅 렌더러 다시 검색',
     floatingRendererFolder: '폴더 열기',
     floatingRendererSkillCopy: 'Skill 복사',

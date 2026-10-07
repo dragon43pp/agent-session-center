@@ -8,6 +8,7 @@ import type {
 } from '../../shared/dsh-ipc'
 import { DSH_SURFACE_ACTIVE_SESSION_REPORT_CHANNEL } from '../../shared/dsh-ipc'
 import type { DshHostManager } from '../dsh-host/DshHostManager'
+import { buildOpenSessionScript } from './sessionApiScript'
 
 const RUNTIME_READY_TIMEOUT_MS = 20_000
 const SESSION_READY_TIMEOUT_MS = 20_000
@@ -506,7 +507,19 @@ export class DshWebSurfaceController {
       request.sessionId &&
       request.sessionId !== this.activeSessionId
     ) {
-      await this.openSession(request.sessionId)
+      // 打开某一场失败不值得把整个表面判死：host 进程健康、页面已经加载，
+      // 只是这一场没打开（会话已不在官方列表、客户端 API 换代、ready 拒绝等）。
+      // 降级成日志 + 清空当前选择，官方页面照常可用，用户在里面点开即可。
+      // 真要提示用户应该走独立 notice 通道，那是另一件事。
+      try {
+        await this.openSession(request.sessionId)
+      } catch (error) {
+        console.warn(
+          '[dsh-surface] session auto-open failed; showing a clean surface:',
+          errorMessage(error)
+        )
+        await this.clearSession().catch(() => undefined)
+      }
     }
     if (generation !== this.generation) return
     // A hidden WebContentsView does not reliably advance animation frames.
@@ -648,28 +661,10 @@ export class DshWebSurfaceController {
   }
 
   private async openSession(sessionId: string): Promise<void> {
-    const encoded = JSON.stringify(sessionId)
+    // 脚本本体在 sessionApiScript.ts：它要同时兼容 dsh 0.1.x 的 open() 和
+    // 0.2.x 的 retain()，判卷在 tools/dsh_session_api_check.ts。
     await this.requireView().webContents.executeJavaScript(
-      `(async () => {
-        const target = ${encoded};
-        const state = globalThis.__ASC_DSH_EMBED__;
-        const sessions = state?.ctx?.get?.('sessions');
-        if (!sessions) throw new Error('official DSH sessions service is unavailable');
-        const deadline = Date.now() + ${SESSION_READY_TIMEOUT_MS};
-        while (Date.now() < deadline) {
-          const snapshot = sessions.list.getSnapshot();
-          if (snapshot.byId?.[target]) {
-            sessions.open(target);
-            if (sessions.list.getSnapshot().current === target) return true;
-          }
-          await new Promise((resolve) => setTimeout(resolve, 50));
-        }
-        const snapshot = sessions.list.getSnapshot();
-        throw new Error(
-          'DSH session is unavailable: ' + target +
-          ' (phase=' + String(snapshot.phase) + ')'
-        );
-      })()`,
+      buildOpenSessionScript(sessionId, SESSION_READY_TIMEOUT_MS),
       true
     )
   }

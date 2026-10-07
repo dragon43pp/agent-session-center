@@ -58,6 +58,10 @@ function check(name: string, ok: boolean, extra = ''): void {
   check('/打开', parseCommand('/打开').cmd === 'open-workbuddy')
   check('/open', parseCommand('/open').cmd === 'open-workbuddy')
   check('/打开 不带序号也认', parseCommand('/打开 1').cmd === 'open-workbuddy')
+  check('/dsh', parseCommand('/dsh').cmd === 'open-dsh')
+  check('/DSH 大小写不敏感', parseCommand('/DSH').cmd === 'open-dsh')
+  check('/dsh 带尾巴仍是 open-dsh（取最近一场）', parseCommand('/dsh ses-9').cmd === 'open-dsh')
+  check('/dshx → unknown（不是前缀匹配）', parseCommand('/dshx').cmd === 'unknown')
 }
 
 // ------------------------------------------------------------------ 假件
@@ -99,12 +103,18 @@ interface Deps {
   listReadyAfterCalls?: number
   /** 接上之后 /打开 和列表按钮才会去开国内 WorkBuddy。 */
   openLatestWorkbuddyImpl?: () => Promise<{ ok: boolean; message: string }>
+  /**
+   * 接上之后 /dsh 和列表按钮才会去开 DSH 界面。
+   * 入参是飞书侧传下来的 sessionId（省略 = 最近一场），判卷要验它被原样透传。
+   */
+  openDshSessionImpl?: (sessionId?: string) => Promise<{ ok: boolean; message: string }>
 }
 
 function makeFixture(deps: Deps = {}) {
   const sent: Array<{ openId: string; message: Record<string, unknown> }> = []
-  const calls = { history: 0, listActive: 0, resume: 0, send: 0, openWorkbuddy: 0 }
+  const calls = { history: 0, listActive: 0, resume: 0, send: 0, openWorkbuddy: 0, openDsh: 0 }
   const resumeArgs: Array<{ sid: string; agent?: string; model?: string }> = []
+  const dshArgs: Array<string | undefined> = []
   const router = createFeishuRouter({
     history: async () => {
       calls.history += 1
@@ -160,6 +170,15 @@ function makeFixture(deps: Deps = {}) {
             return deps.openLatestWorkbuddyImpl!()
           }
         }
+      : {}),
+    ...(deps.openDshSessionImpl
+      ? {
+          openDshSession: async (sessionId?: string) => {
+            calls.openDsh += 1
+            dshArgs.push(sessionId)
+            return deps.openDshSessionImpl!(sessionId)
+          }
+        }
       : {})
   })
 
@@ -190,7 +209,7 @@ function makeFixture(deps: Deps = {}) {
     const last = sent[sent.length - 1]
     return (last?.message as { card?: Record<string, unknown> }).card ?? {}
   }
-  return { router, sent, calls, resumeArgs, message, cardAction, lastText, lastCard }
+  return { router, sent, calls, resumeArgs, dshArgs, message, cardAction, lastText, lastCard }
 }
 
 // ------------------------------------------------------------------ 安全
@@ -227,6 +246,8 @@ function makeCardActionFor(value: Record<string, unknown>, openId = 'ou_me'): Fe
   check('/帮助 回的是卡片', Boolean(header?.title?.content))
   check('/帮助 卡里写了 /列表', JSON.stringify(card).includes('/列表'))
   check('/帮助 卡里写了 /打开', JSON.stringify(card).includes('/打开'))
+  check('/帮助 卡里写了 /dsh', JSON.stringify(card).includes('/dsh'))
+  check('/帮助 卡里说明了 dsh 不进序号', JSON.stringify(card).includes('不进'))
 
   await router.onMessage(message({ text: '/列表' }))
   const listCard = lastCard() as {
@@ -244,6 +265,7 @@ function makeCardActionFor(value: Record<string, unknown>, openId = 'ou_me'): Fe
       typeof pickButtons[0]?.value?.['title'] === 'string'
   )
   check('没接打开器时列表不放 WorkBuddy 按钮', !buttons.some((button) => button.value?.['cmd'] === 'open-workbuddy'))
+  check('没接打开器时列表不放 DSH 按钮', !buttons.some((button) => button.value?.['cmd'] === 'open-dsh'))
 
   await router.onMessage(message({ text: '/继续 2' }))
   check('/继续 2 回复带 ✅', lastText().includes('✅'), lastText())
@@ -534,6 +556,149 @@ function makeCardActionFor(value: Record<string, unknown>, openId = 'ou_me'): Fe
   const card = JSON.stringify(empty.lastCard())
   check('没有终端会话时仍给出 WorkBuddy 按钮', card.includes('open-workbuddy'), card)
   check('没有终端会话时不说先去跑几场就结束', !empty.lastText().includes('先在桌面端跑几场'))
+}
+
+// ------------------------------------------------------------------ DSH：把一场交给桌面 DSH 界面
+
+{
+  const { router, message, calls, lastText } = makeFixture()
+  await router.onMessage(message({ text: '/dsh' }))
+  check('没接 DSH 打开器：/dsh 说明原因', lastText().includes('DSH 打开器'), lastText())
+  check('没接 DSH 打开器：不调用 resume', calls.resume === 0, String(calls.resume))
+  check('没接 DSH 打开器：不调用 send', calls.send === 0, String(calls.send))
+}
+
+{
+  const opened = makeFixture({
+    openDshSessionImpl: async () => ({ ok: true, message: '已在 DSH 里打开「昨晚那场」。' })
+  })
+  await opened.router.onMessage(opened.message({ text: '/dsh' }))
+  check('/dsh 成功：调用打开器', opened.calls.openDsh === 1, String(opened.calls.openDsh))
+  check('/dsh 成功：回复 ✅', opened.lastText().includes('✅'), opened.lastText())
+  check('/dsh 成功：带上会话名', opened.lastText().includes('昨晚那场'), opened.lastText())
+  check('/dsh 成功：声明不走终端', opened.lastText().includes('不经过终端'), opened.lastText())
+  check(
+    '/dsh 不带序号：透传 undefined（= 最近一场）',
+    opened.dshArgs.length === 1 && opened.dshArgs[0] === undefined,
+    JSON.stringify(opened.dshArgs)
+  )
+  check(
+    '/dsh 成功：resume 与 send 都是 0',
+    opened.calls.resume === 0 && opened.calls.send === 0,
+    `${opened.calls.resume}/${opened.calls.send}`
+  )
+
+  await opened.router.onMessage(opened.message({ text: '/列表' }))
+  const listCard = opened.lastCard() as {
+    elements?: Array<{ tag?: string; actions?: Array<{ value?: Record<string, unknown> }> }>
+  }
+  const buttons = listCard.elements?.flatMap((el) => el.actions ?? []) ?? []
+  const dshButtons = buttons.filter((button) => button.value?.['cmd'] === 'open-dsh')
+  check('接上后列表有 DSH 按钮', dshButtons.length === 1, String(dshButtons.length))
+  check(
+    'DSH 按钮文案点名 DSH',
+    JSON.stringify(dshButtons[0]?.text ?? '').includes('DSH'),
+    JSON.stringify(dshButtons[0])
+  )
+  check(
+    '接上后列表仍只有序号按钮走 pick',
+    buttons.filter((button) => button.value?.['cmd'] === 'pick').length === 2
+  )
+
+  const toast = (await opened.router.onCardAction(
+    opened.cardAction({ cmd: 'open-dsh' })
+  )) as { toast?: { type?: string; content?: string } }
+  check('按钮打开 DSH：toast success', toast?.toast?.type === 'success', JSON.stringify(toast))
+  check('按钮打开 DSH：toast 点名 DSH', toast?.toast?.content?.includes('DSH') === true)
+  check('按钮打开 DSH：打开器被再调一次', opened.calls.openDsh === 2, String(opened.calls.openDsh))
+  check('按钮打开 DSH：不碰 resume/send', opened.calls.resume === 0 && opened.calls.send === 0)
+  check('按钮打开 DSH：私聊也收到 ✅', opened.lastText().includes('✅'), opened.lastText())
+}
+
+{
+  // 列表按钮在没接打开器时也要能回人话，而不是静默失败。
+  const noOpener = makeFixture()
+  const toast = (await noOpener.router.onCardAction(
+    noOpener.cardAction({ cmd: 'open-dsh' })
+  )) as { toast?: { type?: string; content?: string } }
+  check('没接打开器时点 DSH 按钮：toast error', toast?.toast?.type === 'error', JSON.stringify(toast))
+  check('没接打开器时点 DSH 按钮：回人话', noOpener.lastText().includes('DSH 打开器'), noOpener.lastText())
+}
+
+{
+  const failed = makeFixture({
+    openDshSessionImpl: async () => ({ ok: false, message: '这台电脑上还没有 DSH 会话。' })
+  })
+  await failed.router.onMessage(failed.message({ text: '/dsh' }))
+  check('/dsh 失败：❌ + 原因', failed.lastText().includes('❌') && failed.lastText().includes('还没有'), failed.lastText())
+  check('/dsh 失败：不调用 resume', failed.calls.resume === 0, String(failed.calls.resume))
+
+  const failToast = (await failed.router.onCardAction(
+    failed.cardAction({ cmd: 'open-dsh' })
+  )) as { toast?: { type?: string; content?: string } }
+  check('按钮打开失败：toast error', failToast?.toast?.type === 'error', JSON.stringify(failToast))
+  check(
+    '按钮打开失败：toast 带原因',
+    failToast?.toast?.content?.includes('还没有') === true,
+    JSON.stringify(failToast)
+  )
+}
+
+{
+  const exploded = makeFixture({
+    openDshSessionImpl: async () => {
+      throw new Error('dsh surface missing')
+    }
+  })
+  await exploded.router.onMessage(exploded.message({ text: '/dsh' }))
+  check(
+    '/dsh 抛错：折成人话',
+    exploded.lastText().includes('❌') && exploded.lastText().includes('dsh surface missing'),
+    exploded.lastText()
+  )
+  const boomToast = (await exploded.router.onCardAction(
+    exploded.cardAction({ cmd: 'open-dsh' })
+  )) as { toast?: { type?: string; content?: string } }
+  check(
+    '按钮打开抛错：toast error 带原因',
+    boomToast?.toast?.type === 'error' &&
+      boomToast.toast.content?.includes('dsh surface missing') === true,
+    JSON.stringify(boomToast)
+  )
+}
+
+{
+  // dsh 会话不可终端恢复 → 它不参与 /列表 的序号，/继续 也不该被它影响。
+  const mixed = makeFixture({
+    openDshSessionImpl: async () => ({ ok: true, message: '已打开。' })
+  })
+  await mixed.router.onMessage(mixed.message({ text: '/列表' }))
+  await mixed.router.onMessage(mixed.message({ text: '/继续 2' }))
+  check('/继续 2 仍走普通 resume（dsh 不占序号）', mixed.calls.resume === 1, String(mixed.calls.resume))
+  check('/继续 2 开的是 codex 那场', mixed.resumeArgs[0]?.sid === 'ses-2', JSON.stringify(mixed.resumeArgs))
+  check('/继续 2 没惊动 DSH 打开器', mixed.calls.openDsh === 0, String(mixed.calls.openDsh))
+}
+
+{
+  // 没有任何可恢复历史时，DSH 按钮仍要出现在兜底卡上。
+  const empty = makeFixture({
+    historyImpl: async () => [],
+    openDshSessionImpl: async () => ({ ok: true, message: '已打开。' })
+  })
+  await empty.router.onMessage(empty.message({ text: '/列表' }))
+  const card = JSON.stringify(empty.lastCard())
+  check('没有终端会话时仍给出 DSH 按钮', card.includes('open-dsh'), card)
+}
+
+{
+  // 安全边界：非配对人发 /dsh 也必须沉默。
+  const guarded = makeFixture({
+    paired: ['ou_other'],
+    openDshSessionImpl: async () => ({ ok: true, message: '已打开。' })
+  })
+  await guarded.router.onMessage(guarded.message({ text: '/dsh' }))
+  check('非配对人 /dsh：一条不回', guarded.sent.length === 0, String(guarded.sent.length))
+  check('非配对人 /dsh：不惊动打开器', guarded.calls.openDsh === 0, String(guarded.calls.openDsh))
 }
 
 console.log(`\n通过 ${pass} · 失败 ${fail}`)

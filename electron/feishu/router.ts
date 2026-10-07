@@ -70,6 +70,12 @@ export interface FeishuRouterDeps {
    * 没接上时 /打开 会说明，列表卡也不放这个按钮。
    */
   openLatestWorkbuddy?: () => Promise<{ ok: boolean; message: string }>
+  /**
+   * 在电脑上的 DSH 界面打开一场 dsh 会话（省略 sessionId = 最近一场）。
+   * dsh 没有终端恢复命令，所以「继续 dsh」= 把这一场交给 ASC 的 DSH 界面，
+   * 而不是往终端里投喂。
+   */
+  openDshSession?: (sessionId?: string) => Promise<{ ok: boolean; message: string }>
   /** 「恢复后自动投喂」的轮询节奏，判卷用小值。默认 3 秒一次、最多等 45 秒。 */
   pollIntervalMs?: number
   pollTimeoutMs?: number
@@ -84,6 +90,7 @@ export type RouterCommand =
   | { cmd: 'resume'; n: number; text?: string }
   | { cmd: 'send'; n: number; text: string }
   | { cmd: 'open-workbuddy' }
+  | { cmd: 'open-dsh' }
   | { cmd: 'unknown' }
 
 export function parseCommand(rawText: string): RouterCommand {
@@ -98,6 +105,7 @@ export function parseCommand(rawText: string): RouterCommand {
   if (word === '列表' || word === 'list') return { cmd: 'list' }
   if (word === '会话' || word === 'sessions') return { cmd: 'active' }
   if (word === '打开' || word === 'open') return { cmd: 'open-workbuddy' }
+  if (word === 'dsh') return { cmd: 'open-dsh' }
   if (word === '继续' || word === 'resume') {
     if (!hasN) return { cmd: 'unknown' }
     // 序号后面还跟着字 = 恢复之后把这句话自动投喂给 CLI（一步到位）。
@@ -221,6 +229,7 @@ function helpCard(): Record<string, unknown> {
             '**/列表** —— 最近可恢复的历史会话（点序号 → 选模型 → 打开）',
             '**/继续 序号 [第一句话]** —— 打开会话；带上话就自动投喂，它直接开跑',
             '**/打开** —— 在电脑上打开上次的国内 WorkBuddy 会话（不选模型，不自动发消息）',
+            '**/dsh** —— 在电脑上的 DSH 界面打开最近一场 DeepSeek Harness 会话',
             '**/会话** —— 现在开着的会话',
             '**/发 序号 一句话** —— 往开着的会话里投喂一句话'
           ].join('\n')
@@ -234,6 +243,7 @@ function helpCard(): Record<string, unknown> {
             '**能力边界**',
             '- 「继续」是在电脑上开标签页：手机上做决定，回到电脑就能接着聊',
             '- 「打开」只开国内 WorkBuddy 里最近一场，国际版不在这里恢复',
+            '- 「/dsh」只开最近一场；dsh 没有终端恢复命令，所以它不进 /列表 的序号',
             '- 「发」只对**开着的**会话生效；会话正忙时不收',
             '- 列表序号 30 分钟内有效，过期重发 /列表'
           ].join('\n')
@@ -293,10 +303,22 @@ export function createFeishuRouter(deps: FeishuRouterDeps): {
       }
     : null
 
+  const dshButton = deps.openDshSession
+    ? {
+        tag: 'button',
+        text: { tag: 'plain_text', content: '打开最近的 DSH' },
+        type: 'default',
+        value: { cmd: 'open-dsh' }
+      }
+    : null
+
   async function sendList(openId: string): Promise<void> {
     const resumable = (await deps.history()).filter((session) => session.resumable)
     if (resumable.length === 0) {
-      if (!workbuddyButton) {
+      const fallbackButtons = [workbuddyButton, dshButton].filter(
+        (button): button is NonNullable<typeof button> => button !== null
+      )
+      if (fallbackButtons.length === 0) {
         await sendText(openId, '这台电脑上还没有可恢复的会话。先在桌面端跑几场再来。')
         return
       }
@@ -312,10 +334,11 @@ export function createFeishuRouter(deps: FeishuRouterDeps): {
               tag: 'div',
               text: {
                 tag: 'lark_md',
-                content: '终端会话还没有。国内 WorkBuddy 可以打开上次那场。'
+                content:
+                  '终端会话还没有。国内 WorkBuddy 和 DSH 各自还能打开最近那场。'
               }
             },
-            { tag: 'action', actions: [workbuddyButton] }
+            { tag: 'action', actions: fallbackButtons }
           ]
         }
       })
@@ -351,7 +374,14 @@ export function createFeishuRouter(deps: FeishuRouterDeps): {
         elements: [
           { tag: 'div', text: { tag: 'lark_md', content: lines.join('\n') } },
           ...grouped.map((group) => ({ tag: 'action', actions: group })),
-          ...(workbuddyButton ? [{ tag: 'action', actions: [workbuddyButton] }] : []),
+          ...[workbuddyButton, dshButton].some(Boolean)
+            ? [
+                {
+                  tag: 'action',
+                  actions: [workbuddyButton, dshButton].filter(Boolean)
+                }
+              ]
+            : [],
           {
             tag: 'note',
             elements: [
@@ -469,6 +499,19 @@ export function createFeishuRouter(deps: FeishuRouterDeps): {
     }
   }
 
+  async function openDshSessionText(): Promise<string> {
+    if (!deps.openDshSession) {
+      return '这台电脑还没接上 DSH 打开器。'
+    }
+    try {
+      const result = await deps.openDshSession()
+      if (!result.ok) return `❌ ${result.message}`
+      return `✅ ${result.message}\n这场不经过终端，只交给电脑上的 DSH 界面。`
+    } catch (error) {
+      return `❌ 没开成：${messageOf(error)}`
+    }
+  }
+
   async function openLatestWorkbuddyText(): Promise<string> {
     if (!deps.openLatestWorkbuddy) {
       return '这台电脑还没接上国内 WorkBuddy 的打开器。'
@@ -537,6 +580,9 @@ export function createFeishuRouter(deps: FeishuRouterDeps): {
             return
           case 'open-workbuddy':
             await sendText(message.openId, await openLatestWorkbuddyText())
+            break
+          case 'open-dsh':
+            await sendText(message.openId, await openDshSessionText())
             return
           case 'resume':
             await sendText(
@@ -609,6 +655,25 @@ export function createFeishuRouter(deps: FeishuRouterDeps): {
             toast: {
               type: result.ok ? 'success' : 'error',
               content: result.ok ? '已在 WorkBuddy 里打开' : truncate(result.message, 60)
+            }
+          }
+        }
+        if (value['cmd'] === 'open-dsh') {
+          if (!deps.openDshSession) {
+            await sendText(action.openId, '这台电脑还没接上 DSH 打开器。')
+            return { toast: { type: 'error', content: '没有 DSH 打开器' } }
+          }
+          const result = await deps.openDshSession()
+          await sendText(
+            action.openId,
+            result.ok
+              ? `✅ ${result.message}\n这场不经过终端，只交给电脑上的 DSH 界面。`
+              : `❌ ${result.message}`
+          )
+          return {
+            toast: {
+              type: result.ok ? 'success' : 'error',
+              content: result.ok ? '已在 DSH 里打开' : truncate(result.message, 60)
             }
           }
         }

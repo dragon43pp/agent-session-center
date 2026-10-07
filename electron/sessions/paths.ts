@@ -53,6 +53,17 @@ export function piAgentDir(): string {
 }
 
 /**
+ * DeepSeek Harness 的家目录：`$DSH_HOME`，默认 `~/.dsh`。
+ *
+ * dsh CLI 和 DSH Desktop 共用这一个目录（Desktop 自己的 lib/bin.js 里写着
+ * `homeDirectoryName: ".dsh"`），所以会话、settings.yaml、profiles 都是同一份。
+ * 会话在 `<dsh home>/sessions/<encoded-cwd>/<session-dir>/session.jsonl.zstd`。
+ */
+export function dshHome(): string {
+  return resolveDir(process.env.DSH_HOME, join(home, '.dsh'))
+}
+
+/**
  * Pi resolves its session root in three steps, and so do we, in the same order:
  *   1. `$PI_CODING_AGENT_SESSION_DIR`
  *   2. `sessionDir` in `<agent dir>/settings.json`

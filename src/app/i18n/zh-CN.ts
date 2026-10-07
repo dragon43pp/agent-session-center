@@ -114,7 +114,9 @@ export const zhCN = {
     openingWorkbuddy: '正在打开…',
     openWorkbuddyHint: '在 WorkBuddy 里打开上次这场国内会话',
     openWorkbuddyFailed: (reason: string) => `没打开：${reason}`,
-    openWorkbuddyNotLatest: '只打开最近一次的国内 WorkBuddy 会话'
+    openWorkbuddyNotLatest: '只打开最近一次的国内 WorkBuddy 会话',
+    openDshSession: '在 DSH 中打开',
+    openDshSessionHint: '在 ASC 里的 DSH 界面打开这一场'
   },
   usageStats: {
     title: '用量统计',
@@ -436,7 +438,7 @@ export const zhCN = {
     floatingWindow: '悬浮窗',
     floatingWindowHint: '独立置顶显示当前 AI CLI 会话状态',
     floatingRenderer: '悬浮窗实现',
-    floatingRendererHint: '可用 HTML、动画或 Live2D 自定义；复制创作 Skill 交给 AI 即可开始',
+    floatingRendererHint: '可用 HTML、CSS 或动画自定义；复制创作 Skill 交给 AI 即可开始',
     floatingRendererRefresh: '重新扫描悬浮窗实现',
     floatingRendererFolder: '打开目录',
     floatingRendererSkillCopy: '复制 Skill',

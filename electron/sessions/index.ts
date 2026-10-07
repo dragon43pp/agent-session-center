@@ -26,6 +26,7 @@ import { estimateCost, loadPricingCache } from './pricing'
 import { BUILTIN_PRICES } from './pricing-table'
 import {
   antigravityCliHome,
+  dshHome,
   workbuddyHome,
   antigravityIdeHome,
   claudeConfigDir,
@@ -42,6 +43,7 @@ import { readGrokSessions } from './readers/grok'
 import { readKimiSessions } from './readers/kimi'
 import { readOpenCodeSessions } from './readers/opencode'
 import { readPiSessions } from './readers/pi'
+import { readDshSessions } from './readers/dsh'
 import { readWorkbuddySessions } from './readers/workbuddy'
 
 interface ReaderSpec {
@@ -54,6 +56,14 @@ interface ReaderSpec {
    * CLI and its IDE keep separate stores, and either counts.
    */
   altRoot?: () => Promise<string>
+  /**
+   * Per-agent override for the scan budget. dsh needs it: one session log is a
+   * concatenated-frame zstd container that has to be decompressed frame by
+   * frame to be counted, and the machine this was measured on (138 sessions,
+   * 48 MB compressed, one of them 18 MB) takes ~15 s warm — too close to the
+   * shared 30 s ceiling to be left there.
+   */
+  timeoutMs?: number
 }
 
 const SPECS: Record<AgentId, ReaderSpec> = {
@@ -99,6 +109,14 @@ const SPECS: Record<AgentId, ReaderSpec> = {
     agent: 'workbuddy',
     read: readWorkbuddySessions,
     root: async () => workbuddyHome()
+  },
+  dsh: {
+    agent: 'dsh',
+    read: readDshSessions,
+    // dsh 的 home 是单个目录（CLI 与 DSH Desktop 共用），会话在其下 sessions/
+    root: async () => dshHome(),
+    // 逐帧解压 48 MB 压缩日志不是免费的（本机热态 ~15 s），单给 dsh 放宽。
+    timeoutMs: 60_000
   }
 }
 
@@ -152,7 +170,7 @@ function priceSessions(sessions: readonly HistorySession[]): HistorySession[] {
 
 async function scanOne(spec: ReaderSpec, options: DiscoverOptions): Promise<AgentScanResult> {
   const started = Date.now()
-  const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS
+  const timeoutMs = spec.timeoutMs ?? options.timeoutMs ?? DEFAULT_TIMEOUT_MS
   const override = options.roots?.[spec.agent]
 
   try {

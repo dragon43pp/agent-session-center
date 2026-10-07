@@ -114,7 +114,9 @@ export const en = {
     openingWorkbuddy: 'Opening…',
     openWorkbuddyHint: 'Open the last domestic WorkBuddy session',
     openWorkbuddyFailed: (reason: string) => `Could not open: ${reason}`,
-    openWorkbuddyNotLatest: 'Only the most recent domestic WorkBuddy session can be opened'
+    openWorkbuddyNotLatest: 'Only the most recent domestic WorkBuddy session can be opened',
+    openDshSession: 'Open in DSH',
+    openDshSessionHint: 'Open this session in the DSH surface inside ASC'
   },
   usageStats: {
     title: 'Usage',
@@ -438,7 +440,7 @@ export const en = {
     floatingWindow: 'Floating window',
     floatingWindowHint: 'Always-on-top status for current AI CLI sessions',
     floatingRenderer: 'Floating renderer',
-    floatingRendererHint: 'Customize with HTML, animation, or Live2D; copy the creation Skill for your AI',
+    floatingRendererHint: 'Customize with HTML, CSS, or animation; copy the creation Skill for your AI',
     floatingRendererRefresh: 'Rescan floating renderers',
     floatingRendererFolder: 'Open folder',
     floatingRendererSkillCopy: 'Copy Skill',

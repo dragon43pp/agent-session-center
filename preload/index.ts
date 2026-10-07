@@ -483,6 +483,16 @@ const appApi: AppApi = {
     return () =>
       ipcRenderer.removeListener(AppEventChannel.OpenNewSession, handler)
   },
+  onOpenDshSession: (cb) => {
+    const handler = (_event: IpcRendererEvent, payload: { sessionId?: unknown }): void => {
+      // 进渲染层前先把形状收窄：sessionId 必须是字符串，其余一概丢。
+      if (!payload || typeof payload.sessionId !== 'string' || payload.sessionId === '') return
+      cb({ sessionId: payload.sessionId })
+    }
+    ipcRenderer.on(AppEventChannel.OpenDshSession, handler)
+    return () =>
+      ipcRenderer.removeListener(AppEventChannel.OpenDshSession, handler)
+  },
   onFocusSession: (cb) => {
     const handler = (
       _event: IpcRendererEvent,

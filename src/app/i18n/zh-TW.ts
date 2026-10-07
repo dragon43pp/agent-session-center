@@ -110,7 +110,9 @@ export const zhTW = {
     openingWorkbuddy: '正在打開…',
     openWorkbuddyHint: '在 WorkBuddy 裡打開上次這場國內工作階段',
     openWorkbuddyFailed: (reason: string) => `沒打開：${reason}`,
-    openWorkbuddyNotLatest: '只打開最近一次的國內 WorkBuddy 工作階段'
+    openWorkbuddyNotLatest: '只打開最近一次的國內 WorkBuddy 工作階段',
+    openDshSession: '在 DSH 中開啟',
+    openDshSessionHint: '在 ASC 的 DSH 介面開啟這一場'
   },
   usageStats: {
     title: '用量統計',
@@ -432,7 +434,7 @@ export const zhTW = {
     floatingWindow: '浮動視窗',
     floatingWindowHint: '獨立置頂顯示目前 AI CLI 工作階段狀態',
     floatingRenderer: '浮動視窗實作',
-    floatingRendererHint: '可用 HTML、動畫或 Live2D 自訂；複製創作 Skill 交給 AI 即可開始',
+    floatingRendererHint: '可用 HTML、CSS 或動畫自訂；複製創作 Skill 交給 AI 即可開始',
     floatingRendererRefresh: '重新掃描浮動視窗實作',
     floatingRendererFolder: '開啟目錄',
     floatingRendererSkillCopy: '複製 Skill',

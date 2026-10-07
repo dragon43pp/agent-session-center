@@ -705,6 +705,11 @@ export const AppInvokeChannel = {
 
 export const AppEventChannel = {
   OpenNewSession: 'app:open-new-session',
+  /**
+   * 让主窗口在 DSH 界面里打开某一 dsh 会话（飞书侧触发）。
+   * dsh 没有终端恢复命令，它的「恢复」就是在 ASC 的 DSH 界面里打开这一场。
+   */
+  OpenDshSession: 'app:open-dsh-session',
   FocusSession: 'app:focus-session',
   MainPrefsChanged: 'app:main-prefs-changed',
   BridgeLaunch: 'bridge:launch',
@@ -856,6 +861,8 @@ export interface AppApi {
   setMainPrefs: (update: MainPrefsUpdate) => Promise<void>
   /** 托盘「新建会话」菜单触发；与 Ctrl+Shift+T 同路径。 */
   onOpenNewSession: (cb: () => void) => () => void
+  /** 飞书 /dsh 触发：在 DSH 界面打开某一场 dsh 会话。 */
+  onOpenDshSession: (cb: (payload: { sessionId: string }) => void) => () => void
   /** 悬浮窗条目 → 主窗口恢复并进入既有 Session terminal。 */
   onFocusSession: (cb: (payload: FocusSessionPayload) => void) => () => void
   onMainPrefsChanged: (cb: (prefs: MainPrefsSnapshot) => void) => () => void
