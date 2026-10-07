@@ -16,7 +16,7 @@ on:
         required: true
         type: string
       run_id:
-        description: '产出该产物的 release-windows.yml 运行 id'
+        description: '产出该产物的构建运行 id（release-windows.yml / release-linux.yml / release-mac.yml 任一）'
         required: true
         type: string
       publish:
@@ -44,22 +44,33 @@ jobs:
           echo '--- downloaded ---'
           find dl -type f -exec ls -l {} +
 
-      - name: Verify the installer against its published checksum
+      - name: Verify every artifact against its published checksum
+        # 不写死文件名：一次运行可能是 Windows（Setup-*.exe）、Linux（AppImage + deb）
+        # 或 macOS（dmg + zip）。凡是带了 .sha256 的产物，逐个比对，缺一个都拒绝挂载。
         run: |
           set -euo pipefail
-          exe=$(find dl -type f -name 'AgentSessionCenter-Setup-*.exe' | head -1)
-          sum=$(find dl -type f -name '*.exe.sha256' | head -1)
-          [ -n "$exe" ] || { echo 'No installer found in the artifact.' >&2; exit 1; }
-          [ -n "$sum" ] || { echo 'No .sha256 file found in the artifact.' >&2; exit 1; }
-          expected=$(cut -d' ' -f1 "$sum" | tr -d '\r\n' | tr '[:upper:]' '[:lower:]')
-          actual=$(sha256sum "$exe" | cut -d' ' -f1)
-          echo "installer : $exe"
-          echo "expected  : $expected"
-          echo "actual    : $actual"
-          if [ "$expected" != "$actual" ]; then
-            echo 'Checksum mismatch — refusing to attach.' >&2
+          mapfile -t sums < <(find dl -type f -name '*.sha256')
+          if [ ${#sums[@]} -eq 0 ]; then
+            echo 'No .sha256 files found in the artifact.' >&2
             exit 1
           fi
+          for sum in "${sums[@]}"; do
+            name=$(basename "$sum" .sha256)
+            artifact=$(find dl -type f -name "$name" -print -quit)
+            if [ -z "$artifact" ]; then
+              echo "Checksum file has no matching artifact: $name" >&2
+              exit 1
+            fi
+            expected=$(cut -d' ' -f1 "$sum" | tr -d '\r\n' | tr '[:upper:]' '[:lower:]')
+            actual=$(sha256sum "$artifact" | cut -d' ' -f1)
+            printf '%-52s expected=%s\n' "$name" "$expected"
+            printf '%-52s   actual=%s\n' '' "$actual"
+            if [ "$expected" != "$actual" ]; then
+              echo "Checksum mismatch for $name — refusing to attach." >&2
+              exit 1
+            fi
+          done
+          echo "All ${#sums[@]} checksum(s) matched."
 
       - name: Attach the artifacts to the release
         env:
