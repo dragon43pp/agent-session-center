@@ -31,6 +31,23 @@ First public release. Agent Session Center (ASC) is a desktop session center for
 - Builds are not commercially code-signed yet, so Windows may show a security prompt on first launch.
 - The early prototype was derived from [UniRound-Tec/hrack](https://github.com/UniRound-Tec/hrack) (Apache-2.0). ASC is an independently maintained hard fork; attribution and the change summary live in [NOTICE](./NOTICE).
 
+## [1.0.1] - 2026-10-07
+
+### Added
+
+- **DeepSeek Harness in session history.** DSH sessions are now read from the DeepSeek Harness home directory (`$DSH_HOME`, default `~/.dsh`) — the same directory the `dsh` CLI and DSH Desktop share — so they are listed alongside the other sources.
+- **Open in DSH.** A DSH session opens directly in ASC's DSH surface with a resume intent, instead of only appearing in the list.
+- **Feishu `/dsh` command.** A prompt or approval on your phone can open a DSH session in the desktop app through the new `app:open-dsh-session` channel.
+
+### Removed
+
+- **The built-in Live2D floating-window skin**, and with it the bundled Live2D Cubism Core runtime and the Mao sample model (48 files, 4.9 MB on disk). They leave both the repository and the installer, so the package no longer contains any non-open-source runtime. The default `builtin/default` monitor is unaffected, and a floating window whose renderer is missing falls back to it.
+- **The Sunny Buddy example renderer** (`examples/`). Custom floating renderers remain supported, but the direction is now compact status surfaces rather than animated characters: the built-in creation Skill states that third-party runtimes and models are supplied and licensed by the user, never bundled here.
+
+### Notes
+
+- The published [v1.0.0](https://github.com/fatedawn/agent-session-center/releases/tag/v1.0.0) installer predates the Live2D removal and still carries that runtime. Only artifacts built from current source are submitted for code signing.
+
 ## [Unreleased]
 
 ## [0.4.7] - 2026-09-18
