@@ -1,5 +1,9 @@
 # Code signing application: SignPath Foundation
 
+> **Not submitted.** This document is preparation for a deferred application, not a record of an
+> active one. The reason it is deferred is in [Status](#status) below. Until it goes in, every
+> Windows release is unsigned and the public documents say so.
+
 This document records how Agent Session Center satisfies the
 [SignPath Foundation conditions for open source projects](https://signpath.org/terms.html), and
 what remains to be configured in the SignPath portal once the application is approved.
@@ -11,13 +15,42 @@ section in the README, which is the public-facing statement.
 
 | | |
 | --- | --- |
-| Application | Not submitted yet. Repository prerequisites are in place; the form is at <https://signpath.org/apply>. |
+| Application | **Deferred — not submitted.** See *Why this is deferred* below. |
 | Certificate | None. Every published Windows installer is currently **unsigned**. |
 | Artifacts in scope | Windows x64 NSIS installer, released from `main` |
 | Programs relying on it | The Windows installer, its `.blockmap`, and `latest.yml` |
+| Public-facing state | The README, `SECURITY.md`, `CONTRIBUTING.md` and `RELEASING.md` all state that releases are unsigned and describe signing as *planned*, not in effect. |
 
 Until a certificate is issued, releases keep shipping unsigned plus a published SHA-256
 checksum, and the README says so plainly.
+
+### Why this is deferred
+
+Read off the live application form on 2026-10-07, not inferred: the form has a **mandatory**
+`Reputation` field whose helper text reads
+
+> Provide links or information showing that your project is **widely used or trusted**. Examples
+> include media coverage, blog posts, download statistics, GitHub insights, or community
+> discussions.
+
+As of 2026-10-07 this repository cannot fill that field: it was created on 2026-10-03, and has
+0 stars, 0 forks, 0 watchers and 0 recorded downloads across all four v1.0.0 assets. Every one of
+the five evidence types the form suggests is empty.
+
+SignPath's terms say the same thing in prose:
+
+> "we cannot sign binaries based on source code that nobody knows. For executable programs that may
+> be downloaded and executed based on our signature, we require a certain verifiable reputation.
+> (Not for developer libraries/components/packages though.)"
+
+An Electron installer is exactly such an executable, so the clause applies. The decision is to
+**promote first and apply once there is a track record to cite**, not to submit an application with
+that field empty. Nothing in the application checklist depends on a build artifact existing, so
+there is no deadline pressure here — the CI artifact's 14-day retention is irrelevant to the
+application and only matters when a signing *request* is submitted after approval.
+
+Everything below this section is preparation, kept because it is the work that would be needed the
+moment the application goes in.
 
 ## Conditions and how this repository meets them
 
@@ -216,15 +249,24 @@ it must equal `package.json`'s `version` in that build.
 
 Approval yields an organization id plus slugs you choose yourself. Do these in order:
 
-1. Install the [SignPath GitHub App](https://github.com/apps/signpath) on this repository.
-2. In the SignPath console, create the **project** (suggested slug `agent-session-center`) and add
-   GitHub Actions as a **trusted build system** pointing at this repository and at
-   `.github/workflows/release-windows.yml`.
+A trusted build system is **required** for SignPath's Open Source Code Signing, so the order below
+matters: the project cannot use the signing policy until the build system is linked to it.
+
+1. Add the **predefined** trusted build system `GitHub.com` to the organization
+   (**Trusted Build Systems** → **Add predefined**). SignPath hosts this connector, so no
+   self-hosted connector and no custom token are involved — the action's `connector-url` defaults
+   to `https://pipelineconnector.connectors.signpath.io/GitHub/GitHubCom`.
+2. In the SignPath console, create the **project** (suggested slug `agent-session-center`), then
+   **link** the `GitHub.com` trusted build system to it (project → **Trusted build systems** →
+   **Link**).
 3. Create the **artifact configuration** described above — suggested slug `windows-installer`.
 4. Create the **signing policy** bound to the Foundation certificate — suggested slug
    `release-signing`. Approval mode: **manual**, so each request waits for an Approver.
 5. Create an **API token** with the submitter role for this project.
-6. Add these to the repository (Settings → Secrets and variables → Actions):
+6. Install the [SignPath GitHub App](https://github.com/apps/signpath) on this repository. It is
+   only *required* when a signing policy uses `enforced_from` and SignPath has to read GitHub's
+   audit log, but installing it early costs nothing and avoids a surprise later.
+7. Add these to the repository (Settings → Secrets and variables → Actions):
 
 | Name | Kind | Value |
 | --- | --- | --- |
@@ -234,59 +276,70 @@ Approval yields an organization id plus slugs you choose yourself. Do these in o
 | `SIGNPATH_ARTIFACT_CONFIGURATION_SLUG` | variable | `windows-installer` |
 | `SIGNPATH_SIGNING_POLICY_SLUG` | variable | `release-signing` |
 
-## Signing workflow to add after approval
+## Signing job to add after approval
 
 Not committed yet: it cannot run without the slugs above, and a workflow that always fails is
 worse than a documented one.
 
-Two things to check against the action's README when you add it, because both are easy to get
-wrong and neither fails loudly:
+### Why this has to be a job inside `release-windows.yml`
 
-- `github-artifact-id` expects the **artifact id**, not the run id. Resolve it first
-  (`gh api repos/{owner}/{repo}/actions/runs/<run_id>/artifacts`) rather than passing the run id.
-- SignPath versions the action and has renamed inputs before. Verify every input name against
-  the current README instead of copying this template blindly.
+The GitHub connector verifies the origin of every request, and two of its published checks rule out
+the obvious design of a separate `workflow_dispatch` workflow that re-downloads the artifact from an
+earlier run:
+
+- *"A build was actually performed by a GitHub workflow, not by some other entity in possession of
+  the API token"* — the run that submits the request has to be the run that built the artifact.
+- *"For OSS projects: all jobs of the GitHub workflow leading up to the signing request were
+  executed on GitHub-hosted agents."*
+
+A re-download workflow satisfies neither. So the signing job is appended to
+`.github/workflows/release-windows.yml`, gated on the build job.
+
+### Two changes the existing build job needs
+
+1. Give **`Upload unsigned installer`** an `id`, so its `artifact-id` output can be referenced.
+   `actions/upload-artifact@v4` already exports it; SignPath's own example uses `@v7`.
+2. Re-export it at job level, because a step output is not visible to another job.
 
 ```yaml
-name: Sign Windows installer
-
-on:
-  workflow_dispatch:
-    inputs:
-      unsigned_run_id:
-        description: 'Run id of the release-windows.yml run that produced the artifact'
-        required: true
-        type: string
-
-permissions:
-  contents: read
-  actions: read
-
 jobs:
-  sign:
-    runs-on: ubuntu-latest
+  build-windows:
+    runs-on: windows-latest
+    outputs:
+      artifact_id: ${{ steps.upload.outputs.artifact-id }}
     steps:
-      - name: Resolve the unsigned artifact id
-        id: artifact
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RUN_ID: ${{ inputs.unsigned_run_id }}
-        run: |
-          id=$(gh api "repos/${{ github.repository }}/actions/runs/$RUN_ID/artifacts" \
-            --jq '.artifacts[] | select(.name | startswith("asc-windows-unsigned-")) | .id' | head -1)
-          if [ -z "$id" ]; then echo "No unsigned artifact on run $RUN_ID" >&2; exit 1; fi
-          echo "id=$id" >> "$GITHUB_OUTPUT"
+      # … every step above stays exactly as it is …
+      - name: Upload unsigned installer
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          # … the existing with: block stays exactly as it is …
+```
 
+Passing the **artifact id** is the documented method, which is why it is read from the upload step
+rather than resolved by querying `…/actions/runs/<run_id>/artifacts`.
+
+### The signing job
+
+```yaml
+  sign-windows:
+    needs: build-windows
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    steps:
       - name: Submit the signing request
-        uses: signpath/github-action-submit-signing-request@v1
+        uses: signpath/github-action-submit-signing-request@v3
         with:
           api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
           organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
           project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
           signing-policy-slug: ${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}
           artifact-configuration-slug: ${{ vars.SIGNPATH_ARTIFACT_CONFIGURATION_SLUG }}
-          github-artifact-id: ${{ steps.artifact.outputs.id }}
+          github-artifact-id: ${{ needs.build-windows.outputs.artifact_id }}
           wait-for-completion: true
+          wait-for-completion-timeout-in-seconds: 3600
           output-artifact-directory: signed
 
       - name: Verify the returned signature
@@ -296,10 +349,26 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: asc-windows-signed
+          name: asc-windows-signed-${{ github.sha }}
           if-no-files-found: error
+          retention-days: 14
           path: signed/
 ```
+
+Three inputs that are easy to get wrong and do not fail loudly:
+
+- **`@v3`, not `@v1`.** The action is versioned and `v3` (2026-09) is current. Every input name
+  above was checked against `v3`'s `action.yml` and none was renamed — but re-check if the pin moves
+  again.
+- **The timeout.** `wait-for-completion: true` blocks the job until an Approver approves inside the
+  SignPath portal, and the default is only 600 seconds. Either raise it as shown, or set
+  `wait-for-completion: false` and collect the result from the `signed-artifact-download-url` output
+  in a later step.
+- **`skip-decompress`.** It defaults to `false`, meaning the returned ZIP is unpacked into
+  `output-artifact-directory`. Because `upload-artifact` stores the artifact as a ZIP, the artifact
+  configuration root has to be `<zip-file>` — see **Portal configuration** above.
+  (`archive: false` on `upload-artifact` plus `skip-decompress: true` is the alternative, but the
+  ZIP root matches what is configured today.)
 
 The release step after this is unchanged: attach the **signed** installer, its `.blockmap`, its
 `.sha256`, and `latest.yml` to the same GitHub Release.

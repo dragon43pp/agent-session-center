@@ -82,7 +82,9 @@ npm run build
 
 ### 代码签名角色
 
-本项目通过 [SignPath Foundation](https://signpath.org) 的免费计划对 Windows 安装包做代码签名。按该计划的要求，团队角色划分如下（单人维护期间三个角色由同一人兼任）：
+Windows 安装包目前**没有代码签名**，以未签名形式构建和发布。项目计划通过 [SignPath Foundation](https://signpath.org) 的免费计划做代码签名，但**申请尚未提交**，因此下面这套角色分工与约束**目前只是预备**，签名启用后才生效。
+
+按该计划的角色要求，团队划分如下（单人维护期间三个角色由同一人兼任）：
 
 | 角色 | 职责 | 成员 |
 | --- | --- | --- |
@@ -90,15 +92,16 @@ npm run build
 | Reviewers（评审者） | 评审一切由无提交权限者提出的改动 —— 即所有来自 fork 的 PR 都必须有人看过才能合并 | [`@fatedawn`](https://github.com/fatedawn) |
 | Approvers（审批者） | 逐次审批发签请求，判断某个版本是否可以签名 | [`@fatedawn`](https://github.com/fatedawn) |
 
-约束：
+约束（**签名启用后**生效）：
 
-1. **所有成员必须对 GitHub 与 SignPath 开启 MFA。** 没有例外；这项不满足就失去权限。
-2. **签名请求必须人工审批。** 构建工作流只能产出未签名的安装包；签名是在 SignPath 门户里由 Approver 手动批准的，工作流无法自行触发。
+1. **所有成员必须对 GitHub 与 SignPath 开启 MFA。** 没有例外；这项不满足就失去权限。目前仅 GitHub 已开启 —— 还没有 SignPath 账号。
+2. **签名请求必须人工审批。** 构建工作流只能产出未签名的安装包；签名要在 SignPath 门户里手动批准，工作流无法自行触发。
 3. **只签自己的东西。** 只能签由本仓库流水线构建出的产物；上游开源项目的二进制不得用本项目的证书重签。
 4. **构建脚本与 CI 配置按代码同等标准评审。** 它们决定了「签名最终签的是什么东西」，改这两类文件时不能图快。
 5. 若之后有新的维护者加入，第三个角色改为双人流程 —— **该版本的提交者不能同时审批该版本的发签请求**。
 
-签名政策全文（英文为主）见 [README 的 Code signing policy 一节](./README.md#code-signing-policy)。
+签名政策的现状与全文见 [README 的 Code signing policy 一节](./README.md#code-signing-policy)；
+申请条件的逐条对照见 [`docs/SIGNPATH-APPLICATION.md`](./docs/SIGNPATH-APPLICATION.md)。
 
 ### 隐私与数据流
 

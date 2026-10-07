@@ -145,7 +145,7 @@ Download the latest build from [GitHub Releases](https://github.com/fatedawn/age
 - **Windows x64** — `AgentSessionCenter-Setup-1.0.0.exe`, a guided NSIS installer, so you can choose the installation directory.
 - macOS Apple Silicon (`AgentSessionCenter-*-macos-arm64.dmg`) and Linux x64 (`AgentSessionCenter-*-linux-x64.AppImage` / `.deb`) targets are configured and validated by their own guarded release scripts, but those packages must be built on their matching operating systems. **v1.0.0 ships Windows x64 only.**
 
-Windows releases are currently **unsigned**, so the operating system may show a security prompt on first launch. Every release ships a SHA-256 checksum next to the installer, and a free code signing certificate has been applied for — see [Code signing policy](#code-signing-policy).
+Windows releases are currently **unsigned**, so the operating system may show a security prompt on first launch. Every release publishes a SHA-256 checksum next to the installer; see [Verifying a download](#verifying-a-download) for what that does and does not prove.
 
 ### First run
 
@@ -186,51 +186,56 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for the local setup, branch naming, and
 
 ## Code signing policy
 
-Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org).
+**Windows releases are not code-signed today.** The installer is built and published unsigned, so Windows may show a security prompt on first launch. What makes a download checkable here is not a signature but the published SHA-256 together with the fact that the build ran in this repository's CI — see [Verifying a download](#verifying-a-download).
 
-An Authenticode signature on a release asset means one specific thing: **this file is an automated build produced from this public repository by the release workflow in it.** It is not a claim about the publisher's identity and it is not a warranty. To check that guarantee for yourself, see [Verifying a download](#verifying-a-download).
+Should a signature be added later, it will mean exactly one thing: **this file is an automated build produced from this public repository by the release workflow in it.** It is not a claim about the publisher's identity and it is not a warranty.
+
+### Planned signing
+
+Agent Session Center intends to sign its Windows installer through [SignPath Foundation](https://signpath.org), whose certificate is issued to SignPath Foundation itself rather than to this project. **That application has not been submitted**, so no release carries a signature today. The conditions that would apply once it is in place — team roles, what may be signed, and how each release is approved — are recorded in [`docs/SIGNPATH-APPLICATION.md`](./docs/SIGNPATH-APPLICATION.md).
 
 ### Team roles
 
-Agent Session Center is maintained by one person, so the three roles that [SignPath Foundation's policy](https://signpath.org/terms.html) requires are currently held by the same maintainer. If more maintainers join, this table is updated and signing approval becomes a two-person step — the committer of a release cannot also approve that release's signing request.
+Agent Session Center is maintained by one person, so the three roles a signing policy requires would be held by the same maintainer. If more maintainers join, this table is updated and signing approval becomes a two-person step — the committer of a release cannot also approve that release's signing request.
 
 | Role | Responsibility | Members |
 | --- | --- | --- |
 | Authors (committers) | May modify source in this repository without additional review | [`@fatedawn`](https://github.com/fatedawn) |
 | Reviewers | Reviews every change proposed by someone without commit access | [`@fatedawn`](https://github.com/fatedawn) |
-| Approvers | Approves each individual code signing request | [`@fatedawn`](https://github.com/fatedawn) |
+| Approvers | Would approve each individual code signing request | [`@fatedawn`](https://github.com/fatedawn) |
 
-Every team member has multi-factor authentication enabled on both GitHub and SignPath. Signing is only enabled while that remains true.
+Every team member has multi-factor authentication enabled on GitHub. There is no SignPath account yet, so that half of the requirement is not in effect — it takes effect if and when signing is adopted.
 
-### What may be signed
+### What a signature would cover
 
-- Only the Windows NSIS installer built from this repository by the release workflow, and only after an Approver approves that specific request by hand in the SignPath portal. A workflow run cannot sign itself.
-- The `latest.yml` update metadata and the `.blockmap` that belong to that same release.
-- macOS and Linux packages are built and published by their own scripts but are **not** signed through SignPath Foundation.
+- Only the Windows NSIS installer built from this repository by the release workflow, and only after a human approves that specific request. A workflow run could not sign itself.
+- macOS and Linux packages are built and published by their own scripts and stay outside any signing policy.
+- The `latest.yml` update metadata and the `.blockmap` belong to the same release but are not signed; they are covered by the published SHA-256.
 
-Nothing from an upstream project may be signed. The one upstream this codebase derives from — [UniRound-Tec/hrack](https://github.com/UniRound-Tec/hrack) — publishes unsigned builds and is unaffiliated with this project; no binary originating there is signed with our certificate or redistributed under our name. Electron, `node-pty`, and the other bundled libraries keep their own signatures or stay unsigned inside our installer.
+Nothing from an upstream project is ever signed. The one upstream this codebase derives from — [UniRound-Tec/hrack](https://github.com/UniRound-Tec/hrack) — publishes unsigned builds and is unaffiliated with this project; no binary originating there is signed with our certificate or redistributed under our name. Electron, `node-pty`, and the other bundled libraries keep their own signatures or stay unsigned inside our installer.
 
 ### Release build process
 
 1. The maintainer commits the version bump and the matching `## [x.y.z]` section in `CHANGELOG.md`, then pushes a `vX.Y.Z` tag.
 2. The [release workflow](./.github/workflows/release-windows.yml) runs on a GitHub-hosted Windows runner: `npm ci`, `npm run build`, then the repository's own packaging script, which runs every release gate (packaged-resource assertions, update-metadata assertions, a launch test of the packaged app, and an icon check).
 3. The workflow uploads the unsigned installer as a build artifact. Nothing is published by this step.
-4. An Approver reviews the diff between the previous tag and the new one, then approves the signing request in SignPath, which returns the signed installer.
-5. The signed installer, the SHA-256 checksum, `latest.yml`, and the blockmap are attached to the GitHub Release.
+4. The maintainer reviews the artifact and checks its SHA-256 against the workflow summary, then creates the Release with the installer, its `.sha256`, `latest.yml`, and the blockmap attached together.
 
-Everything that can influence what gets signed — the build scripts, the CI workflow, the packaging configuration, and the release gates — lives in this repository and is reviewed with the same care as the application code itself.
+Everything that can influence what gets published — the build scripts, the CI workflow, the packaging configuration, and the release gates — lives in this repository and is reviewed with the same care as the application code itself.
 
 ### Verifying a download
 
 ```powershell
-# 1. The hash must match the one published in the release notes.
+# The hash must match the one published in the release notes.
 Get-FileHash .\AgentSessionCenter-Setup-x.y.z.exe -Algorithm SHA256
-
-# 2. The signature must be present and must validate.
-Get-AuthenticodeSignature .\AgentSessionCenter-Setup-x.y.z.exe | Format-List Status, SignerCertificate
 ```
 
-`Status` should be `Valid` and the signer should be **SignPath Foundation**. A hash alone only proves the download was not corrupted; it is the signature that ties the file to a build of this repository.
+A matching hash proves the download is intact and is the file the maintainer published. It does not by itself prove who built it — that is the one thing a code signature would add, and it is not available yet:
+
+```powershell
+# Once signing is in place, this will additionally report Status: Valid.
+Get-AuthenticodeSignature .\AgentSessionCenter-Setup-x.y.z.exe | Format-List Status, SignerCertificate
+```
 
 ### Privacy
 

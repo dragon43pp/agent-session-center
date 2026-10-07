@@ -145,7 +145,7 @@ Agent Session Center 还可以扫描并启动 Devin CLI、Cline、Qwen Code、Am
 - **Windows x64** —— `AgentSessionCenter-Setup-1.0.0.exe`，引导式 NSIS 安装包，可选安装目录。
 - macOS Apple Silicon（`AgentSessionCenter-*-macos-arm64.dmg`）与 Linux x64（`AgentSessionCenter-*-linux-x64.AppImage` / `.deb`）目标已配置，并由各自的发版脚本校验，但这些包必须在对应系统上构建。**v1.0.0 只发 Windows x64。**
 
-Windows 版目前**尚未签名**，首次启动时系统可能显示安全提醒。每个版本都会在安装包旁附上 SHA-256 校验值；免费代码签名证书已提交申请 —— 见 [代码签名政策](#代码签名政策)。
+Windows 版目前**尚未签名**，首次启动时系统可能显示安全提醒。每个版本都会在安装包旁附上 SHA-256 校验值；这个哈希能证明什么、不能证明什么，见 [验证下载](#验证下载)。
 
 ### 第一次启动
 
@@ -186,51 +186,56 @@ Windows、macOS、Linux 安装包需要在对应系统上通过 `npm run release
 
 ## 代码签名政策
 
-Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org)。
+**Windows 版目前没有代码签名。** 安装包以未签名的形式构建和发布，因此 Windows 首次启动时可能显示安全提醒。这里让下载可核对的东西不是签名，而是公布的 SHA-256，加上「这次构建确实跑在本仓库的 CI 上」这个事实 —— 见 [验证下载](#验证下载)。
 
-安装包上的 Authenticode 签名只说明一件事：**这个文件是由本仓库里的发布流水线、基于本仓库的源码自动构建出来的。** 它不代表发布者身份，也不构成任何担保。想自己验证这一点，见 [验证下载](#验证下载)。
+如果将来加上了签名，它只说明一件事：**这个文件是由本仓库里的发布流水线、基于本仓库的源码自动构建出来的。** 它不代表发布者身份，也不构成任何担保。
+
+### 计划中的签名
+
+本项目计划通过 [SignPath Foundation](https://signpath.org) 为其 Windows 安装包签名。该证书是签发给 SignPath Foundation 本身、而不是签发给我们项目的，**申请尚未提交**，因此当前没有任何版本带签名。一旦启用，需要满足的条件（团队角色、可签名范围、逐次审批方式）记录在 [`docs/SIGNPATH-APPLICATION.md`](./docs/SIGNPATH-APPLICATION.md)。
 
 ### 团队角色
 
-Agent Session Center 目前由一人维护，因此 [SignPath Foundation 政策](https://signpath.org/terms.html)要求的三个角色由同一位维护者兼任。若之后有新的维护者加入，本表会同步更新，且签名审批改为双人流程 —— 该版本的提交者不能同时审批该版本的发签请求。
+Agent Session Center 目前由一人维护，因此签名政策要求的三个角色会由同一位维护者兼任。若之后有新的维护者加入，本表会同步更新，且签名审批改为双人流程 —— 该版本的提交者不能同时审批该版本的发签请求。
 
 | 角色 | 职责 | 成员 |
 | --- | --- | --- |
 | Authors（提交者） | 可不经额外评审直接修改本仓库源码 | [`@fatedawn`](https://github.com/fatedawn) |
 | Reviewers（评审者） | 评审一切由无提交权限者提出的改动 | [`@fatedawn`](https://github.com/fatedawn) |
-| Approvers（审批者） | 逐次审批每个代码签名请求 | [`@fatedawn`](https://github.com/fatedawn) |
+| Approvers（审批者） | 将逐次审批每个代码签名请求 | [`@fatedawn`](https://github.com/fatedawn) |
 
-全体成员均已对 GitHub 与 SignPath 开启多因素认证（MFA）。仅在该前提成立期间启用签名。
+全体成员均已对 GitHub 开启多因素认证（MFA）。目前还没有 SignPath 账号，所以这项要求的另一半尚未生效 —— 启用签名时它才生效。
 
-### 可签名的范围
+### 计划中的可签名范围
 
-- 只有由本仓库发布流水线构建出的 Windows NSIS 安装包，且每次都必须经 Approver 在 SignPath 门户中**人工审批**。工作流本身无法自行触发签名。
-- 与该版本配套的 `latest.yml` 更新元数据与 `.blockmap`。
-- macOS 与 Linux 包由各自的脚本构建发布，但**不**通过 SignPath Foundation 签名。
+- 只有由本仓库发布流水线构建出的 Windows NSIS 安装包，且每次都必须经人工**审批**。工作流本身无法自行触发签名。
+- macOS 与 Linux 包由各自的脚本构建发布，不在任何签名政策范围内。
+- 与该版本配套的 `latest.yml` 更新元数据与 `.blockmap` 不同步签名，由公布的 SHA-256 覆盖。
 
-任何来自上游项目的东西都不在可签名范围内。本代码库所源自的上游 [UniRound-Tec/hrack](https://github.com/UniRound-Tec/hrack) 只发布未签名构建，且与本项目无隶属关系；不存在任何源自它的二进制会被我们的证书签名，或以我们的名义再分发。Electron、`node-pty` 等随包分发的库保留其自身签名，或在我们安装包内保持未签名状态。
+任何来自上游项目的东西永远不签名。本代码库所源自的上游 [UniRound-Tec/hrack](https://github.com/UniRound-Tec/hrack) 只发布未签名构建，且与本项目无隶属关系；不存在任何源自它的二进制会被我们的证书签名，或以我们的名义再分发。Electron、`node-pty` 等随包分发的库保留其自身签名，或在我们安装包内保持未签名状态。
 
 ### 发布构建流程
 
 1. 维护者提交版本号变更，并在 `CHANGELOG.md` 中写入对应的 `## [x.y.z]` 段落，然后推送 `vX.Y.Z` 标签。
 2. [发布工作流](./.github/workflows/release-windows.yml)在 GitHub 托管的 Windows Runner 上运行：`npm ci` → `npm run build` → 仓库自带的打包脚本。打包脚本会跑完全部门禁（产物资源断言、更新元数据断言、打包后应用启动测试、图标校验）。
 3. 工作流把**未签名**的安装包上传为构建产物。这一步不发布任何东西。
-4. Approver 审阅上一个标签到新标签之间的 diff，然后在 SignPath 中批准该次签名请求，取回已签名的安装包。
-5. 已签名安装包、SHA-256 校验值、`latest.yml` 与 blockmap 一并附到 GitHub Release。
+4. 维护者审阅产物，并把它的 SHA-256 与工作流摘要核对一致，然后创建 Release，把安装包、`.sha256`、`latest.yml` 与 blockmap 一并附上。
 
-一切能影响签名结果的东西 —— 构建脚本、CI 工作流、打包配置、发布门禁 —— 都在本仓库内，并与应用代码同等对待评审。
+一切能影响最终发布内容的东西 —— 构建脚本、CI 工作流、打包配置、发布门禁 —— 都在本仓库内，并与应用代码同等对待评审。
 
 ### 验证下载
 
 ```powershell
-# 1. 哈希值必须与发行说明里公布的一致
+# 哈希值必须与发行说明里公布的一致
 Get-FileHash .\AgentSessionCenter-Setup-x.y.z.exe -Algorithm SHA256
-
-# 2. 签名必须存在且校验通过
-Get-AuthenticodeSignature .\AgentSessionCenter-Setup-x.y.z.exe | Format-List Status, SignerCertificate
 ```
 
-`Status` 应为 `Valid`，签名者应为 **SignPath Foundation**。仅凭哈希只能证明下载过程没有损坏；只有签名才能把文件与「本仓库的一次构建」绑定起来。
+哈希对得上，说明下载完整、且就是维护者发布的那个文件。但它本身不能证明「是谁构建的」—— 那恰恰是代码签名唯一能补上的东西，而我们现在还没有签名：
+
+```powershell
+# 签名到位后，这条命令会额外报告 Status: Valid
+Get-AuthenticodeSignature .\AgentSessionCenter-Setup-x.y.z.exe | Format-List Status, SignerCertificate
+```
 
 ### 隐私
 

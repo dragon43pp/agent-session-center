@@ -68,14 +68,15 @@ The guarded macOS and Linux commands perform equivalent runtime/resource and upd
 
 ## Code signing
 
-Windows installers are signed through the [SignPath Foundation](https://signpath.org) free
-program for open source projects. The terms of that program are what the
-[Code signing policy](../README.md#code-signing-policy) section in the README documents; this
-section covers the mechanics.
+**Windows installers are not code-signed today**, so the release flow ends at an unsigned
+installer plus its published checksum.
 
-**One rule shapes everything else: the installer must be built by CI, not by hand.** SignPath
-verifies the origin of each artifact, so an installer produced on a maintainer's laptop cannot
-be signed even though it passes every local gate.
+Signing through the [SignPath Foundation](https://signpath.org) free program for open source
+projects is planned but **not applied for**, so nothing in this section is in effect yet. It is
+kept because it constrains the design: the installer must be built by CI, not by hand. A signature
+would attest to exactly that, which is why an installer produced on a maintainer's laptop could
+never be signed even though it passes every local gate. The conditions a signing application has
+to meet are recorded in [`SIGNPATH-APPLICATION.md`](./SIGNPATH-APPLICATION.md).
 
 ```text
 push tag vX.Y.Z
@@ -87,33 +88,29 @@ push tag vX.Y.Z
 asc-windows-unsigned-<sha> (workflow artifact, UNSIGNED, nothing published)
       │
       ▼
-SignPath signing request  ──► manual approval by an Approver
+maintainer reviews the artifact and checks its SHA-256 against the run summary
       │
       ▼
-signed installer (+ latest.yml, + blockmap, + SHA-256)
-      │
-      ▼
-GitHub Release
+GitHub Release  (installer + .sha256 + latest.yml + blockmap)
 ```
 
-So the release flow becomes:
+So the release flow is:
 
 1. Bump the version, add the matching `## [x.y.z]` section to `CHANGELOG.md`, commit, push.
 2. Tag and push the tag.
 3. Let `release-windows.yml` finish and check its summary for the unsigned SHA-256.
-4. Submit that artifact for signing and approve the request. The first signing request needs the
-   `signpath/github-action-submit-signing-request` workflow; see the application notes in
-   `docs/SIGNPATH-APPLICATION.md` for the template and the slug values to fill in.
-5. Verify the returned installer (`Get-AuthenticodeSignature`, see the README), then create the
-   Release with the **signed** installer, its blockmap, its `.sha256`, and `latest.yml` all
-   attached together.
+4. Download the artifact, verify its hash against the summary, then create the Release with the
+   installer, its `.sha256`, `latest.yml` and the blockmap attached together.
 
 Local builds stay useful for wiring and for gate debugging, but they are **not** what gets
-signed. If `npm run release:win` and CI disagree, CI is right.
+published. If `npm run release:win` and CI disagree, CI is right.
 
-The signature only covers the Windows installer. macOS and Linux stay outside the SignPath
-policy; macOS still needs its own signing and notarization before auto-install can be trusted
-there.
+**If signing is adopted later**, two steps are inserted between 3 and 4: submit the artifact for
+signing and have the request approved by a human in the SignPath portal, then publish the
+**signed** installer instead. [`SIGNPATH-APPLICATION.md`](./SIGNPATH-APPLICATION.md) has the
+workflow to add and the portal values to fill in. A signature would cover only the Windows
+installer; macOS and Linux stay outside any such policy, and macOS still needs its own signing
+and notarization before auto-install can be trusted there.
 
 ## GitHub Release workflow
 
@@ -121,8 +118,9 @@ There is **no automatic publishing**. `.github/workflows/ci.yml` runs `npm run t
 `npm run build` on push and pull request; `.github/workflows/release-windows.yml` additionally
 builds and packages the Windows installer and uploads it as an **unsigned** workflow artifact.
 Neither workflow creates a Release. Publishing stays a manual, maintainer-confirmed step because
-it is irreversible, because a signing request needs a human approval, and because the e2e suite
-needs a real DeepSeek Harness host that GitHub runners cannot provide.
+it is irreversible, because the maintainer verifies the artifact's hash against the run summary
+before anything is announced, and because the e2e suite needs a real DeepSeek Harness host that
+GitHub runners cannot provide.
 
 Rehearse the whole Windows chain (tag/version gate + guarded packaging + checksum)
 without touching GitHub:

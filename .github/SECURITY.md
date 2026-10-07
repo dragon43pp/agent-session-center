@@ -57,9 +57,11 @@ Out of scope, or handled elsewhere:
 
 ## A note on code signing
 
-Windows releases are code-signed through [SignPath Foundation](https://signpath.org), whose
-certificate asserts exactly one thing: the installer was built by this repository's release
-workflow from this repository's source. It is not an endorsement. How to verify a download is
+Windows releases are **not code-signed**, so Windows may show a security prompt on first launch.
+The installer is built by this repository's release workflow from this repository's source, and
+each release publishes its SHA-256 next to the installer — that hash, checked against the release
+notes, is what ties a download to a published build. It does not prove who built it; that is what a
+code signature would add, and signing is planned but not yet in place. How to verify a download is
 described in the [Code signing policy](../README.md#code-signing-policy) section of the README.
 
 ---
@@ -98,6 +100,8 @@ described in the [Code signing policy](../README.md#code-signing-policy) section
 
 ## 关于代码签名
 
-Windows 版本通过 [SignPath Foundation](https://signpath.org) 签名。该证书只断言一件事：
-安装包是由本仓库的发布工作流、基于本仓库源码构建出来的，不构成背书。如何验证下载见
-README 的 [代码签名政策](../README.zh-CN.md#代码签名政策)一节。
+Windows 版本**没有代码签名**，首次启动时系统可能显示安全提醒。安装包由本仓库的发布工作流、
+基于本仓库源码构建；每个版本都会在安装包旁公布 SHA-256，把它与发行说明核对一致，就能确认
+这次下载对应的是哪一次已发布的构建。它不能证明「是谁构建的」—— 那正是代码签名能补上的一环，
+而签名目前只是计划、尚未落地。如何验证下载见 README 的
+[代码签名政策](../README.zh-CN.md#代码签名政策)一节。
