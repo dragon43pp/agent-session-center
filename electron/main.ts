@@ -434,6 +434,33 @@ const feishuRouter = createFeishuRouter({
       return { ok: false, message: '这台电脑上还没有国内 WorkBuddy 会话。' }
     }
     return openDomesticWorkbuddy(latest.sessionId)
+  },
+  openDshSession: async () => {
+    // 和 WorkBuddy 一样单取 1 条：混在全部 agent 的前 300 里会被挤掉。
+    const result = await controlPlane.handle('sessions.history', {
+      agent: 'dsh',
+      limit: 1,
+      refresh: true
+    })
+    const rows = (result.kind === 'json' ? result.value : []) as BridgeHistorySession[]
+    const latest = rows[0]
+    if (!latest?.sessionId) {
+      return { ok: false, message: '这台电脑上还没有 DeepSeek Harness 会话。' }
+    }
+    // winRef 是主窗口的唯一引用处（本文件其余事件推送同样走它）。
+    if (!winRef || winRef.isDestroyed()) {
+      return { ok: false, message: '主窗口没开着，先在桌面上把 ASC 打开。' }
+    }
+    const window = winRef
+    // dsh 的「恢复」发生在 ASC 自己的 DSH 界面里：把导航事件推给渲染进程，
+    // 它会用 intent:'resume' 让官方界面打开这一场（见 DshPage）。
+    window.webContents.send(AppEventChannel.OpenDshSession, {
+      sessionId: latest.sessionId
+    })
+    return {
+      ok: true,
+      message: `已在 DSH 界面打开「${latest.title || latest.sessionId}」。`
+    }
   }
 })
 
@@ -652,11 +679,7 @@ if (isPrimaryInstance) app.whenReady().then(async () => {
       app.getPath('userData'),
       'floating-renderers'
     ),
-    builtinRendererRoot: join(__dirname, '../renderer'),
-    builtinLive2dRoot: join(
-      __dirname,
-      '../../resources/floating-renderers/live2d-mao'
-    )
+    builtinRendererRoot: join(__dirname, '../renderer')
   })
   await floatingController.setEnabled(prefs.floatingWindowEnabled)
   trayRef = createTray(prefs.language, trayCallbacks)

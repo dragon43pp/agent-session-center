@@ -4,16 +4,9 @@ import {
   type ElectronApplication,
   type Page,
 } from "@playwright/test";
-import {
-  cpSync,
-  existsSync,
-  mkdirSync,
-  mkdtempSync,
-  writeFileSync,
-} from "node:fs";
+import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { PNG } from "pngjs";
 import { launchApp, openSettings } from "./helpers";
 
 interface FloatingInspect {
@@ -183,64 +176,6 @@ test("floating renderer size is persisted and uniformly applied", async () => {
   }
 });
 
-test("built-in Live2D renderer follows real turn projections", async () => {
-  const { app, window } = await launchApp({ createDefaultTerminal: false });
-  try {
-    await window.evaluate(async () => {
-      await window.floatingWindowApi.setRenderer("builtin/live2d-mao");
-      await window.floatingWindowApi.setEnabled(true);
-    });
-    const live2d = await floatingPage(
-      app,
-      (url) => url.startsWith("file:") && url.includes("live2d-mao"),
-    );
-    await expect(live2d.locator("html")).toHaveAttribute(
-      "data-live2d-ready",
-      "true",
-      { timeout: 30_000 },
-    );
-    expect((await inspectFloating(app)).state.activeRendererId).toBe(
-      "builtin/live2d-mao",
-    );
-    await expect
-      .poll(async () => (await inspectFloating(app)).window?.bounds)
-      .toMatchObject({ width: 420, height: 620 });
-
-    await publish(app, projection("working", 41));
-    await expect(live2d.locator("body")).toHaveAttribute(
-      "data-turn-state",
-      "working",
-    );
-    await expect(live2d.locator("body")).toHaveAttribute(
-      "data-turn-id",
-      "turn-41",
-    );
-    await expect(live2d.locator("#session-detail")).toContainText(
-      "1 个工具运行中",
-    );
-
-    await publish(app, projection("needs-you", 42));
-    await expect(live2d.locator("body")).toHaveAttribute(
-      "data-turn-state",
-      "needs-you",
-    );
-    await expect(live2d.locator("#live2d-turn-status")).toContainText(
-      "需要你的确认",
-    );
-    expect(await live2d.pageErrors()).toEqual([]);
-    if (process.env["ASC_CAPTURE_BUILTIN_LIVE2D"]) {
-      const captureDir = resolve(__dirname, "../.dev-shots");
-      mkdirSync(captureDir, { recursive: true });
-      await live2d.screenshot({
-        path: join(captureDir, "builtin-live2d-turn.png"),
-        omitBackground: true,
-      });
-    }
-  } finally {
-    await app.close().catch(() => {});
-  }
-});
-
 test("user renderer hot reloads in the same sandbox and falls back when invalid", async () => {
   const userDataDir = mkdtempSync(join(tmpdir(), "asc-floating-e2e-"));
   const rendererDir = join(userDataDir, "floating-renderers", "sample");
@@ -337,90 +272,6 @@ test("user renderer hot reloads in the same sandbox and falls back when invalid"
   }
 });
 
-test("Sunny Buddy example renders session moods and respects the effect toggle", async () => {
-  const userDataDir = mkdtempSync(join(tmpdir(), "asc-sunny-e2e-"));
-  const rendererRoot = join(userDataDir, "floating-renderers", "sunny-buddy");
-  mkdirSync(join(userDataDir, "floating-renderers"), { recursive: true });
-  cpSync(
-    resolve(__dirname, "../examples/floating-renderers/sunny-buddy"),
-    rendererRoot,
-    { recursive: true },
-  );
-
-  const { app, window } = await launchApp({
-    userDataDir,
-    createDefaultTerminal: false,
-  });
-  try {
-    await window.evaluate(async () => {
-      await window.floatingWindowApi.refreshRenderers();
-      await window.floatingWindowApi.setRenderer("user/sunny-buddy");
-      await window.floatingWindowApi.setEnabled(true);
-    });
-    const sunny = await floatingPage(app, (url) =>
-      url.startsWith("asc-floating://sunny-buddy/"),
-    );
-    await expect(sunny.locator("#buddy")).toBeVisible();
-    await expect
-      .poll(() =>
-        sunny
-          .locator("#mascot")
-          .evaluate((image: HTMLImageElement) => image.naturalWidth),
-      )
-      .toBeGreaterThan(0);
-
-    await publish(app, projection("working", 1));
-    await expect(sunny.locator("#buddy")).toHaveAttribute(
-      "data-mood",
-      "working",
-    );
-    await publish(app, projection("needs-you", 2));
-    await expect(sunny.locator("#buddy")).toHaveAttribute(
-      "data-mood",
-      "needs-you",
-    );
-    await expect(sunny.locator("#attention-badge")).toBeVisible();
-    await expect
-      .poll(async () => (await inspectFloating(app)).window?.bounds)
-      .toMatchObject({ width: 340, height: 430 });
-    await expect(sunny.locator(".session-chip")).toBeVisible();
-    if (process.platform === "win32" || process.platform === "linux") {
-      await expect
-        .poll(
-          async () => (await inspectFloating(app)).window?.shapeRectCount ?? 0,
-        )
-        .toBeGreaterThan(100);
-    }
-    if (process.env["ASC_CAPTURE_SUNNY"]) {
-      const captureDir = resolve(__dirname, "../.dev-shots");
-      mkdirSync(captureDir, { recursive: true });
-      await sunny.screenshot({
-        path: join(captureDir, "sunny-buddy.png"),
-      });
-    }
-
-    await window.evaluate(() =>
-      window.floatingWindowApi.setAttentionEffectEnabled(false),
-    );
-    await publish(app, projection("done", 3));
-    await expect(sunny.locator("#buddy")).toHaveAttribute(
-      "data-effects",
-      "off",
-    );
-    await expect(sunny.locator("#buddy")).not.toHaveClass(/attention-burst/);
-
-    await window.evaluate(() =>
-      window.floatingWindowApi.setAttentionEffectEnabled(true),
-    );
-    await expect(sunny.locator("#buddy")).not.toHaveClass(/attention-burst/);
-    await publish(app, projection("working", 4));
-    await publish(app, projection("done", 5));
-    await expect(sunny.locator("#buddy")).toHaveClass(/attention-burst/);
-  } finally {
-    await app.close().catch(() => {});
-  }
-});
-
 test("settings copies the built-in renderer creation Skill without exposing its body", async () => {
   const { app, window } = await launchApp({ createDefaultTerminal: false });
   try {
@@ -452,96 +303,11 @@ test("settings copies the built-in renderer creation Skill without exposing its 
       ),
     );
     expect(copied).toContain("name: create-asc-floating-renderer");
-    expect(copied).toContain("## Live2D implementation");
+    expect(copied).toContain("## Render authoritative state");
     expect(copied).toContain("activeTurnId");
     expect(copied).toContain("60%–160%");
     expect(copied).toContain("do not synthesize pointer events");
     await expect(copy).toContainText(/已复制|Copied|コピー済み|복사됨|已複製/);
-  } finally {
-    await app.close().catch(() => {});
-  }
-});
-
-test("local official Live2D model renders and animates offline", async () => {
-  const rendererSource = process.env["ASC_LIVE2D_RENDERER"];
-  test.skip(
-    !rendererSource || !existsSync(rendererSource),
-    "Set ASC_LIVE2D_RENDERER to a licensed local renderer fixture",
-  );
-
-  const userDataDir = mkdtempSync(join(tmpdir(), "asc-live2d-e2e-"));
-  const rendererRoot = join(
-    userDataDir,
-    "floating-renderers",
-    "live2d-mao-smoke",
-  );
-  mkdirSync(join(userDataDir, "floating-renderers"), { recursive: true });
-  cpSync(rendererSource!, rendererRoot, { recursive: true });
-
-  const { app, window } = await launchApp({
-    userDataDir,
-    createDefaultTerminal: false,
-  });
-  try {
-    await window.evaluate(async () => {
-      await window.floatingWindowApi.refreshRenderers();
-      await window.floatingWindowApi.setRenderer("user/live2d-mao-smoke");
-      await window.floatingWindowApi.setEnabled(true);
-    });
-    const live2d = await floatingPage(app, (url) =>
-      url.startsWith("asc-floating://live2d-mao-smoke/"),
-    );
-    await expect(live2d.locator("html")).toHaveAttribute(
-      "data-live2d-ready",
-      "true",
-      { timeout: 30_000 },
-    );
-    await expect(live2d.locator("#live2d-test-status")).toContainText(
-      "Live2D 已运行",
-    );
-    expect(
-      await live2d.evaluate(async () => {
-        const response = await fetch("./Resources/Mao/Mao.moc3");
-        const buffer = await response.arrayBuffer();
-        return {
-          core: typeof (window as unknown as Record<string, unknown>)[
-            "Live2DCubismCore"
-          ],
-          webgl2: Boolean(
-            document.querySelector("canvas")?.getContext("webgl2"),
-          ),
-          mocStatus: response.status,
-          mocBytes: buffer.byteLength,
-        };
-      }),
-    ).toEqual({
-      core: "object",
-      webgl2: true,
-      mocStatus: 200,
-      mocBytes: 879_680,
-    });
-    expect(await live2d.pageErrors()).toEqual([]);
-
-    const before = PNG.sync.read(
-      await live2d.screenshot({ omitBackground: true }),
-    );
-    await live2d.waitForTimeout(750);
-    const afterBuffer = await live2d.screenshot({ omitBackground: true });
-    const after = PNG.sync.read(afterBuffer);
-    let changedPixels = 0;
-    for (let index = 0; index < before.data.length; index += 4) {
-      const difference =
-        Math.abs(before.data[index] - after.data[index]) +
-        Math.abs(before.data[index + 1] - after.data[index + 1]) +
-        Math.abs(before.data[index + 2] - after.data[index + 2]) +
-        Math.abs(before.data[index + 3] - after.data[index + 3]);
-      if (difference > 20) changedPixels++;
-    }
-    expect(changedPixels).toBeGreaterThan(500);
-
-    const captureDir = resolve(__dirname, "../.dev-shots");
-    mkdirSync(captureDir, { recursive: true });
-    writeFileSync(join(captureDir, "live2d-mao-smoke.png"), afterBuffer);
   } finally {
     await app.close().catch(() => {});
   }

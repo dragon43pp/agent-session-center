@@ -58,7 +58,6 @@ interface FloatingWindowControllerDeps {
   listActiveSessions(): AgentSessionProjection[]
   renderersDirectory: string
   builtinRendererRoot: string
-  builtinLive2dRoot: string
 }
 
 function attentionKind(status: AgentSessionProjection['status']): FloatingAttentionKind | null {
@@ -133,7 +132,6 @@ export class ElectronFloatingWindowController
     this.registry = new FloatingRendererRegistry({
       userDirectory: deps.renderersDirectory,
       builtinRoot: deps.builtinRendererRoot,
-      builtinLive2dRoot: deps.builtinLive2dRoot,
       onChanged: (snapshot) => this.handleRegistryChanged(snapshot)
     })
     screen.on('display-removed', this.handleDisplayChange)

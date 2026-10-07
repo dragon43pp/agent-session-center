@@ -3,7 +3,6 @@ import { watch, type Dirent, type FSWatcher } from 'node:fs'
 import { isAbsolute, relative, resolve } from 'node:path'
 import {
   BUILTIN_FLOATING_RENDERER_ID,
-  BUILTIN_LIVE2D_FLOATING_RENDERER_ID,
   FLOATING_RENDERER_SCHEMA_VERSION,
   type FloatingRendererInfo,
   type FloatingRendererLoadError,
@@ -31,7 +30,6 @@ export interface FloatingRendererRegistrySnapshot {
 interface FloatingRendererRegistryOptions {
   userDirectory: string
   builtinRoot: string
-  builtinLive2dRoot: string
   onChanged?: (snapshot: FloatingRendererRegistrySnapshot) => void
 }
 
@@ -152,18 +150,7 @@ export class FloatingRendererRegistry {
       minHeight: 92,
       maxHeight: 360
     }
-    const live2d: FloatingRendererDefinition = {
-      id: BUILTIN_LIVE2D_FLOATING_RENDERER_ID,
-      name: 'Live2D · Mao',
-      version: '5-r.4',
-      source: 'builtin',
-      root: this.options.builtinLive2dRoot,
-      entry: 'index.html',
-      width: 420,
-      minHeight: 620,
-      maxHeight: 620
-    }
-    const definitions: FloatingRendererDefinition[] = [builtin, live2d]
+    const definitions: FloatingRendererDefinition[] = [builtin]
     const errors: FloatingRendererLoadError[] = []
     let entries: Dirent[] = []
     let userRoot = this.options.userDirectory

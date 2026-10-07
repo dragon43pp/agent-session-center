@@ -6,7 +6,6 @@ import type {
 import type { UiColorToken, UiThemeType } from './theme-schema'
 
 export const BUILTIN_FLOATING_RENDERER_ID = 'builtin/default'
-export const BUILTIN_LIVE2D_FLOATING_RENDERER_ID = 'builtin/live2d-mao'
 export const FLOATING_WINDOW_SCALE_MIN = 0.6
 export const FLOATING_WINDOW_SCALE_MAX = 1.6
 export const FLOATING_RENDERER_SCHEMA_VERSION = 1
