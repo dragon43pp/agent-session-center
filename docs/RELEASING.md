@@ -162,11 +162,21 @@ gh release create v1.0.0 `
   --title "Agent Session Center v1.0.0" --notes-file <notes.md>
 ```
 
-The Windows Release must contain at least these four non-empty assets — the
-installer, its blockmap, its SHA-256 file, and `latest.yml` — or existing clients
-cannot resolve an update. macOS and Linux assets (`latest-mac.yml`,
-`latest-linux.yml`, dmg/zip/AppImage/deb and their checksums) are added when those
-platforms are built on their own machines. A tag with a prerelease suffix (for
+A Release must contain, for every platform it ships, that platform's metadata file
+plus every file the metadata references — or existing clients on that platform
+cannot resolve an update:
+
+- **Windows** — `latest.yml`, the NSIS installer, its `.blockmap` and its `.sha256`.
+- **Linux** — `latest-linux.yml`, the `AppImage` and the `deb`, and both `.sha256` files.
+
+Windows and Linux are both built on GitHub-hosted runners by their own workflows
+(`release-windows.yml`, `release-linux.yml`), so pushing a `v*` tag produces both
+without a maintainer's machine being involved. The Linux job is the only one that
+must **not** skip npm lifecycle scripts, because `node-pty` ships no Linux prebuild
+and therefore has to be compiled from source.
+
+macOS assets (`latest-mac.yml`, dmg/zip and their checksums) are added when that
+platform is built on its own machine. A tag with a prerelease suffix (for
 example `v1.1.0-beta.1`) is published as a GitHub prerelease; stable clients ignore
 prereleases.
 

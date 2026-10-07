@@ -143,9 +143,10 @@ Agent Session Center 还可以扫描并启动 Devin CLI、Cline、Qwen Code、Am
 从 [GitHub Releases](https://github.com/fatedawn/agent-session-center/releases/latest) 下载最新版本：
 
 - **Windows x64** —— `AgentSessionCenter-Setup-x.y.z.exe`，引导式 NSIS 安装包，可选安装目录。
-- macOS Apple Silicon（`AgentSessionCenter-*-macos-arm64.dmg`）与 Linux x64（`AgentSessionCenter-*-linux-x64.AppImage` / `.deb`）目标已配置，并由各自的发版脚本校验，但这些包必须在对应系统上构建。**目前只发 Windows x64。**
+- **Linux x64** —— `AgentSessionCenter-x.y.z-linux-x64.AppImage`（免安装：下载后 `chmod +x` 直接运行）或 `AgentSessionCenter-x.y.z-linux-x64.deb`（用 `apt` 安装）。
+- macOS Apple Silicon（`AgentSessionCenter-x.y.z-macos-arm64.dmg` / `.zip`）目标已配置，并由其受门禁的发版脚本校验，但该包必须在 macOS 上构建。**目前只发 Windows 与 Linux，均为 x64；尚无 macOS 构建。**
 
-Windows 版目前**尚未签名**，首次启动时系统可能显示安全提醒。每个版本都会在安装包旁附上 SHA-256 校验值；这个哈希能证明什么、不能证明什么，见 [验证下载](#验证下载)。
+Windows 版目前**尚未签名**，首次启动时系统可能显示安全提醒；Linux 包不需要代码签名。每个版本都会在每个可安装文件旁附上 SHA-256 校验值；这个哈希能证明什么、不能证明什么，见 [验证下载](#验证下载)。
 
 ### 第一次启动
 

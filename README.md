@@ -143,9 +143,10 @@ Field depth varies by source. Title, time, turn count, and token usage are avail
 Download the latest build from [GitHub Releases](https://github.com/fatedawn/agent-session-center/releases/latest):
 
 - **Windows x64** — `AgentSessionCenter-Setup-x.y.z.exe`, a guided NSIS installer, so you can choose the installation directory.
-- macOS Apple Silicon (`AgentSessionCenter-*-macos-arm64.dmg`) and Linux x64 (`AgentSessionCenter-*-linux-x64.AppImage` / `.deb`) targets are configured and validated by their own guarded release scripts, but those packages must be built on their matching operating systems. **Releases currently ship Windows x64 only.**
+- **Linux x64** — `AgentSessionCenter-x.y.z-linux-x64.AppImage` (portable: download, `chmod +x`, run) or `AgentSessionCenter-x.y.z-linux-x64.deb` (installs with `apt`).
+- macOS Apple Silicon (`AgentSessionCenter-x.y.z-macos-arm64.dmg` / `.zip`) targets are configured and validated by their own guarded release script, but that package has to be built on macOS. **Releases currently ship Windows and Linux, both x64. There is no macOS build yet.**
 
-Windows releases are currently **unsigned**, so the operating system may show a security prompt on first launch. Every release publishes a SHA-256 checksum next to the installer; see [Verifying a download](#verifying-a-download) for what that does and does not prove.
+Windows releases are currently **unsigned**, so the operating system may show a security prompt on first launch. Linux packages need no code signature. Every release publishes a SHA-256 checksum beside each installable file; see [Verifying a download](#verifying-a-download) for what that does and does not prove.
 
 ### First run
 
