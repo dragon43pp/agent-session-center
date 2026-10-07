@@ -4,8 +4,26 @@
 
 > 说明：0.4.7 及更早的条目记录的是本项目早期阶段（当时产品名与现在不同）。为避免旧名残留，文中产品名统一写作「本应用」。条目按历史事实原样保留，未做改写。
 
-## [1.0.0] - 2026-10-06
+## [Unreleased]
 
+## [1.0.1] - 2026-10-07
+
+### Added
+
+- **DeepSeek Harness in session history.** DSH sessions are now read from the DeepSeek Harness home directory (`$DSH_HOME`, default `~/.dsh`) — the same directory the `dsh` CLI and DSH Desktop share — so they are listed alongside the other sources.
+- **Open in DSH.** A DSH session opens directly in ASC's DSH surface with a resume intent, instead of only appearing in the list.
+- **Feishu `/dsh` command.** A prompt or approval on your phone can open a DSH session in the desktop app through the new `app:open-dsh-session` channel.
+
+### Removed
+
+- **The built-in Live2D floating-window skin**, and with it the bundled Live2D Cubism Core runtime and the Mao sample model (48 files, 4.9 MB on disk). They leave both the repository and the installer, so the package no longer contains any non-open-source runtime. The default `builtin/default` monitor is unaffected, and a floating window whose renderer is missing falls back to it.
+- **The Sunny Buddy example renderer** (`examples/`). Custom floating renderers remain supported, but the direction is now compact status surfaces rather than animated characters: the built-in creation Skill states that third-party runtimes and models are supplied and licensed by the user, never bundled here.
+
+### Notes
+
+- The published [v1.0.0](https://github.com/fatedawn/agent-session-center/releases/tag/v1.0.0) installer predates the Live2D removal and still carries that runtime. Release assets here are always built from this repository's own source by its own CI, but they are **not code-signed** — see the [code signing policy](https://github.com/fatedawn/agent-session-center#code-signing-policy).
+
+## [1.0.0] - 2026-10-06
 First public release. Agent Session Center (ASC) is a desktop session center for eight AI coding agents — Claude Code, Codex CLI, OpenCode, Grok Build, Kimi Code, Pi, Antigravity and WorkBuddy. The CLIs keep their native TUI and do all the work; ASC adds the layer usually missing around them.
 
 ### Added
@@ -31,27 +49,7 @@ First public release. Agent Session Center (ASC) is a desktop session center for
 - Builds are not commercially code-signed yet, so Windows may show a security prompt on first launch.
 - The early prototype was derived from [UniRound-Tec/hrack](https://github.com/UniRound-Tec/hrack) (Apache-2.0). ASC is an independently maintained hard fork; attribution and the change summary live in [NOTICE](./NOTICE).
 
-## [1.0.1] - 2026-10-07
-
-### Added
-
-- **DeepSeek Harness in session history.** DSH sessions are now read from the DeepSeek Harness home directory (`$DSH_HOME`, default `~/.dsh`) — the same directory the `dsh` CLI and DSH Desktop share — so they are listed alongside the other sources.
-- **Open in DSH.** A DSH session opens directly in ASC's DSH surface with a resume intent, instead of only appearing in the list.
-- **Feishu `/dsh` command.** A prompt or approval on your phone can open a DSH session in the desktop app through the new `app:open-dsh-session` channel.
-
-### Removed
-
-- **The built-in Live2D floating-window skin**, and with it the bundled Live2D Cubism Core runtime and the Mao sample model (48 files, 4.9 MB on disk). They leave both the repository and the installer, so the package no longer contains any non-open-source runtime. The default `builtin/default` monitor is unaffected, and a floating window whose renderer is missing falls back to it.
-- **The Sunny Buddy example renderer** (`examples/`). Custom floating renderers remain supported, but the direction is now compact status surfaces rather than animated characters: the built-in creation Skill states that third-party runtimes and models are supplied and licensed by the user, never bundled here.
-
-### Notes
-
-- The published [v1.0.0](https://github.com/fatedawn/agent-session-center/releases/tag/v1.0.0) installer predates the Live2D removal and still carries that runtime. Only artifacts built from current source are submitted for code signing.
-
-## [Unreleased]
-
 ## [0.4.7] - 2026-09-18
-
 ### Fixed
 
 - Fixed newly created DSH sessions not appearing in the desktop sidebar and session changes inside DSH not updating the active sidebar entry after upgrading to DSH 0.1.5.
@@ -62,7 +60,6 @@ First public release. Agent Session Center (ASC) is a desktop session center for
 - Added an explicit "Choose image / GIF" option and a GIF-only file filter for terminal backgrounds, with clearer instructions in all five supported languages. Animated GIFs up to 16 MB play in both the preview and terminal, support the existing fit and opacity controls, and remain selected after restart.
 
 ## [0.4.6] - 2026-09-10
-
 ### Fixed
 
 - Adapted to DeepSeek Harness 0.1.2+ browser authentication and Typert RPC: 本应用 now reads the process launch token, exchanges it for the signed session cookie, and uses that cookie for host ready checks, the official embedded page, wire/projector traffic, and the remote tunnel. Ready checks accept both the older `session.list` / `workspace.list` control plane and the 0.1.5 `session/list` remote. Older DSH hosts that do not print a token keep working without a cookie.
@@ -95,7 +92,6 @@ First public release. Agent Session Center (ASC) is a desktop session center for
 - The pairing QR code is memoized on its URL instead of being rebuilt on every pairing poll.
 
 ## [0.4.5] - 2026-08-28
-
 ### Added
 
 - Added eight built-in UI themes with four light styles (Paper Ink, Glacier Glass, Sakura Clay, and Circuit Lime) and four dark styles (Obsidian Ember, Midnight Cobalt, Forest Signal, and Violet Arcade).
@@ -112,7 +108,6 @@ First public release. Agent Session Center (ASC) is a desktop session center for
 - Fixed intermittent remote terminal alignment after scrolling or viewport changes by synchronizing cursor and viewport state with remote renderers.
 
 ## [0.4.4] - 2026-08-28
-
 ### Added
 
 - Added a selectable diagnostics panel in Settings that collects desktop, remote-control, and DSH events for easier troubleshooting without forcing an all-at-once copy action.
@@ -124,7 +119,6 @@ First public release. Agent Session Center (ASC) is a desktop session center for
 - Hardened remote and DSH connection diagnostics so regional routing and tunnel failures retain useful local context without exposing pairing credentials.
 
 ## [0.4.3] - 2026-08-27
-
 ### Fixed
 
 - Fixed intermittent terminal corruption and misalignment after long, scrollable TUI output or window-size changes. 本应用 now suppresses only ConPTY redraw frames that carry the expected size marker, while preserving application-owned redraws from Cline, Claude Code, Kimi Code, and other terminal UIs.
@@ -136,7 +130,6 @@ First public release. Agent Session Center (ASC) is a desktop session center for
 - Updated the public 本应用 website with device-aware visual effects that cap render cadence, pause off-screen work, reduce load on constrained devices, and respect reduced-motion preferences.
 
 ## [0.4.2] - 2026-08-26
-
 ### 新增
 
 - 远程设置页新增连接状态面板，实时显示连接指示灯、往返延迟以及本次连接的上传/下载流量。
@@ -153,14 +146,12 @@ First public release. Agent Session Center (ASC) is a desktop session center for
 - 发布产物的 `latest*.yml` 直接携带 CHANGELOG 原始 Markdown，避免 GitHub Atom 将更新说明转换为 HTML 后被安全渲染器跳过。
 
 ## [0.4.1] - 2026-08-25
-
 ### 修复
 
 - 适配 DeepSeek Harness 0.1.1 的 boot manifest 注入方式：远程能力检查改为解析 `window.__DSH_BOOT__` 和 `globalThis["__DSH_BOOT__"]` 的等价写法，再校验 manifest 内容，不再将 0.1.1 误判为“远程隧道不可用”。
 - 调整 DSH 远程状态文案，不再把主机、网页表面或隧道的能力失败笼统归因于 DSH 版本。
 
 ## [0.4.0] - 2026-08-25
-
 ### 新增
 
 - 新增完整的 本应用 Remote：桌面端可生成配对 URL / 二维码，经正式 TLS 公网中继把实时会话状态同步到手机，并支持临时接管终端输入。
@@ -189,7 +180,6 @@ First public release. Agent Session Center (ASC) is a desktop session center for
 - 远程控制需配合已部署的 本应用 Remote 服务和手机端应用使用；桌面端不会在手机未主动接管时转发键盘输入。
 
 ## [0.3.6] - 2026-08-21
-
 ### 新增
 
 - 支持重启 DSH 进程：打开 DSH 时标题栏提供「重启 DSH」，设置 → 会话里也有同一入口。安装插件后会杀掉当前 host 再拉起，并重载官方页面；本应用 的跟踪位不会被清掉。
@@ -200,7 +190,6 @@ First public release. Agent Session Center (ASC) is a desktop session center for
 - 适配 rc.7+ 官方页面模块加载：Cordis 改为从 `window.__ModuleLoader__` 捕获，不再依赖已移除的 `__DSH_MODULES__`，避免嵌入失败后又弹出浏览器。
 
 ## [0.3.5] - 2026-08-20
-
 ### 新增
 
 - 终端可设置背景图像：从本地选择图片，支持覆盖 / 适应 / 拉伸 / 平铺，默认不透明度 30%，设置页带小预览；背景铺满圆角留白，并隐藏多余滚动条。
@@ -219,7 +208,6 @@ First public release. Agent Session Center (ASC) is a desktop session center for
 - 设置页按外观 / 布局 / 终端 / 会话 / 更新分页，左侧分类导航，内容区加宽；去掉叠在真实标题上的装饰性英文眉题。
 
 ## [0.3.4] - 2026-08-19
-
 ### 新增
 
 - 新建 CLI 会话时记住上次工作区，并用主题化下拉框提供最近 5 条工作区记录。
@@ -242,7 +230,6 @@ First public release. Agent Session Center (ASC) is a desktop session center for
 - Windows / macOS / Linux 安装包去掉约 250MB 的 `dsh-runtime`，并裁掉未使用的 Electron 语言包，安装包更小、安装更快。
 
 ## [0.3.3] - 2026-08-18
-
 ### 修复
 
 - 修复打包版内置 DSH 启动失败（HMR 报 `--expose-internals is required`）：内置 host 改以 `ELECTRON_RUN_AS_NODE` 纯 Node 模式启动，`--expose-internals` 在打包产物中同样生效，开发与打包行为一致。
@@ -252,7 +239,6 @@ First public release. Agent Session Center (ASC) is a desktop session center for
 - DSH 运行时发现不再锁定唯一兼容版本：扫描如实上报本机 / WSL 安装的实际版本，任意版本均可作为候选并被 auto 优先选中（随包内置版本仅作兜底）；实际兼容性由启动时的控制面能力门禁（`session.list` / `workspace.list`）兜底。
 
 ## [0.3.2] - 2026-08-18
-
 ### 新增
 
 - 设置页新增「主题 JSON」编辑器，可编辑并保存个人界面主题（固定 `custom.json`），保存后可在主题选择器中选用。
@@ -271,7 +257,6 @@ First public release. Agent Session Center (ASC) is a desktop session center for
 - 修复 DSH 圆角原先依赖内容留白、关闭后圆角消失的问题，改为原生圆角实现。
 
 ## [0.3.0] - 2026-08-16
-
 ### 新增
 
 - 产品由 Vibing 更名为当时的产品名，更新应用界面、图标、安装包与项目文档。
@@ -292,7 +277,6 @@ First public release. Agent Session Center (ASC) is a desktop session center for
 - Windows 与 macOS 产物尚未进行商业代码签名，系统首次启动时可能显示安全提醒。
 
 ## [0.2.2] - 2026-08-07
-
 首个公开的 Windows 预览版本。
 
 ### 新增
