@@ -138,7 +138,7 @@ Agent Session Center 还可以扫描并启动 Devin CLI、Cline、Qwen Code、Am
 
 ## 安装
 
-> **配置项与数据格式尚未冻结。** 在 1.x 版本序列内仍可能变更；跨 minor 版本升级时请查看 [CHANGELOG.md](./CHANGELOG.md) 的迁移说明。
+> **状态：1.x 早期版本。** 可用于日常使用，但配置项命名与 `hub/` 目录结构仍可能在 1.x 内调整；需要长期稳定请锁定具体版本。
 
 从 [GitHub Releases](https://github.com/fatedawn/agent-session-center/releases) 下载最新版本：
 

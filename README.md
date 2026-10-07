@@ -138,7 +138,7 @@ Field depth varies by source. Title, time, turn count, and token usage are avail
 
 ## Install
 
-> **Configuration keys and data formats are not frozen yet.** They may still change within the 1.x series — check the migration notes in [CHANGELOG.md](./CHANGELOG.md) when upgrading across minor versions.
+> **Status: early 1.x.** Stable for daily use, but configuration keys and the `hub/` layout may still change within the 1.x line. Pin a version if you need that guarantee.
 
 Download the latest build from [GitHub Releases](https://github.com/fatedawn/agent-session-center/releases):
 
