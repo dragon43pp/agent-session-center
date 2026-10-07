@@ -1,0 +1,147 @@
+name: Linux release build
+
+# 与 release-windows.yml 对称：只构建、不上传发布。发布由 publish-release.yml
+# 在人工确认后完成（见 docs/RELEASING.md 与仓库顶部的未签名口径说明）。
+#
+# 与 Windows 版唯一的实质差异：**这里不能跳过 npm 生命周期脚本**。
+# node-pty 1.1.0 的预编译产物只有 darwin-arm64 / darwin-x64 / win32-arm64 /
+# win32-x64 —— **没有 linux**，所以 Linux 上 node-pty 必须真编译
+# （docs/RELEASING.md 已记录这一点）。这也是 release-win.ps1 里
+# --config.npmRebuild=false 只加在 Windows 的原因。
+#
+# Linux 产物不需要任何代码签名：AppImage 与 deb 都没有签名要求。
+#
+# 本地复现同一条链（含 tag 与 package.json 版本一致性校验）：
+#   npm run release:github:linux -- vX.Y.Z
+on:
+  workflow_dispatch:
+    inputs:
+      expected_tag:
+        description: '要构建的 tag（如 v1.0.1）。必须等于 package.json 的版本，脚本会拒绝不一致的输入。'
+        required: true
+        type: string
+      arch:
+        description: '目标架构。x64 与 package.json 的 linux.target 一致；arm64 需要 ARM runner，暂不默认。'
+        required: false
+        default: x64
+        type: choice
+        options:
+          - x64
+          - arm64
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-linux-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-linux:
+    runs-on: ${{ inputs.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # Electron 是无头应用，脚本会真实拉起打包后的可执行文件做 tray 校验
+      # （scripts/verify-packaged-tray.cjs），所以需要 GUI 运行库；
+      # 没有 DISPLAY 时 release-linux.sh 会改用 xvfb-run，故需 xvfb；
+      # node-gyp 编译 node-pty 需要编译工具链；deb 打包需要 fakeroot / dpkg-dev。
+      - name: Install Linux packaging prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential python3 make g++ \
+            fakeroot dpkg-dev file \
+            xvfb \
+            libgtk-3-0 libnss3 libatk-bridge2.0-0 libgbm1 libasound2t64
+
+      - name: Install dependencies
+        # 不加 --ignore-scripts：node-pty 在本平台没有预编译产物，必须真编译。
+        run: npm ci
+
+      # manual 触发时用输入值，tag 触发时用被推的 tag；两者都不为空，
+      # 交给 release-github-linux.sh 做「tag 必须等于 package.json 版本」的门禁。
+      - name: Resolve release tag
+        id: tag
+        env:
+          INPUT_TAG: ${{ inputs.expected_tag }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          tag="${INPUT_TAG:-$REF_NAME}"
+          if [ -z "$tag" ]; then echo 'A release tag is required.' >&2; exit 1; fi
+          echo "Building for tag: $tag"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      # 这个脚本 = tag/版本门禁 + npm run typecheck + npm run release:linux + 写 .sha256。
+      # release-linux.sh 内含全部门禁：AppImage 解压出可执行 AppRun、deb 的
+      # Version/Architecture 字段、可执行位、架构匹配、打包后应用启动测试、
+      # 更新元数据断言，以及 dsh-runtime 必须不存在。
+      - name: Build, package and checksum
+        env:
+          ASC_LINUX_ARCH: ${{ inputs.arch || 'x64' }}
+        run: npm run release:github:linux -- "${{ steps.tag.outputs.tag }}"
+
+      - name: Summarise artifacts
+        run: |
+          ls -lh artifacts \
+            | awk 'NR==1 || /AgentSessionCenter-.*-(AppImage|deb)/ || /latest-linux/ {print}'
+
+      - name: Read AppImage digest
+        id: digest
+        run: |
+          image="$(find artifacts -maxdepth 1 -type f -name 'AgentSessionCenter-*.AppImage' -print -quit)"
+          if [ -z "$image" ]; then echo 'No AppImage was produced.' >&2; exit 1; fi
+          published="$(awk '{print $1}' "$image.sha256")"
+          actual="$(sha256sum "$image" | awk '{print $1}')"
+          if [ "$published" != "$actual" ]; then
+            echo "Published checksum does not match the AppImage ($published vs $actual)." >&2
+            exit 1
+          fi
+          echo "appimage=$(basename "$image")" >> "$GITHUB_OUTPUT"
+          echo "sha256=$published" >> "$GITHUB_OUTPUT"
+          echo "UNSIGNED $(basename "$image") sha256=$published"
+
+      - name: Upload unsigned packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: asc-linux-unsigned-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            artifacts/AgentSessionCenter-*-linux-*.AppImage
+            artifacts/AgentSessionCenter-*-linux-*.AppImage.sha256
+            artifacts/AgentSessionCenter-*-linux-*.deb
+            artifacts/AgentSessionCenter-*-linux-*.deb.sha256
+            artifacts/latest-linux.yml
+
+      - name: Job summary
+        env:
+          APPIMAGE: ${{ steps.digest.outputs.appimage }}
+          SHA256: ${{ steps.digest.outputs.sha256 }}
+          COMMIT: ${{ github.sha }}
+        run: |
+          {
+            echo '### Linux build (unsigned)'
+            echo ''
+            echo '| | |'
+            echo '| --- | --- |'
+            echo "| AppImage | \`$APPIMAGE\` |"
+            echo "| SHA-256 | \`$SHA256\` |"
+            echo "| Commit | \`$COMMIT\` |"
+            echo ''
+            echo 'Linux packages need no code signature. Check the SHA-256 above against the'
+            echo 'release notes, then attach the assets to the GitHub Release.'
+            echo 'See docs/RELEASING.md.'
+          } >> "$GITHUB_STEP_SUMMARY"
