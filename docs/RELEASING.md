@@ -117,10 +117,24 @@ and notarization before auto-install can be trusted there.
 There is **no automatic publishing**. `.github/workflows/ci.yml` runs `npm run typecheck` and
 `npm run build` on push and pull request; `.github/workflows/release-windows.yml` additionally
 builds and packages the Windows installer and uploads it as an **unsigned** workflow artifact.
-Neither workflow creates a Release. Publishing stays a manual, maintainer-confirmed step because
-it is irreversible, because the maintainer verifies the artifact's hash against the run summary
-before anything is announced, and because the e2e suite needs a real DeepSeek Harness host that
-GitHub runners cannot provide.
+Neither of those two creates a Release. Publishing stays a manual, maintainer-confirmed step
+because it is irreversible, because the maintainer verifies the artifact's hash against the run
+summary before anything is announced, and because the e2e suite needs a real DeepSeek Harness host
+that GitHub runners cannot provide.
+
+### Attaching a build to a Release
+
+`.github/workflows/publish-release.yml` is a **manual** workflow that takes an existing
+`release-windows.yml` run id plus a tag, downloads that run's artifact **on the runner**, verifies
+the installer against the `.sha256` shipped in the same artifact, attaches everything to the
+Release, and optionally publishes it. It builds nothing and changes nothing it downloads.
+
+It exists because moving the artifact by hand is the slow part: the installer is ~94 MB and the
+round trip to a maintainer's machine runs at whatever their link gives — measured at ~22 KB/s on
+this project, which is about an hour — while the runner fetches it from GitHub's own storage in
+seconds. No secrets beyond the default `GITHUB_TOKEN` are needed, and it can only be reached by
+hand: both inputs are required, and `publish` defaults to `false`, so a run that only attaches
+assets leaves the Release as a draft.
 
 Rehearse the whole Windows chain (tag/version gate + guarded packaging + checksum)
 without touching GitHub:

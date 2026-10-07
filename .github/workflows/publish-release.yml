@@ -1,0 +1,83 @@
+name: Publish release
+
+# 把**一次既有构建**的产物挂到指定 Release 上，可选地把它发布出去。
+#
+# 存在的理由：产物已经在 GitHub 上，把它拉回本地再传回去要绕一整圈国际链路 —— 本机实测
+# ~22 KB/s，94 MB 要一个小时，而且中途重定向还会失败。让 runner 从同一次运行里直接取产物
+# 挂到 Release，几秒钟完事，链路不出 GitHub。
+#
+# 这个工作流**不构建任何东西**：它只搬运既有产物、校验校验值、挂上去。发布仍然是人工动作 ——
+# 必须手动触发，且必须显式给出 run id 与 tag，两个值都不猜。
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: '要挂到的 Release tag（如 v1.0.1）'
+        required: true
+        type: string
+      run_id:
+        description: '产出该产物的 release-windows.yml 运行 id'
+        required: true
+        type: string
+      publish:
+        description: '挂上后是否把这个 draft Release 正式发布出去'
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Download the artifacts from that run
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_ID: ${{ inputs.run_id }}
+        run: |
+          gh run download "$RUN_ID" --repo "${{ github.repository }}" --dir dl
+          echo '--- downloaded ---'
+          find dl -type f -exec ls -l {} +
+
+      - name: Verify the installer against its published checksum
+        run: |
+          set -euo pipefail
+          exe=$(find dl -type f -name 'AgentSessionCenter-Setup-*.exe' | head -1)
+          sum=$(find dl -type f -name '*.exe.sha256' | head -1)
+          [ -n "$exe" ] || { echo 'No installer found in the artifact.' >&2; exit 1; }
+          [ -n "$sum" ] || { echo 'No .sha256 file found in the artifact.' >&2; exit 1; }
+          expected=$(cut -d' ' -f1 "$sum" | tr -d '\r\n' | tr '[:upper:]' '[:lower:]')
+          actual=$(sha256sum "$exe" | cut -d' ' -f1)
+          echo "installer : $exe"
+          echo "expected  : $expected"
+          echo "actual    : $actual"
+          if [ "$expected" != "$actual" ]; then
+            echo 'Checksum mismatch — refusing to attach.' >&2
+            exit 1
+          fi
+
+      - name: Attach the artifacts to the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          mapfile -t files < <(find dl -type f)
+          printf 'attaching %s\n' "${files[@]}"
+          gh release upload "$TAG" "${files[@]}" \
+            --repo "${{ github.repository }}" --clobber
+
+      - name: Publish the release
+        if: inputs.publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          gh release edit "$TAG" --repo "${{ github.repository }}" --draft=false
+          gh release view "$TAG" --repo "${{ github.repository }}" \
+            --json tagName,isDraft,assets \
+            --jq '"tag=\(.tagName) draft=\(.isDraft) assets=\(.assets|length)"'
