@@ -138,6 +138,8 @@ Agent Session Center 还可以扫描并启动 Devin CLI、Cline、Qwen Code、Am
 
 ## 安装
 
+> **配置项与数据格式尚未冻结。** 在 1.x 版本序列内仍可能变更；跨 minor 版本升级时请查看 [CHANGELOG.md](./CHANGELOG.md) 的迁移说明。
+
 从 [GitHub Releases](https://github.com/fatedawn/agent-session-center/releases) 下载最新版本：
 
 - **Windows x64** —— `AgentSessionCenter-Setup-1.0.0.exe`，引导式 NSIS 安装包，可选安装目录。

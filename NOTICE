@@ -19,6 +19,12 @@ License 2.0 licensed project.
 与许可声明由 UniRound-Tec 保留；本项目按 Apache License 2.0 第 4 条要求，
 在 LICENSE 文件中保留原始版权声明与许可声明副本。
 
+据实说明：上游 UniRound-Tec/hrack 的 LICENSE 文件未填写具体版权年份与版权主体
+（其附录仍为 Apache-2.0 模板占位 `Copyright [yyyy] [name of copyright owner]`），
+上游仓库亦未提供 NOTICE 文件，因此并不存在可供本文件复制的原始版权声明。
+本项目不代为补写未声明的年份与主体；上游项目的署名、许可与本项目改动说明，
+记载于 LICENSE 末尾「Upstream attribution」一节及本文件上述各节。
+
 ---------------------------------------------------------------------------
 本项目的主要变更 / Modifications
 ---------------------------------------------------------------------------

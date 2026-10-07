@@ -189,6 +189,12 @@
 
    Copyright [yyyy] [name of copyright owner]
 
+   [Note: the line above is the boilerplate placeholder printed in the
+   appendix of the Apache License 2.0 text; it is reproduced verbatim as
+   part of the license and is not a copyright notice of this project.
+   The notices that actually apply to this project are set out at the end
+   of this file.]
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
@@ -214,3 +220,27 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+
+---------------------------------------------------------------------------
+Upstream attribution
+---------------------------------------------------------------------------
+
+This work (Agent Session Center) is a derivative work of UniRound-Tec/hrack
+(https://github.com/UniRound-Tec/hrack), which is distributed under the
+Apache License, Version 2.0.
+
+The upstream project declares no copyright year and no copyright holder in
+its own LICENSE file. That file, as retrieved from the upstream repository
+on 2026-10-07, is an unedited copy of the Apache License 2.0 text whose
+appendix still carries the template placeholder "Copyright [yyyy] [name of
+copyright owner]"; the upstream repository also publishes no NOTICE file.
+There is consequently no upstream copyright notice for this file to
+reproduce, and none has been invented here.
+
+Upstream attribution, the statement of what this fork changed, and the
+measured extent of the inherited code are recorded in the NOTICE file at the
+root of this repository, as provided for by Section 4(d) of the Apache
+License, Version 2.0.
+
+The copyright notice of this project is the one above:
+"Copyright 2026 fatedawn".

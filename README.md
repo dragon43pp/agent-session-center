@@ -138,6 +138,8 @@ Field depth varies by source. Title, time, turn count, and token usage are avail
 
 ## Install
 
+> **Configuration keys and data formats are not frozen yet.** They may still change within the 1.x series — check the migration notes in [CHANGELOG.md](./CHANGELOG.md) when upgrading across minor versions.
+
 Download the latest build from [GitHub Releases](https://github.com/fatedawn/agent-session-center/releases):
 
 - **Windows x64** — `AgentSessionCenter-Setup-1.0.0.exe`, a guided NSIS installer, so you can choose the installation directory.
