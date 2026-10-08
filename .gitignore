@@ -29,6 +29,8 @@ electron.vite.config.*.mjs
 #   SIGNPATH-APPLICATION.md
 #                 代码签名政策与申请材料的完整说明，RELEASING.md 里有链接，
 #                 同时也是 SignPath 审查要看的公开证据，必须入库否则 404
+#   site/         零构建的双语在线 demo（假数据），由 scripts/build-demo-site.cjs 部署；
+#                 package.json 的 files 已排除 docs，对安装包零影响
 docs/*
 !docs/SPEC-REMOTE-DSH-WEB-TUNNEL.md
 !docs/brand.md
@@ -39,6 +41,8 @@ docs/*
 !docs/shots/**
 !docs/demo
 !docs/demo/**
+!docs/site
+!docs/site/**
 
 # 内置 dsh 运行时的隔离依赖树（dsh-runtime/package*.json 需提交）
 dsh-runtime/node_modules/
