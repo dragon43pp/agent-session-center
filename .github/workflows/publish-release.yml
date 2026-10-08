@@ -35,6 +35,12 @@ jobs:
     timeout-minutes: 15
 
     steps:
+      # 检出必须排在下载之前：actions/checkout 默认 clean: true，会先跑
+      # `git clean -ffdx`。放在「Download the artifacts」后面会把刚下载的 dl/ 直接删掉。
+      - name: Check out the repository
+        # 只是为了拿到 scripts/merge-mac-update-metadata.cjs —— 这个工作流不构建任何东西。
+        uses: actions/checkout@v4
+
       - name: Download the artifacts from that run
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -43,6 +49,26 @@ jobs:
           gh run download "$RUN_ID" --repo "${{ github.repository }}" --dir dl
           echo '--- downloaded ---'
           find dl -type f -exec ls -l {} +
+
+      - name: Merge the per-architecture macOS update metadata
+        # macOS 是唯一一个更新元数据不带架构后缀的平台：electron-updater 的
+        # Provider.getChannelFilePrefix() 只在 linux 上追加架构（arm64 Linux 会去取
+        # latest-linux-arm64.yml），darwin 恒返回裸的 -mac。所以 Mac 永远只请求
+        # latest-mac.yml 这一个文件，并期望它的 files: 数组列出所有架构的产物，
+        # 再由 MacUpdater.filterFilesForArch() 按 URL 里的 "arm64" 字样筛选。
+        #
+        # release-mac.yml 把 arm64 / x64 拆成两个 matrix job（为的是各自在原生 runner 上
+        # 验证，而不是让 x64 二进制跑在 Rosetta 下），于是两个 artifact 各带一份只覆盖自己
+        # 架构的 latest-mac.yml。两份同名文件没法同时挂到 Release —— GitHub 会回 422
+        # `ReleaseAsset.name already exists`；而 gh release upload 是一次传整个文件列表，
+        # 这一个冲突就会中止整步，留下「有元数据、有校验值、但没有二进制」的 Release，
+        # 比什么都不上传更糟：已安装的 Mac 会被提示更新、然后下载 404。
+        #
+        # 脚本自己会断言被引用的产物确实都在本次运行里，并删掉各架构的输入文件，
+        # 保证合并后的 latest-mac.yml 是唯一一份。没有 mac 元数据时它静默通过
+        # （Windows / Linux 运行本来就没有）。
+        run: |
+          node scripts/merge-mac-update-metadata.cjs dl dl/latest-mac.yml
 
       - name: Verify every artifact against its published checksum
         # 不写死文件名：一次运行可能是 Windows（Setup-*.exe）、Linux（AppImage + deb）
@@ -77,9 +103,24 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ inputs.tag }}
         run: |
-          mapfile -t files < <(find dl -type f)
-          printf 'attaching %s\n' "${files[@]}"
-          gh release upload "$TAG" "${files[@]}" \
+          set -euo pipefail
+          mapfile -t payload < <(find dl -type f ! -name '*.sha256' | sort)
+          mapfile -t sums < <(find dl -type f -name '*.sha256' | sort)
+          if [ ${#payload[@]} -eq 0 ]; then
+            echo 'Nothing to attach — the artifact contained no payload files.' >&2
+            exit 1
+          fi
+
+          # 二进制与更新元数据先上，.sha256 最后上。一个指向不存在产物的校验值文件是有害的
+          # （它替一个下不动的产物背书），这个顺序让「整步中途失败」也到不了那个状态：
+          # 载荷传不完就根本不会去传校验值，最多是缺校验值，而不是校验值悬空。
+          printf 'attaching %s payload file(s)\n' "${#payload[@]}"
+          printf '  %s\n' "${payload[@]}"
+          gh release upload "$TAG" "${payload[@]}" \
+            --repo "${{ github.repository }}" --clobber
+
+          printf 'attaching %s checksum file(s)\n' "${#sums[@]}"
+          gh release upload "$TAG" "${sums[@]}" \
             --repo "${{ github.repository }}" --clobber
 
       - name: Publish the release
