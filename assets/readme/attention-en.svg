@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 512" width="1160" height="512" role="img" aria-label="Six agent sessions running side by side. One blocks on an approval, reaches the user's phone, and resumes in the same PTY.">
+  <title>The attention loop — six sessions, one of them needs you</title>
+  <style>
+    :root {
+      --plate: #141922;
+      --screen: #0E1218;
+      --hair: #242C38;
+      --ink: #E8EBF0;
+      --dim: #8A93A3;
+      --faint: #5E6675;
+      --working: #F2A93B;
+      --needs-you: #FF6B4A;
+      --done: #3ECF8E;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --plate: #EDF0F5;
+        --screen: #E7EBF2;
+        --hair: #DFE4EC;
+        --ink: #0F1420;
+        --dim: #626C7D;
+        --faint: #98A1B0;
+      }
+    }
+    .sans { font-family: ui-sans-serif, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+    .plate { fill: var(--plate); stroke: var(--hair); stroke-width: 1; }
+    .node  { fill: var(--screen); stroke: var(--hair); stroke-width: 1; }
+    .track { fill: var(--screen); }
+    .hair  { stroke: var(--hair); stroke-width: 1; fill: none; }
+    .wire  { stroke: var(--dim); stroke-width: 1.2; fill: none; }
+    .away  { fill: var(--hair); opacity: 0.5; }
+    .label { fill: var(--faint); font-size: 10px; letter-spacing: 3.4px; }
+    .title { fill: var(--ink); font-size: 26px; font-weight: 700; letter-spacing: -1.2px; }
+    .step  { fill: var(--ink); font-size: 13px; font-weight: 600; letter-spacing: 0.6px; }
+    .body  { fill: var(--dim); font-size: 11px; }
+    .micro { fill: var(--faint); font-size: 10.5px; }
+    .note  { fill: var(--faint); font-size: 10.5px; }
+    .lane  { fill: var(--dim); font-size: 10.5px; }
+    .lamp  { fill: var(--needs-you); }
+  </style>
+
+  <rect class="plate" x="0.5" y="0.5" width="1159" height="511" rx="20"/>
+
+  <text class="mono label" x="36" y="52">ATTENTION</text>
+  <text class="sans title" x="36" y="88">Six sessions at once. One of them is waiting on you.</text>
+  <line class="hair" x1="36" y1="110" x2="1124" y2="110"/>
+
+  <!-- the window in which nobody was watching any of them -->
+  <rect class="away" x="500" y="138" width="360" height="190" rx="10"/>
+  <text class="mono micro" x="680" y="130" text-anchor="middle">you were away</text>
+
+  <!-- lane tracks -->
+  <rect class="track" x="262" y="150" width="862" height="10" rx="5"/>
+  <rect class="track" x="262" y="182" width="862" height="10" rx="5"/>
+  <rect class="track" x="262" y="214" width="862" height="10" rx="5"/>
+  <rect class="track" x="262" y="246" width="862" height="10" rx="5"/>
+  <rect class="track" x="262" y="278" width="862" height="10" rx="5"/>
+  <rect class="track" x="262" y="310" width="862" height="10" rx="5"/>
+
+  <!-- lane 1 · grok-build -->
+  <text class="mono lane" x="250" y="159" text-anchor="end">grok-build · blog-engine</text>
+  <rect x="262" y="150" width="298" height="10" rx="5" fill="var(--working)"/>
+  <rect x="560" y="150" width="564" height="10" rx="5" fill="var(--done)"/>
+
+  <!-- lane 2 · claude-code · the one that glows -->
+  <text class="mono lane" x="250" y="191" text-anchor="end">claude-code · api-server</text>
+  <rect x="262" y="182" width="238" height="10" rx="5" fill="var(--working)"/>
+  <rect x="500" y="182" width="360" height="10" rx="5" fill="var(--needs-you)"/>
+  <rect x="860" y="182" width="180" height="10" rx="5" fill="var(--working)"/>
+  <rect x="1040" y="182" width="84" height="10" rx="5" fill="var(--done)"/>
+  <circle class="lamp" cx="500" cy="187" r="16" opacity="0.07"/>
+  <circle class="lamp" cx="500" cy="187" r="11" opacity="0.18"/>
+  <circle class="lamp" cx="500" cy="187" r="4.4"/>
+
+  <!-- lane 3 · codex -->
+  <text class="mono lane" x="250" y="223" text-anchor="end">codex · webhook-relay</text>
+  <rect x="262" y="214" width="438" height="10" rx="5" fill="var(--working)"/>
+  <rect x="700" y="214" width="424" height="10" rx="5" fill="var(--done)"/>
+
+  <!-- lane 4 · opencode -->
+  <text class="mono lane" x="250" y="255" text-anchor="end">opencode · pt-toolkit</text>
+  <rect x="262" y="246" width="618" height="10" rx="5" fill="var(--working)"/>
+  <rect x="880" y="246" width="244" height="10" rx="5" fill="var(--done)"/>
+
+  <!-- lane 5 · kimi-code -->
+  <text class="mono lane" x="250" y="287" text-anchor="end">kimi-code · blog-engine</text>
+  <rect x="262" y="278" width="378" height="10" rx="5" fill="var(--working)"/>
+  <rect x="640" y="278" width="484" height="10" rx="5" fill="var(--done)"/>
+
+  <!-- lane 6 · pi -->
+  <text class="mono lane" x="250" y="319" text-anchor="end">pi · agent-session-center</text>
+  <rect x="262" y="310" width="698" height="10" rx="5" fill="var(--working)"/>
+  <rect x="960" y="310" width="164" height="10" rx="5" fill="var(--done)"/>
+
+  <text class="mono micro" x="262" y="346">you launched six</text>
+  <text class="mono micro" x="1124" y="346" text-anchor="end">now</text>
+
+  <line class="hair" x1="36" y1="372" x2="1124" y2="372"/>
+
+  <!-- the handoff -->
+  <rect class="node" x="56.5"  y="390.5" width="244" height="54" rx="8"/>
+  <rect class="node" x="324.5" y="390.5" width="244" height="54" rx="8"/>
+  <rect class="node" x="592.5" y="390.5" width="244" height="54" rx="8"/>
+  <rect class="node" x="860.5" y="390.5" width="243" height="54" rx="8"/>
+
+  <text class="mono step" x="72"  y="414">needs-you</text>
+  <text class="mono micro" x="72"  y="433">pendingApprovals is not empty</text>
+  <text class="mono step" x="340" y="414">Feishu push</text>
+  <text class="mono micro" x="340" y="433">one card, on your phone</text>
+  <text class="mono step" x="608" y="414">you tap approve</text>
+  <text class="mono micro" x="608" y="433">the decision travels back</text>
+  <text class="mono step" x="876" y="414">same PTY resumes</text>
+  <text class="mono micro" x="876" y="433">nothing restarted, nothing lost</text>
+
+  <path class="wire" d="M301 417.5 H323" marker-end="url(#a2)"/>
+  <path class="wire" d="M569 417.5 H591" marker-end="url(#a2)"/>
+  <path class="wire" d="M837 417.5 H859" marker-end="url(#a2)"/>
+
+  <text class="sans note" x="36" y="488">The other five never interrupt you. Only the coral session asks — and it keeps asking, across restarts, until you answer.</text>
+
+  <defs>
+    <marker id="a2" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 1 L7 4 L0 7 z" fill="var(--dim)"/>
+    </marker>
+  </defs>
+</svg>

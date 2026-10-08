@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 486" width="1160" height="486" role="img" aria-label="The six-state projection. Only needs-you glows.">
+  <title>The six-state projection — one light is on</title>
+  <style>
+    :root {
+      --bg: #0B0E13;
+      --plate: #141922;
+      --hair: #242C38;
+      --ink: #E8EBF0;
+      --dim: #8A93A3;
+      --faint: #5E6675;
+      --working: #F2A93B;
+      --needs-you: #FF6B4A;
+      --done: #3ECF8E;
+      --error: #EF4E45;
+      --idle: #6B7484;
+      --exited: #4C9AFF;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #F5F7FA;
+        --plate: #EDF0F5;
+        --hair: #DFE4EC;
+        --ink: #0F1420;
+        --dim: #626C7D;
+        --faint: #98A1B0;
+      }
+    }
+    .sans { font-family: ui-sans-serif, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+    .plate { fill: var(--plate); stroke: var(--hair); stroke-width: 1; }
+    .card  { fill: none; stroke: var(--hair); stroke-width: 1; }
+    .hair  { stroke: var(--hair); stroke-width: 1; }
+    .label { fill: var(--faint); font-size: 10px; letter-spacing: 3.4px; }
+    .title { fill: var(--ink); font-size: 26px; font-weight: 700; letter-spacing: -1.2px; }
+    .state { fill: var(--ink); font-size: 15px; font-weight: 600; letter-spacing: 0.6px; }
+    .body  { fill: var(--dim); font-size: 12px; }
+    .note  { fill: var(--faint); font-size: 10.5px; }
+    .tag   { fill: var(--needs-you); font-size: 9.5px; font-weight: 700; letter-spacing: 2.4px; }
+  </style>
+
+  <rect class="plate" x="0.5" y="0.5" width="1159" height="485" rx="20"/>
+
+  <text class="mono label" x="36" y="52">SIX-STATE PROJECTION</text>
+  <text class="sans title" x="36" y="88">One light is on.</text>
+
+  <!-- header right: the single glow, restated -->
+  <circle cx="848" cy="60" r="17" fill="var(--needs-you)" opacity="0.07"/>
+  <circle cx="848" cy="60" r="11" fill="var(--needs-you)" opacity="0.16"/>
+  <circle cx="848" cy="60" r="4.6" fill="var(--needs-you)"/>
+  <text class="mono body" x="866" y="64">needs-you — the only state that glows</text>
+
+  <line class="hair" x1="36" y1="110" x2="1124" y2="110"/>
+
+  <!-- needs-you -->
+  <rect x="36.5" y="136.5" width="537" height="92" rx="14" class="card"/>
+  <rect x="36.5" y="136.5" width="4" height="92" rx="2" fill="var(--needs-you)"/>
+  <circle cx="76" cy="182" r="19" fill="var(--needs-you)" opacity="0.07"/>
+  <circle cx="76" cy="182" r="12.5" fill="var(--needs-you)" opacity="0.17"/>
+  <circle cx="76" cy="182" r="5" fill="var(--needs-you)"/>
+  <text class="mono state" x="102" y="178">needs-you</text>
+  <text class="mono tag" x="196" y="177">GLOWS</text>
+  <text class="sans body" x="102" y="199">Blocked on your confirmation. This is the one that finds you.</text>
+
+  <!-- working -->
+  <rect x="586.5" y="136.5" width="537" height="92" rx="14" class="card"/>
+  <circle cx="626" cy="182" r="5" fill="var(--working)"/>
+  <text class="mono state" x="652" y="178">working</text>
+  <text class="sans body" x="652" y="199">Streaming output. Nothing for you to do.</text>
+
+  <!-- done -->
+  <rect x="36.5" y="242.5" width="537" height="92" rx="14" class="card"/>
+  <circle cx="76" cy="288" r="5" fill="var(--done)"/>
+  <text class="mono state" x="102" y="284">done</text>
+  <text class="sans body" x="102" y="305">Finished. Collect the result.</text>
+
+  <!-- error -->
+  <rect x="586.5" y="242.5" width="537" height="92" rx="14" class="card"/>
+  <circle cx="626" cy="288" r="5" fill="var(--error)"/>
+  <text class="mono state" x="652" y="284">error</text>
+  <text class="sans body" x="652" y="305">Failed. Needs a human.</text>
+
+  <!-- idle -->
+  <rect x="36.5" y="348.5" width="537" height="92" rx="14" class="card"/>
+  <circle cx="76" cy="394" r="5" fill="var(--idle)"/>
+  <text class="mono state" x="102" y="390">idle</text>
+  <text class="sans body" x="102" y="411">Alive, nothing happening right now.</text>
+
+  <!-- exited -->
+  <rect x="586.5" y="348.5" width="537" height="92" rx="14" class="card"/>
+  <circle cx="626" cy="394" r="5" fill="var(--exited)"/>
+  <text class="mono state" x="652" y="390">exited</text>
+  <text class="sans body" x="652" y="411">Process gone. Still recoverable from history.</text>
+
+  <text class="sans note" x="36" y="468">Events are the fact; a status is a projection of them — and when the observer cannot be sure, it says so with a confidence flag instead of inventing one.</text>
+</svg>

@@ -1,0 +1,149 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 640" width="1160" height="640" role="img" aria-label="Agent Session Center 的观测方式：终端保持原生，状态在旁边的流水线里推出。">
+  <title>工作方式 —— 终端保持原生，状态在旁边推出来</title>
+  <style>
+    :root {
+      --plate: #141922;
+      --screen: #0E1218;
+      --hair: #242C38;
+      --ink: #E8EBF0;
+      --dim: #8A93A3;
+      --faint: #5E6675;
+      --needs-you: #FF6B4A;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --plate: #EDF0F5;
+        --screen: #E7EBF2;
+        --hair: #DFE4EC;
+        --ink: #0F1420;
+        --dim: #626C7D;
+        --faint: #98A1B0;
+      }
+    }
+    .sans { font-family: ui-sans-serif, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", "Microsoft YaHei", monospace; }
+    .plate  { fill: var(--plate); stroke: var(--hair); stroke-width: 1; }
+    .node   { fill: var(--screen); stroke: var(--hair); stroke-width: 1; }
+    .hair   { stroke: var(--hair); stroke-width: 1; fill: none; }
+    .wire   { stroke: var(--dim); stroke-width: 1.2; fill: none; }
+    .label  { fill: var(--faint); font-size: 10px; letter-spacing: 3.4px; }
+    .title  { fill: var(--ink); font-size: 26px; font-weight: 700; letter-spacing: -1.2px; }
+    .step   { fill: var(--ink); font-size: 13px; font-weight: 600; letter-spacing: 0.6px; }
+    .body   { fill: var(--dim); font-size: 11px; }
+    .micro  { fill: var(--faint); font-size: 10.5px; }
+    .note   { fill: var(--faint); font-size: 10.5px; }
+    .lamp   { fill: var(--needs-you); }
+  </style>
+
+  <rect class="plate" x="0.5" y="0.5" width="1159" height="639" rx="20"/>
+
+  <text class="mono label" x="36" y="52">事件流水线</text>
+  <text class="sans title" x="36" y="88">终端保持原生，状态在旁边推出来。</text>
+  <line class="hair" x1="36" y1="110" x2="1124" y2="110"/>
+
+  <!-- ═══════════ 1 · 终端通道 ═══════════ -->
+  <rect class="plate" x="36.5" y="124.5" width="1087" height="92" rx="14"/>
+  <text class="mono label" x="56" y="150">终端通道</text>
+  <text class="sans micro" x="560" y="150">由你和 CLI 共同持有</text>
+
+  <rect class="node" x="56.5" y="164.5" width="140" height="34" rx="8"/>
+  <text class="mono body" x="126" y="186" text-anchor="middle">CLI 进程</text>
+  <path class="wire" d="M197 181.5 H245" marker-end="url(#z1)"/>
+  <rect class="node" x="246.5" y="164.5" width="140" height="34" rx="8"/>
+  <text class="mono body" x="316" y="186" text-anchor="middle">PTY</text>
+  <path class="wire" d="M387 181.5 H435" marker-end="url(#z1)"/>
+  <rect class="node" x="436.5" y="164.5" width="240" height="34" rx="8"/>
+  <text class="mono body" x="556" y="186" text-anchor="middle">原生 TUI —— 原样呈现</text>
+
+  <text class="sans body" x="1110" y="172" text-anchor="end">Agent Session Center 从不改写终端字节。</text>
+  <text class="sans body" x="1110" y="192" text-anchor="end">状态来自事件，不来自抓屏。</text>
+
+  <path class="wire" d="M126 217 V268" marker-end="url(#z1)"/>
+  <text class="sans micro" x="136" y="248">事件</text>
+
+  <!-- ═══════════ 2 · 观测通道 ═══════════ -->
+  <rect class="plate" x="36.5" y="232.5" width="1087" height="268" rx="14"/>
+  <text class="mono label" x="56" y="258">观测通道</text>
+  <text class="sans micro" x="560" y="258">不管原生协议是什么，都归一成同一套词汇</text>
+
+  <rect class="node" x="56.5"   y="270.5" width="164" height="28" rx="6"/>
+  <rect class="node" x="232.5"  y="270.5" width="164" height="28" rx="6"/>
+  <rect class="node" x="408.5"  y="270.5" width="164" height="28" rx="6"/>
+  <rect class="node" x="584.5"  y="270.5" width="164" height="28" rx="6"/>
+  <rect class="node" x="760.5"  y="270.5" width="164" height="28" rx="6"/>
+  <rect class="node" x="936.5"  y="270.5" width="167" height="28" rx="6"/>
+  <text class="mono body" x="138"  y="289" text-anchor="middle">hook</text>
+  <text class="mono body" x="314"  y="289" text-anchor="middle">jsonl</text>
+  <text class="mono body" x="490"  y="289" text-anchor="middle">rpc · acp</text>
+  <text class="mono body" x="666"  y="289" text-anchor="middle">native-stream</text>
+  <text class="mono body" x="842"  y="289" text-anchor="middle">transcript</text>
+  <text class="mono body" x="1020" y="289" text-anchor="middle">lifecycle</text>
+
+  <path class="wire" d="M580 299 V320" marker-end="url(#z1)"/>
+
+  <rect class="node" x="56.5"  y="322.5" width="244" height="58" rx="8"/>
+  <rect class="node" x="324.5" y="322.5" width="244" height="58" rx="8"/>
+  <rect class="node" x="592.5" y="322.5" width="244" height="58" rx="8"/>
+  <rect class="node" x="860.5" y="322.5" width="243" height="58" rx="8"/>
+
+  <text class="mono step" x="72"  y="346">normalizer</text>
+  <text class="mono body" x="72"  y="366">原生协议 → AgentEvent</text>
+  <text class="mono step" x="340" y="346">queue</text>
+  <text class="mono body" x="340" y="366">按 seq 排序，不认时钟</text>
+  <text class="mono step" x="608" y="346">reducer</text>
+  <text class="mono body" x="608" y="366">关联工具 · 审批 · 输入</text>
+  <text class="mono step" x="876" y="346">projector</text>
+  <text class="mono body" x="876" y="366">六态 + 置信度 + 能力</text>
+
+  <path class="wire" d="M301 351.5 H323" marker-end="url(#z1)"/>
+  <path class="wire" d="M569 351.5 H591" marker-end="url(#z1)"/>
+  <path class="wire" d="M837 351.5 H859" marker-end="url(#z1)"/>
+
+  <text class="sans micro" x="72" y="404">按 nativeId 去重 —— hook 重放和 RPC 重连会送两遍</text>
+
+  <path class="wire" d="M580 381 V406" marker-end="url(#z1)"/>
+
+  <rect class="node" x="56.5"  y="408.5" width="244" height="60" rx="8"/>
+  <rect class="node" x="324.5" y="408.5" width="244" height="60" rx="8"/>
+  <rect class="node" x="592.5" y="408.5" width="244" height="60" rx="8"/>
+  <rect class="node" x="860.5" y="408.5" width="243" height="60" rx="8"/>
+
+  <circle class="lamp" cx="74" cy="428" r="16" opacity="0.07"/>
+  <circle class="lamp" cx="74" cy="428" r="11" opacity="0.16"/>
+  <circle class="lamp" cx="74" cy="428" r="4.4"/>
+  <text class="sans step" x="92"  y="432">侧边栏</text>
+  <text class="sans body" x="72"  y="454">每场会话一颗灯</text>
+
+  <text class="sans step" x="340" y="432">悬浮窗</text>
+  <text class="sans body" x="340" y="454">会主动找你的那个面</text>
+
+  <text class="sans step" x="608" y="432">会话历史</text>
+  <text class="sans body" x="608" y="454">读 CLI 自己落盘的东西</text>
+
+  <text class="sans step" x="876" y="432">飞书推送</text>
+  <text class="sans body" x="876" y="454">需要你时，推到手机上</text>
+
+  <!-- ═══════════ 3 · 工作区通道 ═══════════ -->
+  <rect class="plate" x="36.5" y="512.5" width="1087" height="76" rx="14"/>
+  <text class="mono label" x="56" y="538">工作区通道</text>
+  <text class="sans micro" x="560" y="538">独立的一条 —— 不参与六态推导</text>
+
+  <rect class="node" x="56.5" y="548.5" width="200" height="30" rx="8"/>
+  <text class="sans body" x="156" y="568" text-anchor="middle">你的工作区</text>
+  <path class="wire" d="M257 563.5 H305" marker-end="url(#z1)"/>
+  <rect class="node" x="306.5" y="548.5" width="200" height="30" rx="8"/>
+  <text class="sans body" x="406" y="568" text-anchor="middle">只读访问</text>
+  <path class="wire" d="M507 563.5 H555" marker-end="url(#z1)"/>
+  <rect class="node" x="556.5" y="548.5" width="240" height="30" rx="8"/>
+  <text class="sans body" x="676" y="568" text-anchor="middle">文件树 · 高亮源码</text>
+
+  <text class="sans body" x="1110" y="568" text-anchor="end">CLI 的原生 TUI 就在旁边</text>
+
+  <text class="sans note" x="36" y="622">观测者挂掉时 PTY 照常跑：observerHealth 变 stale、statusConfidence 降到 low —— 降级的是显示，不是你的会话。</text>
+
+  <defs>
+    <marker id="z1" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 1 L7 4 L0 7 z" fill="var(--dim)"/>
+    </marker>
+  </defs>
+</svg>

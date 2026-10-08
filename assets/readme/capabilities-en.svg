@@ -1,0 +1,156 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 486" width="1160" height="486" role="img" aria-label="Capability matrix: what each coding agent adapter actually declares for a live session.">
+  <title>Capability matrix — declared per session, not claimed per brand</title>
+  <style>
+    :root {
+      --plate: #141922;
+      --screen: #0E1218;
+      --hair: #242C38;
+      --ink: #E8EBF0;
+      --dim: #8A93A3;
+      --faint: #5E6675;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --plate: #EDF0F5;
+        --screen: #E7EBF2;
+        --hair: #DFE4EC;
+        --ink: #0F1420;
+        --dim: #626C7D;
+        --faint: #98A1B0;
+      }
+    }
+    .sans { font-family: ui-sans-serif, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+    .plate { fill: var(--plate); stroke: var(--hair); stroke-width: 1; }
+    .hair  { stroke: var(--hair); stroke-width: 1; fill: none; }
+    .track { fill: var(--screen); }
+    .bar   { fill: var(--dim); }
+    .label { fill: var(--faint); font-size: 10px; letter-spacing: 3.4px; }
+    .title { fill: var(--ink); font-size: 26px; font-weight: 700; letter-spacing: -1.2px; }
+    .col   { fill: var(--dim); font-size: 10.5px; }
+    .ladder{ fill: var(--faint); font-size: 9px; }
+    .name  { fill: var(--ink); font-size: 11px; }
+    .name-lo { fill: var(--dim); font-size: 11px; }
+    .level { fill: var(--dim); font-size: 9.5px; }
+    .level-none { fill: var(--faint); font-size: 9.5px; }
+    .note  { fill: var(--faint); font-size: 10.5px; }
+  </style>
+
+  <rect class="plate" x="0.5" y="0.5" width="1159" height="485" rx="20"/>
+
+  <text class="mono label" x="36" y="52">CAPABILITY MATRIX</text>
+  <text class="sans title" x="36" y="88">Declared per session, not claimed per brand.</text>
+  <line class="hair" x1="36" y1="110" x2="1124" y2="110"/>
+
+  <!-- column headers -->
+  <text class="mono col" x="276" y="142">thinking</text>
+  <text class="mono ladder" x="276" y="158">up to summary</text>
+  <text class="mono col" x="420" y="142">tools</text>
+  <text class="mono ladder" x="420" y="158">up to progress</text>
+  <text class="mono col" x="564" y="142">approvals</text>
+  <text class="mono ladder" x="564" y="158">up to structured</text>
+  <text class="mono col" x="708" y="142">input requests</text>
+  <text class="mono ladder" x="708" y="158">up to structured</text>
+  <text class="mono col" x="852" y="142">usage</text>
+  <text class="mono ladder" x="852" y="158">up to tokens-and-context</text>
+  <text class="mono col" x="996" y="142">messages</text>
+  <text class="mono ladder" x="996" y="158">up to summary</text>
+  <line class="hair" x1="36" y1="168" x2="1124" y2="168"/>
+
+  <!-- ── row 1 · DeepSeek Harness ── -->
+  <text class="mono name" x="242" y="198" text-anchor="end">DeepSeek Harness</text>
+  <rect class="track" x="276" y="196" width="112" height="6" rx="3"/><rect class="bar" x="276" y="196" width="56" height="6" rx="3"/>
+  <text class="mono level" x="276" y="188">phase</text>
+  <rect class="track" x="420" y="196" width="112" height="6" rx="3"/><rect class="bar" x="420" y="196" width="56" height="6" rx="3"/>
+  <text class="mono level" x="420" y="188">lifecycle</text>
+  <rect class="track" x="564" y="196" width="112" height="6" rx="3"/><rect class="bar" x="564" y="196" width="112" height="6" rx="3"/>
+  <text class="mono level" x="564" y="188">structured</text>
+  <rect class="track" x="708" y="196" width="112" height="6" rx="3"/><rect class="bar" x="708" y="196" width="112" height="6" rx="3"/>
+  <text class="mono level" x="708" y="188">structured</text>
+  <text class="mono level-none" x="852" y="188">none</text>
+  <text class="mono level-none" x="996" y="188">none</text>
+  <line class="hair" x1="36" y1="204" x2="1124" y2="204"/>
+
+  <!-- ── row 2 · Claude Code ── -->
+  <text class="mono name" x="242" y="234" text-anchor="end">Claude Code</text>
+  <rect class="track" x="276" y="232" width="112" height="6" rx="3"/><rect class="bar" x="276" y="232" width="56" height="6" rx="3"/>
+  <text class="mono level" x="276" y="224">phase</text>
+  <rect class="track" x="420" y="232" width="112" height="6" rx="3"/><rect class="bar" x="420" y="232" width="56" height="6" rx="3"/>
+  <text class="mono level" x="420" y="224">lifecycle</text>
+  <rect class="track" x="564" y="232" width="112" height="6" rx="3"/><rect class="bar" x="564" y="232" width="112" height="6" rx="3"/>
+  <text class="mono level" x="564" y="224">structured</text>
+  <rect class="track" x="708" y="232" width="112" height="6" rx="3"/><rect class="bar" x="708" y="232" width="112" height="6" rx="3"/>
+  <text class="mono level" x="708" y="224">structured</text>
+  <text class="mono level-none" x="852" y="224">none</text>
+  <text class="mono level-none" x="996" y="224">none</text>
+  <line class="hair" x1="36" y1="240" x2="1124" y2="240"/>
+
+  <!-- ── row 3 · Codex CLI ── -->
+  <text class="mono name" x="242" y="270" text-anchor="end">Codex CLI</text>
+  <rect class="track" x="276" y="268" width="112" height="6" rx="3"/><rect class="bar" x="276" y="268" width="56" height="6" rx="3"/>
+  <text class="mono level" x="276" y="260">phase</text>
+  <rect class="track" x="420" y="268" width="112" height="6" rx="3"/><rect class="bar" x="420" y="268" width="56" height="6" rx="3"/>
+  <text class="mono level" x="420" y="260">lifecycle</text>
+  <rect class="track" x="564" y="268" width="112" height="6" rx="3"/><rect class="bar" x="564" y="268" width="112" height="6" rx="3"/>
+  <text class="mono level" x="564" y="260">structured</text>
+  <text class="mono level-none" x="708" y="260">none</text>
+  <text class="mono level-none" x="852" y="260">none</text>
+  <text class="mono level-none" x="996" y="260">none</text>
+  <line class="hair" x1="36" y1="276" x2="1124" y2="276"/>
+
+  <!-- ── row 4 · Grok Build ── -->
+  <text class="mono name" x="242" y="306" text-anchor="end">Grok Build</text>
+  <rect class="track" x="276" y="304" width="112" height="6" rx="3"/><rect class="bar" x="276" y="304" width="56" height="6" rx="3"/>
+  <text class="mono level" x="276" y="296">phase</text>
+  <rect class="track" x="420" y="304" width="112" height="6" rx="3"/><rect class="bar" x="420" y="304" width="56" height="6" rx="3"/>
+  <text class="mono level" x="420" y="296">lifecycle</text>
+  <rect class="track" x="564" y="304" width="112" height="6" rx="3"/><rect class="bar" x="564" y="304" width="112" height="6" rx="3"/>
+  <text class="mono level" x="564" y="296">structured</text>
+  <text class="mono level-none" x="708" y="296">none</text>
+  <text class="mono level-none" x="852" y="296">none</text>
+  <text class="mono level-none" x="996" y="296">none</text>
+  <line class="hair" x1="36" y1="312" x2="1124" y2="312"/>
+
+  <!-- ── row 5 · Kimi Code ── -->
+  <text class="mono name" x="242" y="342" text-anchor="end">Kimi Code</text>
+  <rect class="track" x="276" y="340" width="112" height="6" rx="3"/><rect class="bar" x="276" y="340" width="56" height="6" rx="3"/>
+  <text class="mono level" x="276" y="332">phase</text>
+  <rect class="track" x="420" y="340" width="112" height="6" rx="3"/><rect class="bar" x="420" y="340" width="56" height="6" rx="3"/>
+  <text class="mono level" x="420" y="332">lifecycle</text>
+  <rect class="track" x="564" y="340" width="112" height="6" rx="3"/><rect class="bar" x="564" y="340" width="112" height="6" rx="3"/>
+  <text class="mono level" x="564" y="332">structured</text>
+  <text class="mono level-none" x="708" y="332">none</text>
+  <text class="mono level-none" x="852" y="332">none</text>
+  <text class="mono level-none" x="996" y="332">none</text>
+  <line class="hair" x1="36" y1="348" x2="1124" y2="348"/>
+
+  <!-- ── row 6 · OpenCode ── -->
+  <text class="mono name" x="242" y="378" text-anchor="end">OpenCode</text>
+  <rect class="track" x="276" y="376" width="112" height="6" rx="3"/><rect class="bar" x="276" y="376" width="56" height="6" rx="3"/>
+  <text class="mono level" x="276" y="368">phase</text>
+  <rect class="track" x="420" y="376" width="112" height="6" rx="3"/><rect class="bar" x="420" y="376" width="112" height="6" rx="3"/>
+  <text class="mono level" x="420" y="368">progress</text>
+  <rect class="track" x="564" y="376" width="112" height="6" rx="3"/><rect class="bar" x="564" y="376" width="112" height="6" rx="3"/>
+  <text class="mono level" x="564" y="368">structured</text>
+  <rect class="track" x="708" y="376" width="112" height="6" rx="3"/><rect class="bar" x="708" y="376" width="112" height="6" rx="3"/>
+  <text class="mono level" x="708" y="368">structured</text>
+  <rect class="track" x="852" y="376" width="112" height="6" rx="3"/><rect class="bar" x="852" y="376" width="37" height="6" rx="3"/>
+  <text class="mono level" x="852" y="368">tokens</text>
+  <rect class="track" x="996" y="376" width="112" height="6" rx="3"/><rect class="bar" x="996" y="376" width="112" height="6" rx="3"/>
+  <text class="mono level" x="996" y="368">summary</text>
+  <line class="hair" x1="36" y1="384" x2="1124" y2="384"/>
+
+  <!-- ── row 7 · Pi ── -->
+  <text class="mono name" x="242" y="414" text-anchor="end">Pi</text>
+  <rect class="track" x="276" y="412" width="112" height="6" rx="3"/><rect class="bar" x="276" y="412" width="56" height="6" rx="3"/>
+  <text class="mono level" x="276" y="404">phase</text>
+  <rect class="track" x="420" y="412" width="112" height="6" rx="3"/><rect class="bar" x="420" y="412" width="112" height="6" rx="3"/>
+  <text class="mono level" x="420" y="404">progress</text>
+  <text class="mono level-none" x="564" y="404">none</text>
+  <text class="mono level-none" x="708" y="404">none</text>
+  <rect class="track" x="852" y="412" width="112" height="6" rx="3"/><rect class="bar" x="852" y="412" width="112" height="6" rx="3"/>
+  <text class="mono level" x="852" y="404">tokens-and-context</text>
+  <text class="mono level-none" x="996" y="404">none</text>
+
+  <text class="sans note" x="36" y="456">Bar length is how deep that dimension goes; a full bar means this harness reaches the top level for that column. An adapter declares what it can prove for the session in front of you — never more.</text>
+</svg>

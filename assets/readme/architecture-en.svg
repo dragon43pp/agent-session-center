@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 640" width="1160" height="640" role="img" aria-label="How Agent Session Center observes a coding agent: the terminal stays native, and status is derived from an event pipeline beside it.">
+  <title>How it works — the terminal stays native, status is derived beside it</title>
+  <style>
+    :root {
+      --plate: #141922;
+      --screen: #0E1218;
+      --hair: #242C38;
+      --ink: #E8EBF0;
+      --dim: #8A93A3;
+      --faint: #5E6675;
+      --needs-you: #FF6B4A;
+      --done: #3ECF8E;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --plate: #EDF0F5;
+        --screen: #E7EBF2;
+        --hair: #DFE4EC;
+        --ink: #0F1420;
+        --dim: #626C7D;
+        --faint: #98A1B0;
+      }
+    }
+    .sans { font-family: ui-sans-serif, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+    .plate  { fill: var(--plate); stroke: var(--hair); stroke-width: 1; }
+    .node   { fill: var(--screen); stroke: var(--hair); stroke-width: 1; }
+    .hair   { stroke: var(--hair); stroke-width: 1; fill: none; }
+    .wire   { stroke: var(--dim); stroke-width: 1.2; fill: none; }
+    .label  { fill: var(--faint); font-size: 10px; letter-spacing: 3.4px; }
+    .title  { fill: var(--ink); font-size: 26px; font-weight: 700; letter-spacing: -1.2px; }
+    .step   { fill: var(--ink); font-size: 13px; font-weight: 600; letter-spacing: 0.6px; }
+    .body   { fill: var(--dim); font-size: 11px; }
+    .micro  { fill: var(--faint); font-size: 10.5px; }
+    .note   { fill: var(--faint); font-size: 10.5px; }
+    .lamp   { fill: var(--needs-you); }
+  </style>
+
+  <rect class="plate" x="0.5" y="0.5" width="1159" height="639" rx="20"/>
+
+  <text class="mono label" x="36" y="52">EVENT PIPELINE</text>
+  <text class="sans title" x="36" y="88">The terminal stays native. Status is derived beside it.</text>
+  <line class="hair" x1="36" y1="110" x2="1124" y2="110"/>
+
+  <!-- ═══════════ 1 · terminal lane ═══════════ -->
+  <rect class="plate" x="36.5" y="124.5" width="1087" height="92" rx="14"/>
+  <text class="mono label" x="56" y="150">TERMINAL LANE</text>
+  <text class="mono micro" x="560" y="150">owned by you and the CLI</text>
+
+  <rect class="node" x="56.5" y="164.5" width="140" height="34" rx="8"/>
+  <text class="mono body" x="126" y="186" text-anchor="middle">CLI process</text>
+  <path class="wire" d="M197 181.5 H245" marker-end="url(#a1)"/>
+  <rect class="node" x="246.5" y="164.5" width="140" height="34" rx="8"/>
+  <text class="mono body" x="316" y="186" text-anchor="middle">PTY</text>
+  <path class="wire" d="M387 181.5 H435" marker-end="url(#a1)"/>
+  <rect class="node" x="436.5" y="164.5" width="240" height="34" rx="8"/>
+  <text class="mono body" x="556" y="186" text-anchor="middle">native TUI — rendered as-is</text>
+
+  <text class="sans body" x="1110" y="172" text-anchor="end">Agent Session Center never writes terminal bytes.</text>
+  <text class="sans body" x="1110" y="192" text-anchor="end">Status is derived from events, not from scraping the screen.</text>
+
+  <!-- events drop out of the CLI into the observer lane -->
+  <path class="wire" d="M126 217 V268" marker-end="url(#a1)"/>
+  <text class="mono micro" x="136" y="248">events</text>
+
+  <!-- ═══════════ 2 · observer lane ═══════════ -->
+  <rect class="plate" x="36.5" y="232.5" width="1087" height="268" rx="14"/>
+  <text class="mono label" x="56" y="258">OBSERVER LANE</text>
+  <text class="mono micro" x="560" y="258">one shared vocabulary, whatever the native protocol</text>
+
+  <!-- six native transports -->
+  <rect class="node" x="56.5"   y="270.5" width="164" height="28" rx="6"/>
+  <rect class="node" x="232.5"  y="270.5" width="164" height="28" rx="6"/>
+  <rect class="node" x="408.5"  y="270.5" width="164" height="28" rx="6"/>
+  <rect class="node" x="584.5"  y="270.5" width="164" height="28" rx="6"/>
+  <rect class="node" x="760.5"  y="270.5" width="164" height="28" rx="6"/>
+  <rect class="node" x="936.5"  y="270.5" width="167" height="28" rx="6"/>
+  <text class="mono body" x="138"  y="289" text-anchor="middle">hook</text>
+  <text class="mono body" x="314"  y="289" text-anchor="middle">jsonl</text>
+  <text class="mono body" x="490"  y="289" text-anchor="middle">rpc · acp</text>
+  <text class="mono body" x="666"  y="289" text-anchor="middle">native-stream</text>
+  <text class="mono body" x="842"  y="289" text-anchor="middle">transcript</text>
+  <text class="mono body" x="1020" y="289" text-anchor="middle">lifecycle</text>
+
+  <path class="wire" d="M580 299 V320" marker-end="url(#a1)"/>
+
+  <!-- the four real stages -->
+  <rect class="node" x="56.5"  y="322.5" width="244" height="58" rx="8"/>
+  <rect class="node" x="324.5" y="322.5" width="244" height="58" rx="8"/>
+  <rect class="node" x="592.5" y="322.5" width="244" height="58" rx="8"/>
+  <rect class="node" x="860.5" y="322.5" width="243" height="58" rx="8"/>
+
+  <text class="mono step" x="72"  y="346">normalizer</text>
+  <text class="sans body" x="72"  y="366">native protocol → AgentEvent</text>
+  <text class="mono step" x="340" y="346">queue</text>
+  <text class="sans body" x="340" y="366">ordered by seq, never by clock</text>
+  <text class="mono step" x="608" y="346">reducer</text>
+  <text class="sans body" x="608" y="366">correlates tools · approvals · input</text>
+  <text class="mono step" x="876" y="346">projector</text>
+  <text class="sans body" x="876" y="366">six states, confidence, capabilities</text>
+
+  <path class="wire" d="M301 351.5 H323" marker-end="url(#a1)"/>
+  <path class="wire" d="M569 351.5 H591" marker-end="url(#a1)"/>
+  <path class="wire" d="M837 351.5 H859" marker-end="url(#a1)"/>
+
+  <text class="mono micro" x="72" y="404">dedupe by nativeId — a hook replay or an RPC reconnect arrives twice</text>
+
+  <path class="wire" d="M580 381 V406" marker-end="url(#a1)"/>
+
+  <!-- consumers -->
+  <rect class="node" x="56.5"  y="408.5" width="244" height="60" rx="8"/>
+  <rect class="node" x="324.5" y="408.5" width="244" height="60" rx="8"/>
+  <rect class="node" x="592.5" y="408.5" width="244" height="60" rx="8"/>
+  <rect class="node" x="860.5" y="408.5" width="243" height="60" rx="8"/>
+
+  <circle class="lamp" cx="74" cy="428" r="16" opacity="0.07"/>
+  <circle class="lamp" cx="74" cy="428" r="11" opacity="0.16"/>
+  <circle class="lamp" cx="74" cy="428" r="4.4"/>
+  <text class="mono step" x="92"  y="432">sidebar</text>
+  <text class="sans body" x="72"  y="454">one dot per session</text>
+
+  <text class="mono step" x="340" y="432">floating window</text>
+  <text class="sans body" x="340" y="454">the surface that finds you</text>
+
+  <text class="mono step" x="608" y="432">session history</text>
+  <text class="sans body" x="608" y="454">read from what the CLI wrote</text>
+
+  <text class="mono step" x="876" y="432">Feishu push</text>
+  <text class="sans body" x="876" y="454">your phone, when it needs you</text>
+
+  <!-- ═══════════ 3 · workspace lane ═══════════ -->
+  <rect class="plate" x="36.5" y="512.5" width="1087" height="76" rx="14"/>
+  <text class="mono label" x="56" y="538">WORKSPACE LANE</text>
+  <text class="mono micro" x="560" y="538">separate — it never feeds the six states</text>
+
+  <rect class="node" x="56.5" y="548.5" width="200" height="30" rx="8"/>
+  <text class="mono body" x="156" y="568" text-anchor="middle">your workspace</text>
+  <path class="wire" d="M257 563.5 H305" marker-end="url(#a1)"/>
+  <rect class="node" x="306.5" y="548.5" width="200" height="30" rx="8"/>
+  <text class="mono body" x="406" y="568" text-anchor="middle">read-only access</text>
+  <path class="wire" d="M507 563.5 H555" marker-end="url(#a1)"/>
+  <rect class="node" x="556.5" y="548.5" width="240" height="30" rx="8"/>
+  <text class="mono body" x="676" y="568" text-anchor="middle">file tree · highlighted source</text>
+
+  <text class="sans body" x="1110" y="568" text-anchor="end">The CLI keeps its native TUI beside it.</text>
+
+  <text class="sans note" x="36" y="622">If an observer dies the PTY keeps running: observerHealth goes stale, statusConfidence drops to low, and the display degrades — never the session.</text>
+
+  <defs>
+    <marker id="a1" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 1 L7 4 L0 7 z" fill="var(--dim)"/>
+    </marker>
+  </defs>
+</svg>
