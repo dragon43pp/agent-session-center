@@ -45,71 +45,58 @@ Agent Session Center 想解决的就是这些每天都会碰到的小麻烦：�
 
 ## 怎么解决？
 
-第一次启动时，Agent Session Center 会自动扫描主机和 WSL 中兼容的 CLI；之后直接使用缓存快速启动，也可以随时手动重扫。每个已支持的 Harness 都有自己的 Adapter，把官方 Hooks、SSE、Extension API 或运行时事件收敛成一套统一状态：
-
-```text
-正在思考 · 调用工具 · 需要你 · 本轮完成 · 发生错误
-```
-
-这些事实会同步到侧边栏、悬浮窗和历史记录，但不会进入终端字符流：
-
-```text
-CLI ── PTY ──────────────────────────────> 原生 TUI
- └── Hooks / SSE / Extension 事件 ────> Adapter ──> 状态与提醒
-
-工作区 ── 只读访问 ─────────────────────> 文件树与阅读器
-```
-
-即使 Observer 失效，PTY 仍会继续运行。Agent Session Center 只会降级状态显示，不会拖垮 CLI 会话。
-
-## 特性
-
-### 每场会话，一张表
-
-会话历史读取的是每个 CLI 自己写到磁盘上的记录——八个来源全覆盖。浏览、一句话语义搜索、隐藏或移入回收站；底层文件永远不会被碰。
+第一次启动时，Agent Session Center 会自动扫描主机和 WSL 中兼容的 CLI；之后直接使用缓存快速启动，也可以随时手动重扫。每个已支持的 Harness 都有自己的 Adapter，把官方 Hooks、SSE、Extension API 或运行时事件收敛成同一套事件，再从事件推导状态——而不是从终端屏幕上猜。
 
 <div align="center">
-  <img src="./docs/shots/03-session-history.png" width="1100" alt="Agent Session Center 会话历史：汇总 8 个 Coding Agent 的会话">
+  <img src="./assets/readme/architecture-zh.svg" width="1100" alt="架构：CLI 的原生 TUI 留在 PTY 里，Hooks、JSONL、RPC/ACP、原生流、transcript 与生命周期事件另行汇入 normalizer、按 seq 排序的 queue、reducer 和 projector，再驱动侧边栏、悬浮窗、会话历史与飞书推送">
 </div>
 
-### 原地恢复
+这个形状带来三条性质，它们比任何功能清单都更重要：
 
-Agent 提供可恢复会话时，ASC 支持一键在原工作目录恢复——哪些能恢复、哪些不能、为什么，如实分开标注。
+- **终端字符流从不被解析。** CLI 的 TUI 里全是制表符、转圈动画和颜色。状态一个字节都不从那里读，Observer 订阅的是结构化事件。
+- **顺序来自 `seq`，不来自墙上时间。** Hook 会重放、RPC 会断线重连、transcript 可能被 tail 两遍。每个事件都带每会话单调递增的序号和原生 id，靠它们去重并还原真实顺序。
+- **Observer 挂掉不会带走你的会话。** 它挂掉时 PTY 照常运行，ASC 降级的是**显示**——`observerHealth` 变 `stale`、`statusConfidence` 降到 `low`——而不是你正在用的那个 CLI。
+
+## 它只被允许说什么
+
+状态是事实的投影，不是猜测。一共只有六个状态，其中只有一个会来问你。
 
 <div align="center">
-  <img src="./docs/shots/06-session-resume.png" width="1100" alt="Agent Session Center 一键恢复可恢复会话">
-  <img src="./docs/shots/07-resume-missing-cwd.png" width="1100" alt="Agent Session Center 说明某个会话因原工作目录已不存在而无法恢复">
+  <img src="./assets/readme/status-zh.svg" width="1100" alt="六个状态 —— needs-you、working、done、error、idle、exited，其中只有 needs-you 会发光">
 </div>
 
-### 一句话让 AI 帮你找会话
+珊瑚色 `#FF6B4A` 是整个产品里唯一会发光的颜色，它只代表一件事：**这场会话卡在等你确认。** 其余全是实心圆点。这条规则是刻意的——如果好几个东西同时抢注意力，那就等于没有注意力。
 
-用一句话描述你要找什么——「把飞书审批卡片接起来的那场会话」——ASC 会把命中的会话和它的回答一起给你。助手端点由你自己配置，桌面端直连，不经第三方服务中转。
+## 注意力闭环
 
-### Token 与费用，按 Agent 分列
-
-用量从每个 CLI 自己的记录聚合而来。Grok Build 自己记账；其余家的费用在模型已知时按模型价目表估算，模型不在价目表里时宁可空着也不猜。
+整个产品就这一张图。六个 Agent，一杯咖啡的时间。
 
 <div align="center">
-  <img src="./docs/shots/04-usage.png" width="1100" alt="Agent Session Center 按 Agent 统计的 token 用量与费用">
+  <img src="./assets/readme/attention-zh.svg" width="1100" alt="六个会话并排跑：五个从不打扰你，一个卡在审批上，经飞书到达手机，一次点击后回到同一个 PTY 继续">
 </div>
 
-### 悬浮窗由你定义
+你不在的这段时间，另外五个照常干活，从不打扰你。卡在审批上的那一个会以卡片形式到达你的手机；在那里放行之后，决定会回到同一个 PTY，这一轮继续往下走——没有重启，也没有丢东西。
 
-默认悬浮监控本身就是一个内置 Renderer。自定义 Renderer 通过同一套公开接口接收真实会话状态，可以用 HTML、CSS、JavaScript、动画库或 Canvas 构建。设置页内置一份简短 Skill，复制后交给你的 Coding Agent，就能帮你创建并安装自己的悬浮窗。
+## 每个 Agent 能报告到什么程度
 
-### 不离开会话也能阅读代码
+各家 Harness 的可观测程度并不一样，而假装一样是一篇 README 最容易撒的谎。每个 Adapter 只声明它**在眼前这场会话里能证明**的能力，界面展示的是这个实际级别，而不是一句品牌宣传。
 
-在终端旁打开只读文件树，查看语法高亮的源码并预览 Markdown，Agent 的原生 TUI 仍然保留在左侧。
+<div align="center">
+  <img src="./assets/readme/capabilities-zh.svg" width="1100" alt="能力矩阵：DeepSeek Harness、Claude Code、Codex CLI、Grok Build、Kimi Code、OpenCode、Pi 在 thinking、tools、approvals、input requests、usage、messages 六个维度上的实际级别">
+</div>
 
-### 主题、字体和布局
+先看右边的三列，差距在那里。**OpenCode** 走得最远，也是唯一会报告消息摘要的一个；**Pi** 则是唯一同时报告 tokens 与 context、而不是只给一个数字的。左边的列是所有 Harness 都有的：思考阶段与工具生命周期，家家都有。
 
-应用主题与终端主题彼此独立；调整终端字体与字号、切换导航模式、在同一个设置页配置悬浮窗 Renderer。
+实时观测与会话历史是分开的两层。读一个 CLI 写到磁盘上的东西，并不需要它的运行时暴露任何接口：
 
-### 跨运行环境快速启动
+| 来源 | 实时状态 | 会话历史 |
+| --- | --- | --- |
+| DeepSeek Harness、Claude Code、Codex CLI、OpenCode、Pi、Kimi Code、Grok Build | 有 | 有 |
+| Antigravity、WorkBuddy | 暂无 | 有 |
 
-从 Home 或快速启动面板打开 Shell 或扫描到的 Coding CLI。Agent Session Center 支持主机安装和兼容的 WSL 发行版。DeepSeek Harness 只在扫描到本机或 WSL 安装后才显示。
+九个来源都能读历史会话——8 个 Coding Agent 加上 DeepSeek Harness。浏览、搜索、token 用量，以及在该 Agent 提供可恢复会话时的恢复。这两层是分开的 —— 能读历史，不代表能读到它的运行时事件流。
 
-## 已支持的 Harness
+### 接入方式明细
 
 | Harness | 接入方式 | Agent Session Center 可获得的状态 | 运行环境 |
 | --- | --- | --- | --- |
@@ -121,20 +108,63 @@ Agent 提供可恢复会话时，ASC 支持一键在原工作目录恢复——�
 | Kimi Code | 官方 Hooks | 回合、思考、工具、审批 | 主机、WSL |
 | Grok Build | 官方 Hooks | 回合、思考、工具、审批 | 主机、WSL |
 
-Agent Session Center 还可以扫描并启动 Devin CLI、Cline、Qwen Code、Amp、Aider、Goose、Kiro CLI、GitHub Copilot CLI 等注册表入口。仅启动接入的 CLI 暂时不会提供同等级别的状态细节；后续会继续抽象 Adapter 接口，让新的 Harness 可以按需加载。
+Agent Session Center 还可以扫描并启动 Devin CLI、Cline、Qwen Code、Amp、Aider、Goose、Kiro CLI、GitHub Copilot CLI 等注册表入口。仅启动接入的 CLI 暂时不会提供同等级别的状态细节。
 
-## 会话历史
+字段深度因来源而异。标题、时间、轮数、token 用量各家都有。费用只在算得出时显示 —— 要么是 Agent 自己记的，要么按模型价目表估算；模型不在价目表里时宁可空着也不猜。逐轮 recap 与代码漂移检测目前只有 Grok Build 支撑，因为它来自 `summary.json`；其他几家的会话文件里根本没记这些数据，无从读起。这是上游数据格式的限制，不是待办事项。
 
-上表列的是**实时观测**接入。读取历史会话是另一套能力，来源也不一样：
+## 特性
 
-| 来源 | 实时状态 | 会话历史 |
-| --- | --- | --- |
-| Grok Build、Claude Code、Codex CLI、OpenCode、Kimi Code、Pi | 有 | 有 |
-| Antigravity、WorkBuddy | 暂无 | 有 |
+### 一句话让 AI 帮你找会话
 
-八个来源都能读历史会话：浏览、搜索、token 用量，以及在该 Agent 提供可恢复会话时的恢复。这两层是分开的 —— 能读历史，不代表能读到它的运行时事件流。
+用一句话描述你要找什么——「把飞书审批卡片接起来的那场会话」——ASC 会把命中的会话和它的回答一起给你。助手端点由你自己配置，桌面端直连，不经第三方服务中转。
 
-字段深度因来源而异。标题、时间、轮数、token 用量八个来源都有。费用只在算得出时显示 —— 要么是 Agent 自己记的，要么按模型价目表估算；模型不在价目表里时宁可空着也不猜。逐轮 recap 与代码漂移检测目前只有 Grok Build 支撑，因为它来自 `summary.json`；其他几家的会话文件里根本没记这些数据，无从读起。这是上游数据格式的限制，不是待办事项。
+<div align="center">
+  <img src="./docs/shots/zh/03-ai-search.png" width="1100" alt="Agent Session Center 用一句话检索会话，并列出命中的会话">
+</div>
+
+### 原地恢复，恢复不了就直说
+
+Agent 提供可恢复会话时，ASC 支持一键在原工作目录恢复；原目录已经不在时，它会说明这一点，让你另选一个，而不是静默失败。
+
+<div align="center">
+  <img src="./docs/shots/zh/04-resume.png" width="1100" alt="Agent Session Center 一键恢复可恢复会话">
+  <img src="./docs/shots/zh/04b-resume-missing-cwd.png" width="1100" alt="Agent Session Center 说明某个会话因原工作目录已不存在而无法恢复">
+</div>
+
+### Token 与费用，按 Agent 分列
+
+用量从每个 CLI 自己的记录聚合而来。Grok Build 自己记账；其余家的费用在模型已知时按模型价目表估算，模型不在价目表里时宁可空着也不猜。
+
+<div align="center">
+  <img src="./docs/shots/zh/05-usage.png" width="1100" alt="Agent Session Center 按 Agent 与按模型统计的 token 用量与费用">
+</div>
+
+### 审批直接推到手机上
+
+飞书扫码接一次即可。之后遇到卡在权限确认上的会话，它会给你发一张卡片，你在手机上就能放行，不必回到工位。
+
+<div align="center">
+  <img src="./docs/shots/zh/06-feishu.png" width="1100" alt="Agent Session Center 通过扫码连接飞书">
+</div>
+
+### 每场会话，一张表
+
+会话历史读取的是每个 CLI 自己写到磁盘上的记录——所有来源全覆盖。浏览、一句话语义搜索、隐藏或移入回收站；底层文件永远不会被碰。
+
+<div align="center">
+  <img src="./docs/shots/zh/02-session-history.png" width="1100" alt="Agent Session Center 会话历史：汇总 8 个 Coding Agent 的会话">
+</div>
+
+### 没有截图的那些
+
+- **悬浮窗由你定义。** 默认悬浮监控本身就是一个内置 Renderer。自定义 Renderer 通过同一套公开接口接收真实会话状态，可以用 HTML、CSS、JavaScript、动画库或 Canvas 构建；设置页内置一份简短 Skill，交给你的 Coding Agent 就能帮你创建并安装自己的悬浮窗。
+- **不离开会话也能阅读代码。** 在终端旁打开只读文件树，查看语法高亮的源码并预览 Markdown，Agent 的原生 TUI 仍然保留。
+- **主题、字体和布局。** 应用主题与终端主题彼此独立；调整终端字体与字号、切换导航模式、配置悬浮窗 Renderer，都在同一个设置页。
+- **跨运行环境快速启动。** 从 Home 或快速启动面板打开 Shell 或扫描到的 Coding CLI，支持主机安装和兼容的 WSL 发行版。DeepSeek Harness 只在扫描到本机或 WSL 安装后才显示。
+
+<div align="center">
+  <img src="./docs/shots/zh/01-home.png" width="1100" alt="Agent Session Center 的 Home 界面，提供多个 Coding Agent 供启动">
+</div>
 
 ## 安装
 
@@ -144,9 +174,30 @@ Agent Session Center 还可以扫描并启动 Devin CLI、Cline、Qwen Code、Am
 
 - **Windows x64** —— `AgentSessionCenter-Setup-x.y.z.exe`，引导式 NSIS 安装包，可选安装目录。
 - **Linux x64** —— `AgentSessionCenter-x.y.z-linux-x64.AppImage`（免安装：下载后 `chmod +x` 直接运行）或 `AgentSessionCenter-x.y.z-linux-x64.deb`（用 `apt` 安装）。
-- macOS Apple Silicon（`AgentSessionCenter-x.y.z-macos-arm64.dmg` / `.zip`）目标已配置，并由其受门禁的发版脚本校验，但该包必须在 macOS 上构建。**目前只发 Windows 与 Linux，均为 x64；尚无 macOS 构建。**
+- **macOS Apple Silicon** —— `AgentSessionCenter-x.y.z-macos-arm64.dmg`；想自己放到位就用同名的 `.zip`。
+- **macOS Intel** —— `AgentSessionCenter-x.y.z-macos-x64.dmg`；同上，另有 `.zip`。
 
-Windows 版目前**尚未签名**，首次启动时系统可能显示安全提醒；Linux 包不需要代码签名。每个版本都会在每个可安装文件旁附上 SHA-256 校验值；这个哈希能证明什么、不能证明什么，见 [验证下载](#验证下载)。
+每个版本都会在每个可安装文件旁附上 SHA-256 校验值；这个哈希能证明什么、不能证明什么，见 [验证下载](#验证下载)。
+
+**所有可下载的构建都没有代码签名。** Windows 首次启动会走 SmartScreen 提示，macOS 会直接拦下直到你放行，Linux 包则本来就不需要签名。这几件事都不是疏忽 —— 见 [代码签名政策](#代码签名政策)。
+
+### macOS：怎么过 Gatekeeper
+
+macOS 构建**未签名、也未公证**，所以第一次启动会被系统拦下。放行方式取决于系统版本：
+
+在 **macOS 15（Sequoia）及之后的版本**（含 macOS 26），老的「右键 → 打开」已经绕不过 Gatekeeper。先尝试打开一次应用，然后进入**系统设置 → 隐私与安全性**，下拉到**安全性**，找到那条关于被拦截应用的提示，点**仍要打开**，再按提示验证指纹或密码。这个按钮**只有在你被拦过一次之后**才会出现。
+
+在 **macOS 10.14 到 14** 上，「右键 → 打开」依然有效，而且更快。
+
+不想点界面的话，可以直接去掉你安装的那个 bundle 的隔离标记：
+
+```bash
+xattr -d com.apple.quarantine "/Applications/Agent Session Center.app"
+```
+
+它只作用于你指定的这一个 bundle —— 不是系统级改动，也不会动任何安全设置。请在核对过公布的 SHA-256 **之后**再执行，而不是之前。
+
+彻底消除这个提示需要公证（notarization），而公证需要付费的 Apple Developer Program 会员。本项目没有，所以 macOS 版本是**有意**保持未签名，不是漏了这一步。
 
 ### 第一次启动
 
@@ -177,7 +228,7 @@ npm run build
 
 端到端测试不在 GitHub CI 里跑 —— 它需要真实的 DeepSeek Harness 宿主和桌面会话。改到 observer 或终端层时，可以在本地用 `npm run e2e:only` 跑。
 
-Windows、macOS、Linux 安装包需要在对应系统上通过 `npm run release:win`、`npm run release:mac` 和 `npm run release:linux` 构建。DSH e2e 会通过 `npm run ensure:dsh` 安装隔离且不入库的 `dsh-runtime` 夹具，它不会打进发行包。完整的发版门禁见 [docs/RELEASING.md](./docs/RELEASING.md)。
+Windows、macOS、Linux 安装包需要在对应系统上通过 `npm run release:win`、`npm run release:mac` 和 `npm run release:linux` 构建。Windows 与 Linux 包也会由 GitHub 托管的 Runner 在 CI 上构建；macOS 走双架构矩阵，arm64 与 x64 各自在原生架构的 Runner 上完成构建与校验。DSH e2e 会通过 `npm run ensure:dsh` 安装隔离且不入库的 `dsh-runtime` 夹具，它不会打进发行包。完整的发版门禁见 [docs/RELEASING.md](./docs/RELEASING.md)。
 
 ## 参与贡献
 
@@ -187,13 +238,15 @@ Windows、macOS、Linux 安装包需要在对应系统上通过 `npm run release
 
 ## 代码签名政策
 
-**Windows 版目前没有代码签名。** 安装包以未签名的形式构建和发布，因此 Windows 首次启动时可能显示安全提醒。这里让下载可核对的东西不是签名，而是公布的 SHA-256，加上「这次构建确实跑在本仓库的 CI 上」这个事实 —— 见 [验证下载](#验证下载)。
+**目前没有任何一个平台带代码签名。** Windows 安装包、macOS 磁盘映像和 Linux 包都以未签名的形式构建和发布，因此首次启动时系统会拦一下，需要你放行。这里让下载可核对的东西不是签名，而是公布的 SHA-256，加上「这次构建确实跑在本仓库的 CI 上」这个事实 —— 见 [验证下载](#验证下载)。
 
 如果将来加上了签名，它只说明一件事：**这个文件是由本仓库里的发布流水线、基于本仓库的源码自动构建出来的。** 它不代表发布者身份，也不构成任何担保。
 
 ### 计划中的签名
 
 本项目计划通过 [SignPath Foundation](https://signpath.org) 为其 Windows 安装包签名。该证书是签发给 SignPath Foundation 本身、而不是签发给我们项目的，**申请尚未提交**，因此当前没有任何版本带签名。一旦启用，需要满足的条件（团队角色、可签名范围、逐次审批方式）记录在 [`docs/SIGNPATH-APPLICATION.md`](./docs/SIGNPATH-APPLICATION.md)。
+
+要给 macOS 构建签名则需要通过付费的 Apple Developer Program 做公证（notarization）。通往「已公证的 macOS 构建」没有免费路径，所以 macOS 版本保持未签名，上面那套 [Gatekeeper 步骤](#macos怎么过-gatekeeper)就是受支持的运行方式。
 
 ### 团队角色
 
@@ -211,24 +264,29 @@ Agent Session Center 目前由一人维护，因此签名政策要求的三个�
 
 - 只有由本仓库发布流水线构建出的 Windows NSIS 安装包，且每次都必须经人工**审批**。工作流本身无法自行触发签名。
 - macOS 与 Linux 包由各自的脚本构建发布，不在任何签名政策范围内。
-- 与该版本配套的 `latest.yml` 更新元数据与 `.blockmap` 不同步签名，由公布的 SHA-256 覆盖。
+- 与该版本配套的 `latest.yml`、`latest-linux.yml`、`latest-mac.yml` 更新元数据与 `.blockmap` 不同步签名，由公布的 SHA-256 覆盖。
 
 任何来自上游项目的东西永远不签名。本代码库所源自的上游 [UniRound-Tec/hrack](https://github.com/UniRound-Tec/hrack) 只发布未签名构建，且与本项目无隶属关系；不存在任何源自它的二进制会被我们的证书签名，或以我们的名义再分发。Electron、`node-pty` 等随包分发的库保留其自身签名，或在我们安装包内保持未签名状态。
 
 ### 发布构建流程
 
 1. 维护者提交版本号变更，并在 `CHANGELOG.md` 中写入对应的 `## [x.y.z]` 段落，然后推送 `vX.Y.Z` 标签。
-2. [发布工作流](./.github/workflows/release-windows.yml)在 GitHub 托管的 Windows Runner 上运行：`npm ci` → `npm run build` → 仓库自带的打包脚本。打包脚本会跑完全部门禁（产物资源断言、更新元数据断言、打包后应用启动测试、图标校验）。
-3. 工作流把**未签名**的安装包上传为构建产物。这一步不发布任何东西。
-4. 维护者审阅产物，并把它的 SHA-256 与工作流摘要核对一致，然后创建 Release，把安装包、`.sha256`、`latest.yml` 与 blockmap 一并附上。
+2. 发布工作流在 GitHub 托管的 Runner 上运行 —— [Windows](./.github/workflows/release-windows.yml) 与 [Linux](./.github/workflows/release-linux.yml) 走 x64，[macOS](./.github/workflows/release-mac.yml) 走双架构矩阵，好让每个包都在原生架构的 Runner 上被校验。每个工作流都执行 `npm ci` → `npm run build` → 仓库自带的打包脚本，打包脚本会跑完全部门禁（产物资源断言、更新元数据断言、打包后应用启动测试、图标校验）。
+3. 每个工作流把**未签名**的安装包上传为构建产物。这一步不发布任何东西。
+4. 维护者审阅产物与它们的 SHA-256，然后运行[挂载工作流](./.github/workflows/publish-release.yml)，它会把每个产物与校验值重新比对一遍，再挂到 Release 上。
 
 一切能影响最终发布内容的东西 —— 构建脚本、CI 工作流、打包配置、发布门禁 —— 都在本仓库内，并与应用代码同等对待评审。
 
 ### 验证下载
 
 ```powershell
-# 哈希值必须与发行说明里公布的一致
+# Windows —— 哈希值必须与发行说明里公布的一致
 Get-FileHash .\AgentSessionCenter-Setup-x.y.z.exe -Algorithm SHA256
+```
+
+```bash
+# Linux 与 macOS
+shasum -a 256 AgentSessionCenter-x.y.z-macos-arm64.dmg
 ```
 
 哈希对得上，说明下载完整、且就是维护者发布的那个文件。但它本身不能证明「是谁构建的」—— 那恰恰是代码签名唯一能补上的东西，而我们现在还没有签名：
