@@ -31,8 +31,14 @@
       'l.doc.title': 'Agent Session Center — one home for every coding agent',
       'l.doc.description':
         'Agent Session Center gathers the sessions of 8 AI coding agents — Claude Code, Codex CLI, OpenCode, Grok Build, Kimi Code, Pi, Antigravity and WorkBuddy — into one desktop app: browse, search, resume, and approve on your phone through Feishu.',
+      'l.nav.home': 'Home',
+      'l.nav.features': 'Features',
       'l.nav.demo': 'Live demo',
-      'l.nav.download': 'Download',
+      'l.nav.changelog': 'Changelog',
+      'l.nav.docs': 'Docs',
+      'l.nav.download': 'Free download',
+      'l.nav.theme': 'Toggle theme',
+      'l.hero.cta.docs': 'Read the docs',
       'l.hero.kicker': 'Open source · Apache-2.0 · Windows / Linux / macOS',
       'l.hero.title': 'Eight coding agents. One place where every session is findable.',
       'l.hero.lede':
@@ -215,8 +221,14 @@
       'l.doc.title': 'Agent Session Center —— 8 个 Coding Agent 的会话中心',
       'l.doc.description':
         'Agent Session Center 把 8 个 AI Coding Agent（Claude Code、Codex CLI、OpenCode、Grok Build、Kimi Code、Pi、Antigravity、WorkBuddy）的会话收进一个桌面应用：浏览、搜索、一键恢复，审批通过飞书推到手机上。',
-      'l.nav.demo': '在线演示',
-      'l.nav.download': '下载',
+      'l.nav.home': '首页',
+      'l.nav.features': '功能',
+      'l.nav.demo': '在线体验',
+      'l.nav.changelog': '更新日志',
+      'l.nav.docs': '文档',
+      'l.nav.download': '免费下载',
+      'l.nav.theme': '切换主题',
+      'l.hero.cta.docs': '查看文档',
       'l.hero.kicker': '开源 · Apache-2.0 · Windows / Linux / macOS',
       'l.hero.title': '8 个 Coding Agent，一个找得到每场会话的地方。',
       'l.hero.lede':

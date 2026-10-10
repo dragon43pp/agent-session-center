@@ -11,6 +11,7 @@
   --ink: #E8EBF0;
   --dim: #8A93A3;
   --faint: #5E6675;
+  --coral-text: #FF6B4A;
 
   --working: #F2A93B;
   --needs-you: #FF6B4A;
@@ -39,6 +40,7 @@
     --ink: #0F1420;
     --dim: #626C7D;
     --faint: #98A1B0;
+    --coral-text: #C8452A;
   }
 }
 
@@ -337,11 +339,7 @@ h2 {
   border-color: color-mix(in srgb, var(--needs-you) 30%, var(--hair));
 }
 
-.session[data-status="needs-you"] .session-status { color: var(--needs-you); }
-
-@media (prefers-color-scheme: light) {
-  .session[data-status="needs-you"] .session-status { color: #C8452A; }
-}
+.session[data-status="needs-you"] .session-status { color: var(--coral-text); }
 
 .session[data-degraded="true"] .session-name { color: var(--dim); }
 
@@ -460,12 +458,8 @@ h2 {
 }
 
 .projection-value strong { color: var(--ink); font-weight: 500; }
-.projection-value .is-coral { color: var(--needs-you); }
+.projection-value .is-coral { color: var(--coral-text); }
 .projection-value .is-faint { color: var(--faint); }
-
-@media (prefers-color-scheme: light) {
-  .projection-value .is-coral { color: #C8452A; }
-}
 
 /* A hairline strip, not a second panel: the six states are a closed set, and the counts
    have to add up to the number of sessions on every single step. */
@@ -556,11 +550,7 @@ h2 {
 
 .btn-primary {
   border-color: var(--needs-you);
-  color: var(--needs-you);
-}
-
-@media (prefers-color-scheme: light) {
-  .btn-primary { color: #C8452A; }
+  color: var(--coral-text);
 }
 
 .btn-primary:hover { border-color: var(--needs-you); }
@@ -613,13 +603,9 @@ h2 {
   word-break: break-word;
 }
 
-.log .l-coral { color: var(--needs-you); }
+.log .l-coral { color: var(--coral-text); }
 .log .l-ink { color: var(--ink); }
 .log .l-dim { color: var(--faint); }
-
-@media (prefers-color-scheme: light) {
-  .log .l-coral { color: #C8452A; }
-}
 
 /* ─────────────────────────── legend ─────────────────────────── */
 
@@ -980,6 +966,130 @@ html[lang="zh-CN"] .lp-tag { letter-spacing: 1px; }
   .lp-block-shot { background: var(--plate); }
 }
 
+/* Manual theme override. The media query above still handles "follow the system"; these
+   blocks let the header button pin a theme, and they come last so a pinned theme wins. */
+html[data-theme="dark"] { color-scheme: dark; }
+
+html[data-theme="light"] {
+  color-scheme: light;
+  --bg: #F5F7FA;
+  --plate: #EDF0F5;
+  --screen: #E7EBF2;
+  --hair: #DFE4EC;
+  --ink: #0F1420;
+  --dim: #626C7D;
+  --faint: #98A1B0;
+  --coral-text: #C8452A;
+}
+
+@media (prefers-color-scheme: light) {
+  html[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0B0E13;
+    --plate: #141922;
+    --screen: #0E1218;
+    --hair: #242C38;
+    --ink: #E8EBF0;
+    --dim: #8A93A3;
+    --faint: #5E6675;
+    --coral-text: #FF6B4A;
+  }
+}
+
+html[data-theme="light"] .lp-shot,
+html[data-theme="light"] .lp-block-shot { background: var(--plate); }
+
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
 }
+
+/* ─────────────── landing chrome: bar and hero ───────────────
+   Brand at the left edge, six text links beside it, controls at the right edge with the
+   repository last. The hero is two columns — recording left, offer right — and stacks
+   below 980px with the prose first so the h1 is never behind a video. */
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  min-width: 0;
+}
+
+.lp-nav { gap: 22px; }
+
+.lp-nav a { font-size: 14px; }
+
+@media (max-width: 959px) {
+  .lp-nav { display: none; }
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--dim);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.icon-btn:hover { color: var(--ink); border-color: var(--hair); }
+
+/* Both glyphs ship in the markup; CSS picks one. That way the button never flashes the
+   wrong icon while the theme is still unknown. */
+.theme-btn .icon-moon { display: none; }
+
+html[data-theme="light"] .theme-btn .icon-sun { display: none; }
+html[data-theme="light"] .theme-btn .icon-moon { display: block; }
+
+@media (prefers-color-scheme: light) {
+  html:not([data-theme]) .theme-btn .icon-sun { display: none; }
+  html:not([data-theme]) .theme-btn .icon-moon { display: block; }
+}
+
+.lp-hero {
+  padding: 56px 0 32px;
+  max-width: none;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+  align-items: center;
+}
+
+@media (min-width: 980px) {
+  .lp-hero {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 52px;
+    padding: 72px 0 40px;
+  }
+
+  .lp-hero-text { order: 2; }
+  .lp-hero-shot { order: 1; }
+}
+
+.lp-hero h1 {
+  font-size: clamp(28px, 3.2vw, 40px);
+  letter-spacing: -1.2px;
+  margin: 0 0 16px;
+}
+
+.lp-hero .lede { font-size: 15px; margin: 0 0 20px; }
+.lp-hero .cta-row { margin: 0 0 20px; }
+.lp-hero .hero-note { max-width: 44ch; }
+
+.lp-hero-shot {
+  margin: 0;
+  border: 1px solid var(--hair);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: var(--screen);
+}
+
+.lp-hero-shot video { display: block; width: 100%; height: auto; }
+
+.lp-platform { margin: 18px 0 0; }
