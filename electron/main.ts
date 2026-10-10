@@ -6,7 +6,7 @@ import { registerIpc, type IpcContext } from './ipc'
 import { PTYManager } from './pty/PTYManager'
 import { EventLog } from './events/EventLog'
 import { loadMainPrefs, getMainPrefs } from './main-prefs'
-import { markQuitting } from './quitting'
+import { markQuitting, isQuitting } from './quitting'
 import {
   registerGlobalShortcut,
   unregisterGlobalShortcut,
@@ -178,6 +178,10 @@ const cliDiscovery = new AiCliDiscoveryService(
 const eventLog = new EventLog()
 let floatingController: FloatingWindowController | null = null
 const broadcastToAllWindows = (channel: string, payload: unknown): void => {
+  // 退出阶段窗口正在拆，webContents 未销毁但渲染帧可能已 dispose —— 往那里 send
+  // 不会抛异常，而是 Electron 自己 console.error（再被诊断日志捕获）。退出后没必要
+  // 再广播任何状态，直接停。
+  if (isQuitting()) return
   for (const win of BrowserWindow.getAllWindows()) {
     if (win.webContents.isDestroyed()) continue
     try {

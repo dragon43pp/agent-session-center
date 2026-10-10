@@ -118,7 +118,10 @@ function emergencyLightTheme(value: unknown): ResolvedUiTheme {
   }
 }
 
-export function loadBuiltInTheme(value: unknown): ResolvedUiTheme {
+export function loadBuiltInTheme(
+  value: unknown,
+  fallback?: ResolvedUiTheme
+): ResolvedUiTheme {
   const validation = validateUiTheme(value)
   if (!validation.ok) {
     console.error(
@@ -126,12 +129,22 @@ export function loadBuiltInTheme(value: unknown): ResolvedUiTheme {
     )
     return emergencyLightTheme(value)
   }
-  const resolved = resolveUiTheme(validation.theme)
+  const resolved = resolveUiTheme(validation.theme, fallback)
   if (!resolved) {
     console.error(
       `[theme] 内置主题 ${validation.theme.id} 缺少颜色 token，使用安全浅色回退`
     )
     return emergencyLightTheme(value)
+  }
+  // 走到了回退链说明数据不全：逐个点名，别让「选了 Dracula 其实拿到一半 light 基色」
+  // 这件事静默发生。数据补齐由 scripts/assert-builtin-themes.mjs 在构建期拦住。
+  const inherited = UI_COLOR_TOKENS.filter(
+    (token) => !(token in validation.theme.colors)
+  )
+  if (inherited.length > 0) {
+    console.warn(
+      `[theme] 内置主题 ${validation.theme.id} 缺少 token，已从同类型内置主题回退：${inherited.join(', ')}`
+    )
   }
   return resolved
 }
@@ -140,23 +153,23 @@ export const builtInLightTheme = loadBuiltInTheme(lightThemeJson)
 export const builtInDarkTheme = loadBuiltInTheme(darkThemeJson)
 const builtInThemes = [
   builtInLightTheme,
-  loadBuiltInTheme(catppuccinLatteThemeJson),
-  loadBuiltInTheme(solarizedLightThemeJson),
-  loadBuiltInTheme(rosePineDawnThemeJson),
-  loadBuiltInTheme(gruvboxLightThemeJson),
-  loadBuiltInTheme(paperInkThemeJson),
-  loadBuiltInTheme(glacierGlassThemeJson),
-  loadBuiltInTheme(sakuraClayThemeJson),
-  loadBuiltInTheme(circuitLimeThemeJson),
+  loadBuiltInTheme(catppuccinLatteThemeJson, builtInLightTheme),
+  loadBuiltInTheme(solarizedLightThemeJson, builtInLightTheme),
+  loadBuiltInTheme(rosePineDawnThemeJson, builtInLightTheme),
+  loadBuiltInTheme(gruvboxLightThemeJson, builtInLightTheme),
+  loadBuiltInTheme(paperInkThemeJson, builtInLightTheme),
+  loadBuiltInTheme(glacierGlassThemeJson, builtInLightTheme),
+  loadBuiltInTheme(sakuraClayThemeJson, builtInLightTheme),
+  loadBuiltInTheme(circuitLimeThemeJson, builtInLightTheme),
   builtInDarkTheme,
-  loadBuiltInTheme(catppuccinMochaThemeJson),
-  loadBuiltInTheme(draculaThemeJson),
-  loadBuiltInTheme(gruvboxDarkThemeJson),
-  loadBuiltInTheme(nordThemeJson),
-  loadBuiltInTheme(obsidianEmberThemeJson),
-  loadBuiltInTheme(midnightCobaltThemeJson),
-  loadBuiltInTheme(forestSignalThemeJson),
-  loadBuiltInTheme(violetArcadeThemeJson)
+  loadBuiltInTheme(catppuccinMochaThemeJson, builtInDarkTheme),
+  loadBuiltInTheme(draculaThemeJson, builtInDarkTheme),
+  loadBuiltInTheme(gruvboxDarkThemeJson, builtInDarkTheme),
+  loadBuiltInTheme(nordThemeJson, builtInDarkTheme),
+  loadBuiltInTheme(obsidianEmberThemeJson, builtInDarkTheme),
+  loadBuiltInTheme(midnightCobaltThemeJson, builtInDarkTheme),
+  loadBuiltInTheme(forestSignalThemeJson, builtInDarkTheme),
+  loadBuiltInTheme(violetArcadeThemeJson, builtInDarkTheme)
 ] as const
 
 export function applyUiTheme(theme: ResolvedUiTheme): void {

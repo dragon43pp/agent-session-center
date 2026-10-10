@@ -6,6 +6,13 @@
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-10-10
+
+### Fixed
+
+- **16 of the 18 bundled UI themes were silently unusable.** Every theme except ASC Light and ASC Dark shipped missing exactly one color token (`bg.hover`), so the resolver rejected them at startup and the renderer fell back to the safe light palette — picking Dracula, Nord or Gruvbox in Settings still showed plain ASC Light, and nothing surfaced the failure. Each of the 16 themes now carries a hover tint derived from its own palette (light themes: their ink at 4% alpha; dark themes: white at 3%). If a token is ever missing again, the renderer now falls back to the same-type built-in theme with an explicit warning naming the inherited tokens, instead of the emergency palette. A new build-time gate (`scripts/assert-builtin-themes.mjs`, wired into `npm run build`) fails the build the moment any bundled theme lacks or misnames a token, so the registry and the JSONs cannot drift apart again.
+- **Exit-time `Error sending from webFrameMain: Render frame was disposed` noise.** The main process no longer broadcasts state changes once quitting has started, so the teardown race cannot reach a disposed render frame.
+
 ## [1.0.2] - 2026-10-10
 
 ### Fixed

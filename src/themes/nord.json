@@ -4,7 +4,7 @@
   "type": "dark",
   "colors": {
     "bg.app": "#2e3440", "bg.content": "#3b4252", "bg.surface": "#434c5e", "bg.surface.hover": "#4c566a", "bg.surface.strong": "#4c566a",
-    "bg.control": "rgb(76 86 106 / 38%)", "bg.control.active": "#434c5e", "bg.overlay": "rgb(46 52 64 / 94%)", "bg.backdrop": "rgb(36 41 51 / 55%)", "bg.backdrop.strong": "rgb(36 41 51 / 70%)",
+    "bg.control": "rgb(76 86 106 / 38%)", "bg.control.active": "#434c5e", "bg.hover": "rgb(236 239 244 / 4%)", "bg.overlay": "rgb(46 52 64 / 94%)", "bg.backdrop": "rgb(36 41 51 / 55%)", "bg.backdrop.strong": "rgb(36 41 51 / 70%)",
     "text.primary": "#eceff4", "text.secondary": "#e5e9f0", "text.strong": "#d8dee9", "text.muted": "rgb(216 222 233 / 72%)", "text.faint": "rgb(216 222 233 / 48%)", "text.disabled": "rgb(76 86 106 / 78%)", "text.inverse": "#2e3440",
     "border.default": "rgb(236 239 244 / 12%)", "border.subtle": "rgb(236 239 244 / 9%)", "border.faint": "rgb(236 239 244 / 6%)", "border.strong": "rgb(236 239 244 / 20%)", "border.control": "#4c566a",
     "accent.flame": "#d08770", "accent.cursor": "#88c0d0", "accent.spark": "#eceff4", "accent.target": "#81a1c1",

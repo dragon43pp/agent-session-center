@@ -9,7 +9,7 @@
     "bg.surface.hover": "#28153a",
     "bg.surface.strong": "#35204a",
     "bg.control": "rgb(111 61 145 / 42%)",
-    "bg.control.active": "#47265f",
+    "bg.control.active": "#47265f", "bg.hover": "rgb(255 255 255 / 3%)",
     "bg.overlay": "rgb(24 12 35 / 95%)",
     "bg.backdrop": "rgb(5 2 9 / 62%)",
     "bg.backdrop.strong": "rgb(5 2 9 / 78%)",

@@ -1,6 +1,6 @@
 {
   "name": "agent-session-center",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Session center for every AI coding agent — browse, resume, fork and handoff across Claude Code, Codex, OpenCode, Kimi, Pi, Antigravity and WorkBuddy, with Feishu push and mobile approval",
   "main": "out/main/index.js",
   "scripts": {
@@ -10,8 +10,9 @@
     "generate:icons": "python tools/make_brand_icons.py",
     "assert-font-size": "node scripts/assert-font-size.mjs",
     "assert:dsh-surface": "node scripts/assert-dsh-web-surface.mjs",
+    "assert:themes": "node scripts/assert-builtin-themes.mjs",
     "ensure:dsh": "node scripts/ensure-dsh-runtime.cjs",
-    "build": "npm run subset-fonts && electron-vite build && npm run assert:dsh-surface && npm run assert-font-size",
+    "build": "npm run subset-fonts && electron-vite build && npm run assert:dsh-surface && npm run assert:themes && npm run assert-font-size",
     "preview": "electron-vite preview",
     "typecheck:node": "tsc -p tsconfig.node.json --noEmit",
     "typecheck:web": "tsc -p tsconfig.web.json --noEmit",
