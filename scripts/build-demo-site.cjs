@@ -1,25 +1,31 @@
 #!/usr/bin/env node
 /**
- * Build the two deployable roots for the interactive demo.
+ * Build the two deployable roots for the public site.
  *
- * `docs/site/` is one page with one string table for both languages, which is the right
- * shape for authoring and the wrong shape for serving: the English site should land in
- * English for someone who has never visited, and the Chinese site should land in Chinese,
- * with neither depending on localStorage or on the browser's locale.
+ * `docs/site/` is two pages (a product landing page and the interactive simulator)
+ * with one string table for both languages, which is the right shape for authoring
+ * and the wrong shape for serving: the English site should land in English for
+ * someone who has never visited, and the Chinese site should land in Chinese, with
+ * neither depending on localStorage or on the browser's locale.
  *
- * So this script emits two complete static roots from the single source, differing only in
- * the four head fields that decide the initial language. No path rewriting is involved,
- * because each root has `index.html` at its own top level.
+ * So this script emits two complete static roots from the single source, differing
+ * in the four head fields that decide the initial language and in which language's
+ * screenshots are copied in. Each page declares which string-table keys its head
+ * uses (`<html data-doc-title-key="l.doc.title" data-doc-desc-key="l.doc.description">`),
+ * so the landing page and the simulator can carry different titles without the
+ * build script knowing either of them.
  *
  *   dist/demo-site/en/   → point the English vhost here
  *   dist/demo-site/zh/   → point the Chinese vhost here
  *
- * Both roots are fully self-contained: three assets, one stylesheet, no build step, no
- * network calls. A plain `rsync` is the entire deployment.
+ * Both roots are fully self-contained: two pages, the stylesheet, the string table,
+ * the simulator script, and real screenshots copied from `docs/shots/{en,zh}` into
+ * `assets/shots/`. No build step at serve time, no network calls. A plain `rsync`
+ * is the entire deployment.
  *
  * Optional environment variables, used only to emit `<link rel="alternate" hreflang>`
- * so the two sites advertise each other to crawlers. Omit them and the tags are left out
- * rather than guessed:
+ * so the two sites advertise each other to crawlers. Omit them and the tags are left
+ * out rather than guessed:
  *
  *   ASC_DEMO_EN_URL   e.g. https://asc.example.com/
  *   ASC_DEMO_ZH_URL   e.g. https://asc-cn.example.com/
@@ -34,6 +40,7 @@ const vm = require('node:vm')
 
 const ROOT = path.resolve(__dirname, '..')
 const SOURCE = path.join(ROOT, 'docs', 'site')
+const PAGES = ['index.html', 'simulator.html']
 const LOCALES = [
   { dir: 'en', lang: 'en', attr: 'en' },
   { dir: 'zh', lang: 'zh', attr: 'zh-CN' }
@@ -73,25 +80,37 @@ function escapeAttribute(value) {
   return String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
 }
 
-function buildHead(html, locale, strings) {
-  const title = strings[locale.lang]['doc.title']
-  const description = strings[locale.lang]['doc.description']
+/* Which string-table keys this page's head uses, declared on the <html> tag. */
+function headKeys(html, page) {
+  const title = /<html\b[^>]*\bdata-doc-title-key="([^"]+)"/.exec(html)
+  const description = /<html\b[^>]*\bdata-doc-desc-key="([^"]+)"/.exec(html)
+  return {
+    title: title ? title[1] : 'doc.title',
+    description: description ? description[1] : 'doc.description'
+  }
+}
+
+function buildHead(html, page, locale, strings) {
+  const keys = headKeys(html, page)
+  const title = strings[locale.lang][keys.title]
+  const description = strings[locale.lang][keys.description]
   if (!title || !description) {
-    throw new Error('the ' + locale.lang + ' pack is missing doc.title or doc.description')
+    throw new Error(page + ': the ' + locale.lang + ' pack is missing "' + keys.title + '" or "' + keys.description + '"')
   }
 
   let out = html
 
   const htmlTag = /<html\b[^>]*>/
-  if (!htmlTag.test(out)) throw new Error('no <html> tag to rewrite')
-  out = out.replace(htmlTag, `<html lang="${locale.attr}" data-default-lang="${locale.lang}">`)
+  if (!htmlTag.test(out)) throw new Error(page + ': no <html> tag to rewrite')
+  out = out.replace(htmlTag, `<html lang="${locale.attr}" data-default-lang="${locale.lang}"` +
+    ` data-doc-title-key="${keys.title}" data-doc-desc-key="${keys.description}">`)
 
   const titleTag = /<title>[\s\S]*?<\/title>/
-  if (!titleTag.test(out)) throw new Error('no <title> to rewrite')
+  if (!titleTag.test(out)) throw new Error(page + ': no <title> to rewrite')
   out = out.replace(titleTag, `<title>${escapeAttribute(title)}</title>`)
 
   const meta = /<meta name="description" content="[^"]*">/
-  if (!meta.test(out)) throw new Error('no <meta name="description"> to rewrite')
+  if (!meta.test(out)) throw new Error(page + ': no <meta name="description"> to rewrite')
   out = out.replace(meta, `<meta name="description" content="${escapeAttribute(description)}">`)
 
   /* hreflang only when both URLs are actually known. A half-filled alternate set is worse
@@ -133,12 +152,13 @@ function copyTree(from, to) {
 function main() {
   const { out } = parseArgs(process.argv.slice(2))
 
-  if (!fs.existsSync(path.join(SOURCE, 'index.html'))) {
-    throw new Error('docs/site/index.html is missing; nothing to build')
+  for (const page of PAGES) {
+    if (!fs.existsSync(path.join(SOURCE, page))) {
+      throw new Error('docs/site/' + page + ' is missing; nothing to build')
+    }
   }
 
   const strings = loadStrings()
-  const html = fs.readFileSync(path.join(SOURCE, 'index.html'), 'utf8')
   const report = []
 
   for (const locale of LOCALES) {
@@ -146,16 +166,38 @@ function main() {
     fs.rmSync(target, { recursive: true, force: true })
 
     const copied = copyTree(SOURCE, target)
-    const built = buildHead(html, locale, strings)
-    if (built !== html) {
-      fs.writeFileSync(path.join(target, 'index.html'), built, 'utf8')
+
+    /* Real screenshots, in the right language, under assets/shots/. The landing
+       page references them there; a locale with no shots would ship broken images,
+       so that is a build error and not a silent 404. */
+    const shotsFrom = path.join(ROOT, 'docs', 'shots', locale.dir)
+    if (!fs.existsSync(shotsFrom)) {
+      throw new Error('docs/shots/' + locale.dir + ' is missing; the landing page needs screenshots')
     }
+    const shots = copyTree(shotsFrom, path.join(target, 'assets', 'shots'))
+
+    /* The hero video: the real interface, recorded, one file per language. */
+    const videoFrom = path.join(ROOT, 'docs', 'demo', 'asc-demo-' + locale.lang + '.mp4')
+    if (!fs.existsSync(videoFrom)) {
+      throw new Error('docs/demo/asc-demo-' + locale.lang + '.mp4 is missing; the landing hero needs the demo video')
+    }
+    fs.copyFileSync(videoFrom, path.join(target, 'assets', 'demo.mp4'))
+    const videoBytes = fs.statSync(path.join(target, 'assets', 'demo.mp4')).size
+
+    let pages = 0
+    for (const page of PAGES) {
+      const html = fs.readFileSync(path.join(SOURCE, page), 'utf8')
+      const built = buildHead(html, page, locale, strings)
+      fs.writeFileSync(path.join(target, page), built, 'utf8')
+      pages += 1
+    }
+
     report.push({
       locale,
       target,
-      files: copied.files,
-      bytes: copied.bytes,
-      changed: built !== html
+      files: copied.files + shots.files + pages + 1,
+      bytes: copied.bytes + shots.bytes + videoBytes,
+      shots: shots.files
     })
   }
 
@@ -164,9 +206,8 @@ function main() {
     console.log(
       '  ' + entry.locale.dir.padEnd(3) +
       String(entry.files).padStart(2) + ' files  ' +
-      (entry.bytes / 1024).toFixed(1).padStart(6) + ' KB  ' +
-      'head ' + (entry.changed ? 'rewritten to ' + entry.locale.attr : 'as authored') +
-      '   ->  ' + entry.target.replace(/\\/g, '/')
+      ((entry.bytes / 1024 / 1024)).toFixed(1).padStart(6) + ' MB  ' +
+      '(' + entry.shots + ' screenshots)   ->  ' + entry.target.replace(/\\/g, '/')
     )
   }
 
@@ -193,9 +234,9 @@ deploy with two vhosts over the same tree shape:
     location / { try_files $uri $uri/ =404; }
   }
 
-Both roots are static and identical apart from their <head>, so a single
-\`rsync -a --delete\` per host is the whole deployment. Nothing here has a backend,
-a database, or an outbound request at runtime.`)
+Both roots are static and identical apart from their <head> and their screenshots,
+so a single \`rsync -a --delete\` per host is the whole deployment. Nothing here
+has a backend, a database, or an outbound request at runtime.`)
 }
 
 main()

@@ -794,6 +794,192 @@ html[lang="zh-CN"] .btn { letter-spacing: 1px; }
 
 html[lang="zh-CN"] .brand-name { letter-spacing: 0; }
 
+/* ─────────────────────────── landing page ───────────────────────────
+   index.html is the product page: prose first, real screenshots, no machinery.
+   It reuses every token above and adds no new colour — coral stays reserved. */
+
+body.lp { font-size: 15.5px; }
+
+.lp-nav {
+  display: flex;
+  gap: 18px;
+}
+
+.lp-nav a {
+  color: var(--dim);
+  text-decoration: none;
+  font-size: 13.5px;
+}
+
+.lp-nav a:hover { color: var(--ink); }
+
+.btn-sm {
+  padding: 6px 14px;
+  font-size: 10.5px;
+}
+
+.lp-hero {
+  padding: 80px 0 40px;
+  max-width: 860px;
+}
+
+.lp-hero .cta-row { margin: 8px 0 18px; }
+
+.lp-hero .hero-note { max-width: 640px; }
+
+/* Screenshot frame: hairline border, no shadow, no glow — the interface is the
+   content, and framing it louder than the prose would invert the hierarchy. */
+.lp-shot {
+  margin: 36px 0 0;
+  border: 1px solid var(--hair);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: var(--screen);
+}
+
+.lp-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.lp-shot video {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* widen the page container a little on the landing so screenshots breathe */
+body.lp main {
+  max-width: calc(var(--page) + 160px);
+}
+
+body.lp .topbar,
+body.lp .foot {
+  padding-left: max(20px, calc((100vw - var(--page) - 160px) / 2));
+  padding-right: max(20px, calc((100vw - var(--page) - 160px) / 2));
+}
+
+/* pain / truth cards */
+
+.lp-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+@media (min-width: 800px) {
+  .lp-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+}
+
+.lp-card {
+  border: 1px solid var(--hair);
+  border-radius: var(--r-md);
+  background: var(--plate);
+  padding: 20px 20px 18px;
+}
+
+.lp-card h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  letter-spacing: -0.3px;
+}
+
+.lp-card p {
+  margin: 0;
+  color: var(--dim);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+/* feature blocks: text and screenshot side by side, alternating */
+
+.lp-block {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  align-items: center;
+  padding: 40px 0;
+  border-top: 1px solid var(--hair);
+}
+
+.lp-block:first-of-type { border-top: 0; margin-top: 8px; }
+
+@media (min-width: 900px) {
+  .lp-block {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 40px;
+  }
+
+  .lp-flip .lp-block-text { order: 2; }
+  .lp-flip .lp-block-shot { order: 1; }
+}
+
+.lp-tag {
+  margin: 0 0 10px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.lp-block h3 {
+  margin: 0 0 10px;
+  font-size: clamp(19px, 2.6vw, 23px);
+  letter-spacing: -0.6px;
+}
+
+.lp-body {
+  margin: 0;
+  color: var(--dim);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.lp-block-shot {
+  margin: 0;
+  border: 1px solid var(--hair);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: var(--screen);
+}
+
+.lp-block-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* download */
+
+.lp-download {
+  text-align: center;
+  padding: 72px 0 8px;
+}
+
+.lp-download .section-lede { margin-left: auto; margin-right: auto; }
+
+.lp-download-cta { justify-content: center; }
+
+body.lp .foot {
+  display: grid;
+  gap: 6px;
+  padding-top: 32px;
+  padding-bottom: 48px;
+}
+
+/* CJK: the landing reuses the simulator's relaxations and adds its own tags */
+html[lang="zh-CN"] .lp-card h3,
+html[lang="zh-CN"] .lp-block h3 { letter-spacing: 0; }
+html[lang="zh-CN"] .lp-tag { letter-spacing: 1px; }
+
+@media (prefers-color-scheme: light) {
+  .lp-shot,
+  .lp-block-shot { background: var(--plate); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
 }

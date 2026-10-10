@@ -27,6 +27,75 @@
       'doc.description':
         'An interactive, entirely fabricated demo of Agent Session Center: watch an agent event become a session status, and watch one session ask for you.',
 
+      /* ── landing page (index.html). The simulator keeps its own keys below. ── */
+      'l.doc.title': 'Agent Session Center — one home for every coding agent',
+      'l.doc.description':
+        'Agent Session Center gathers the sessions of 8 AI coding agents — Claude Code, Codex CLI, OpenCode, Grok Build, Kimi Code, Pi, Antigravity and WorkBuddy — into one desktop app: browse, search, resume, and approve on your phone through Feishu.',
+      'l.nav.demo': 'Live demo',
+      'l.nav.download': 'Download',
+      'l.hero.kicker': 'Open source · Apache-2.0 · Windows / Linux / macOS',
+      'l.hero.title': 'Eight coding agents. One place where every session is findable.',
+      'l.hero.lede':
+        'Every CLI writes its sessions somewhere else. Agent Session Center puts them in one desktop app: browse and search history, resume with one click, see tokens and cost — and when an agent stalls on a permission prompt, Feishu pushes it to your phone.',
+      'l.hero.cta.download': 'Download v1.0.3',
+      'l.hero.cta.demo': 'Try the live demo',
+      'l.hero.note':
+        'The downloads are unsigned; the release page publishes SHA-256 for every asset. Your terminals stay exactly as they are — ASC reads event streams, not your screen.',
+      'l.pain.title': 'Does this sound familiar?',
+      'l.pain1.title': 'Which folder was that session in?',
+      'l.pain1.body':
+        'You run several agents a day across many project folders. When something breaks two days later, finding the right session means guessing the CLI, the project and the date — all three.',
+      'l.pain2.title': 'Where did I leave off?',
+      'l.pain2.body':
+        'Long sessions outlive your memory of them. Opening a CLI only shows the newest transcript of whichever folder you happened to open.',
+      'l.pain3.title': 'You walk away, the agent stalls.',
+      'l.pain3.body':
+        'An agent stopped on a permission prompt waits forever, silently. Away from the desk, there is nothing you can do about it.',
+      'l.feat.title': 'What it does',
+      'l.f1.tag': 'Session history',
+      'l.f1.title': 'Every session, from every agent, in one list',
+      'l.f1.body':
+        'Claude Code, Codex CLI, OpenCode, Grok Build, Kimi Code, Pi, Antigravity and WorkBuddy appear in one view — with workspace path, duration and status. Workspaces are scanned read-only; nothing is modified.',
+      'l.f2.tag': 'AI search',
+      'l.f2.title': 'Ask in plain language, get the session back',
+      'l.f2.body':
+        'Say what you remember — the task, the file, roughly when — and search narrows across every agent at once. You do not have to remember which CLI you used.',
+      'l.f3.tag': 'Resume',
+      'l.f3.title': 'One click back into the conversation',
+      'l.f3.body':
+        'Resume buttons are shown only where they have been tested: Claude Code, Codex CLI and Grok Build. Everywhere else the workspace opens with the transcript — an unverified capability is never dressed up as a working one.',
+      'l.f4.tag': 'Usage',
+      'l.f4.title': 'Tokens and cost, per agent, per day',
+      'l.f4.body':
+        'See which agent burned what, and when. The numbers are read from local session files; nothing is sent anywhere.',
+      'l.f5.tag': 'Feishu',
+      'l.f5.title': 'Approvals on your phone, from anywhere',
+      'l.f5.body':
+        'When an agent stops on a permission prompt, Feishu pushes a card carrying the actual question. Approve or deny from your phone — at lunch, on the sofa, away from the desk.',
+      'l.truth.title': 'Where it draws the line',
+      'l.truth1.title': 'It never reads your terminal',
+      'l.truth1.body':
+        'Status comes from structured events — hooks, SSE, RPC, transcripts — never from parsing the TUI. The CLI keeps its own interface; ASC adds the layer around it.',
+      'l.truth2.title': 'It reports capability honestly',
+      'l.truth2.body':
+        'Each agent can report a different depth. ASC declares, in source, what each one can and cannot see, and marks low confidence instead of guessing.',
+      'l.truth3.title': 'Unsigned, hashed, inspectable',
+      'l.truth3.body':
+        'The builds are unsigned; every release publishes SHA-256 so you can verify what you run. The whole product is Apache-2.0 on GitHub.',
+      'l.dl.title': 'Download',
+      'l.dl.lede':
+        'v1.0.3 for Windows, Linux and macOS. Unzip, run, and it finds the agents already on your machine — the first scan takes seconds, and nothing leaves your computer.',
+      'l.dl.cta': 'Get the latest release',
+      'l.dl.src': 'Read the source',
+      'l.foot.upstream':
+        'Early prototype from UniRound-Tec/hrack (Apache-2.0); Agent Session Center is an independently maintained hard fork — see NOTICE.',
+      'l.foot.demo':
+        'Screenshots show the real interface; the simulator page runs on fabricated data.',
+      'l.foot.line':
+        'Agent Session Center · Apache-2.0 · this site is a static page with no network calls.',
+
+      'nav.home': 'Home',
+
       'badge.fake': 'Fabricated data',
 
       'hero.kicker': 'Interactive demo',
@@ -141,6 +210,74 @@
       'doc.title': 'Agent Session Center —— 交互式演示',
       'doc.description':
         'Agent Session Center 的交互式演示：所有内容均为虚构。看一条 agent 事件如何变成一个会话状态，以及某个会话如何开始找你。',
+
+      /* ── 落地页（index.html）。模拟器页的词条在下面，互不混用。 ── */
+      'l.doc.title': 'Agent Session Center —— 8 个 Coding Agent 的会话中心',
+      'l.doc.description':
+        'Agent Session Center 把 8 个 AI Coding Agent（Claude Code、Codex CLI、OpenCode、Grok Build、Kimi Code、Pi、Antigravity、WorkBuddy）的会话收进一个桌面应用：浏览、搜索、一键恢复，审批通过飞书推到手机上。',
+      'l.nav.demo': '在线演示',
+      'l.nav.download': '下载',
+      'l.hero.kicker': '开源 · Apache-2.0 · Windows / Linux / macOS',
+      'l.hero.title': '8 个 Coding Agent，一个找得到每场会话的地方。',
+      'l.hero.lede':
+        '每个 CLI 都把会话写在不同的地方。Agent Session Center 把它们收进一个桌面应用：浏览和搜索历史、一键恢复、看 token 和费用 —— agent 卡在权限确认上时，飞书把它推到你的手机上。',
+      'l.hero.cta.download': '下载 v1.0.3',
+      'l.hero.cta.demo': '在线体验',
+      'l.hero.note':
+        '下载包未签名，Release 页公布每个资产的 SHA-256。你的终端原样不动 —— ASC 读的是事件流，不是你的屏幕。',
+      'l.pain.title': '这些场景眼熟吗？',
+      'l.pain1.title': '那个会话在哪个文件夹来着？',
+      'l.pain1.body':
+        '一天用几个 agent，散在好多工程文件夹里。两天后出了问题，想找回那场会话，得同时猜对 CLI、项目和日期 —— 三样都得对。',
+      'l.pain2.title': '上次做到哪了？',
+      'l.pain2.body':
+        '长会话比你的记忆活得久。打开 CLI 只能看到你碰巧打开的那个文件夹里最新的记录。',
+      'l.pain3.title': '人一走开，agent 就卡住。',
+      'l.pain3.body':
+        '停在权限确认上的 agent 会永远白等，一声不吭。人不在电脑前，就一点办法都没有。',
+      'l.feat.title': '它能做什么',
+      'l.f1.tag': '会话历史',
+      'l.f1.title': '所有 agent 的所有会话，一个列表',
+      'l.f1.body':
+        'Claude Code、Codex CLI、OpenCode、Grok Build、Kimi Code、Pi、Antigravity、WorkBuddy 出现在同一个视图里 —— 带工作区路径、时长和状态。工作区只读扫描，不改任何东西。',
+      'l.f2.tag': 'AI 查找',
+      'l.f2.title': '用人话问，把会话找回来',
+      'l.f2.body':
+        '说得出大概 —— 做过什么、碰过哪个文件、大概什么时间 —— 查找就能跨所有 agent 一起缩小范围。不用记得当时用的是哪个 CLI。',
+      'l.f3.tag': '一键恢复',
+      'l.f3.title': '一下回到那段对话',
+      'l.f3.body':
+        '恢复按钮只在实测过的三家放：Claude Code、Codex CLI 和 Grok Build。其余的会打开工作区并展示记录 —— 没验证过的能力，绝不假装能用。',
+      'l.f4.tag': '用量统计',
+      'l.f4.title': 'token 和费用，按 agent、按天',
+      'l.f4.body':
+        '看清楚哪个 agent 什么时候烧了多少。数字读自本地会话文件，什么都不外发。',
+      'l.f5.tag': '飞书通道',
+      'l.f5.title': '审批推到手机，人在哪都行',
+      'l.f5.body':
+        'agent 停在权限确认上时，飞书把那张带着真实问题的卡片推过来。手机上点一下放行 —— 吃饭时、沙发上、离开电脑都行。',
+      'l.truth.title': '它的边界画在哪',
+      'l.truth1.title': '从不读你的终端',
+      'l.truth1.body':
+        '状态来自结构化事件 —— hooks、SSE、RPC、transcript —— 从不解析 TUI。CLI 保留自己的界面，ASC 补的是外围那一层。',
+      'l.truth2.title': '能力有多少说多少',
+      'l.truth2.body':
+        '每个 agent 能上报的深度不同。ASC 在源码里声明各家能看见什么、看不见什么，拿不准就标低置信度，而不是猜。',
+      'l.truth3.title': '未签名，但有哈希，可审查',
+      'l.truth3.body':
+        '构建未签名；每个 Release 公布 SHA-256，跑什么自己核得清。整个产品在 GitHub 上，Apache-2.0。',
+      'l.dl.title': '下载',
+      'l.dl.lede':
+        'v1.0.3，Windows、Linux、macOS。解压即用，它会自己找到机器上已有的 agent —— 首次扫描几秒钟，什么都不离开你的电脑。',
+      'l.dl.cta': '获取最新版本',
+      'l.dl.src': '看源码',
+      'l.foot.upstream':
+        '早期原型源自 UniRound-Tec/hrack（Apache-2.0）；Agent Session Center 是独立维护的硬分叉，见 NOTICE。',
+      'l.foot.demo': '截图为真实界面；模拟器页面的数据是编的。',
+      'l.foot.line':
+        'Agent Session Center · Apache-2.0 · 本站是静态页面，不发起任何网络请求。',
+
+      'nav.home': '首页',
 
       'badge.fake': '全部为假数据',
 
@@ -304,10 +441,17 @@
 
     var pack = STRINGS[current]
     document.documentElement.setAttribute('lang', current === 'zh' ? 'zh-CN' : 'en')
-    document.title = t('doc.title')
+    /* The landing page and the simulator page ship different titles, so the key is
+       declared on <html data-doc-title-key> and falls back to the simulator's. */
+    document.title = t(document.documentElement.getAttribute('data-doc-title-key') || 'doc.title')
 
     var description = document.querySelector('meta[name="description"]')
-    if (description) description.setAttribute('content', t('doc.description'))
+    if (description) {
+      description.setAttribute(
+        'content',
+        t(document.documentElement.getAttribute('data-doc-desc-key') || 'doc.description')
+      )
+    }
 
     var nodes = document.querySelectorAll('[data-i18n]')
     for (var index = 0; index < nodes.length; index += 1) {

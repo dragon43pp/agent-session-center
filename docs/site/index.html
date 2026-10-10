@@ -1,15 +1,15 @@
 <!doctype html>
-<html lang="en" data-default-lang="en">
+<html lang="en" data-default-lang="en" data-doc-title-key="l.doc.title" data-doc-desc-key="l.doc.description">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Agent Session Center — interactive demo</title>
-<meta name="description" content="An interactive, entirely fabricated demo of Agent Session Center: watch an agent event become a session status, and watch one session ask for you.">
+<title>Agent Session Center — one home for every coding agent</title>
+<meta name="description" content="Agent Session Center gathers the sessions of 8 AI coding agents — Claude Code, Codex CLI, OpenCode, Grok Build, Kimi Code, Pi, Antigravity and WorkBuddy — into one desktop app: browse, search, resume, and approve on your phone through Feishu.">
 <meta name="color-scheme" content="dark light">
 <link rel="stylesheet" href="./assets/style.css">
 <link rel="icon" href="./assets/mark.svg" type="image/svg+xml">
 </head>
-<body>
+<body class="lp">
 
 <header class="topbar">
   <a class="brand" href="#top">
@@ -17,155 +17,171 @@
     <span class="brand-name">Agent Session Center</span>
   </a>
   <div class="topbar-right">
-    <span class="chip chip-flag" data-i18n="badge.fake">Fabricated data</span>
+    <nav class="lp-nav" aria-label="Sections">
+      <a href="./simulator.html" data-i18n="l.nav.demo">Live demo</a>
+      <a href="https://github.com/fatedawn/agent-session-center" rel="noopener">GitHub</a>
+    </nav>
     <div class="lang" role="group" aria-label="Language">
       <button type="button" data-lang="en" class="lang-btn">EN</button>
       <button type="button" data-lang="zh" class="lang-btn">中文</button>
     </div>
-    <a class="chip chip-link" href="https://github.com/fatedawn/agent-session-center" rel="noopener">GitHub</a>
+    <a class="btn btn-primary btn-sm" href="https://github.com/fatedawn/agent-session-center/releases/latest" rel="noopener" data-i18n="l.nav.download">Download</a>
   </div>
 </header>
 
 <main id="top">
 
-  <section class="hero">
-    <p class="kicker" data-i18n="hero.kicker">Interactive demo</p>
-    <h1 data-i18n="hero.title">Six sessions. One of them needs you.</h1>
-    <p class="lede" data-i18n="hero.lede">
-      Everything on this page is invented — the sessions, the paths, the token counts, the
-      timestamps. What is not invented is the mechanism: press play and watch a single
-      agent event travel through the four stages that turn it into a status, and watch one
-      session begin asking for you.
+  <!-- ─────────────────────────── hero ─────────────────────────── -->
+
+  <section class="lp-hero">
+    <p class="kicker" data-i18n="l.hero.kicker">Open source · Apache-2.0 · Windows / Linux / macOS</p>
+    <h1 data-i18n="l.hero.title">Eight coding agents. One place where every session is findable.</h1>
+    <p class="lede" data-i18n="l.hero.lede">
+      Every CLI writes its sessions somewhere else. Agent Session Center puts them in one
+      desktop app: browse and search history, resume with one click, see tokens and cost —
+      and when an agent stalls on a permission prompt, Feishu pushes it to your phone.
     </p>
-    <p class="hero-note" data-i18n="hero.note">
-      Coral means one thing only: this session is blocked on your confirmation. It is the
-      only colour in the product that glows.
+    <p class="cta-row">
+      <a class="btn btn-primary" href="https://github.com/fatedawn/agent-session-center/releases/latest" rel="noopener" data-i18n="l.hero.cta.download">Download v1.0.3</a>
+      <a class="btn" href="./simulator.html" data-i18n="l.hero.cta.demo">Try the live demo</a>
     </p>
+    <p class="hero-note" data-i18n="l.hero.note">
+      The downloads are unsigned; the release page publishes SHA-256 for every asset.
+      Your terminals stay exactly as they are — ASC reads event streams, not your screen.
+    </p>
+    <figure class="lp-shot lp-shot-hero">
+      <!-- The real interface, recorded. 46 seconds, no sound, looping: the actual
+           product flow (history → search → resume → usage → Feishu), not a mock. -->
+      <video autoplay muted loop playsinline preload="metadata" poster="./assets/shots/01-home.png">
+        <source src="./assets/demo.mp4" type="video/mp4">
+      </video>
+    </figure>
   </section>
 
-  <section class="sim" aria-labelledby="sim-heading">
-    <div class="sim-head">
-      <h2 id="sim-heading" data-i18n="sim.title">The pipeline, one step at a time</h2>
-      <p class="sim-step"><span data-i18n="sim.step">Step</span>
-        <span class="mono" id="step-counter">0 / 8</span></p>
+  <!-- ─────────────────────────── pain points ─────────────────────────── -->
+
+  <section class="blocks" aria-labelledby="pain-heading">
+    <h2 id="pain-heading" data-i18n="l.pain.title">Does this sound familiar?</h2>
+    <div class="lp-cards">
+      <article class="lp-card">
+        <h3 data-i18n="l.pain1.title">Which folder was that session in?</h3>
+        <p data-i18n="l.pain1.body"></p>
+      </article>
+      <article class="lp-card">
+        <h3 data-i18n="l.pain2.title">Where did I leave off?</h3>
+        <p data-i18n="l.pain2.body"></p>
+      </article>
+      <article class="lp-card">
+        <h3 data-i18n="l.pain3.title">You walk away, the agent stalls.</h3>
+        <p data-i18n="l.pain3.body"></p>
+      </article>
     </div>
+  </section>
 
-    <div class="sim-grid">
+  <!-- ─────────────────────────── features ─────────────────────────── -->
 
-      <div class="panel panel-sessions">
-        <p class="panel-label" data-i18n="sim.sessions">Sessions</p>
-        <ul class="sessions" id="sessions"></ul>
+  <section class="blocks" aria-labelledby="feat-heading">
+    <h2 id="feat-heading" data-i18n="l.feat.title">What it does</h2>
+
+    <article class="lp-block">
+      <div class="lp-block-text">
+        <p class="lp-tag" data-i18n="l.f1.tag">Session history</p>
+        <h3 data-i18n="l.f1.title">Every session, from every agent, in one list</h3>
+        <p class="lp-body" data-i18n="l.f1.body"></p>
       </div>
+      <figure class="lp-block-shot">
+        <img loading="lazy" src="./assets/shots/02-session-history.png" width="1440" height="900" alt="">
+      </figure>
+    </article>
 
-      <div class="panel panel-pipe">
-        <p class="panel-label" data-i18n="sim.pipeline">Event pipeline</p>
-
-        <div class="sources" id="sources"></div>
-        <p class="sources-note" data-i18n="sim.sourcesNote">
-          Six of the eight event sources the contract allows.
-        </p>
-        <div class="wire-down" aria-hidden="true"></div>
-
-        <ol class="stages" id="stages">
-          <li class="stage" data-stage="normalizer">
-            <span class="stage-name mono">normalizer</span>
-            <span class="stage-body" data-i18n="stage.normalizer">native protocol → AgentEvent</span>
-          </li>
-          <li class="stage" data-stage="queue">
-            <span class="stage-name mono">queue</span>
-            <span class="stage-body" data-i18n="stage.queue">ordered by seq, never by clock</span>
-          </li>
-          <li class="stage" data-stage="reducer">
-            <span class="stage-name mono">reducer</span>
-            <span class="stage-body" data-i18n="stage.reducer">correlates tools, approvals, input</span>
-          </li>
-          <li class="stage" data-stage="projector">
-            <span class="stage-name mono">projector</span>
-            <span class="stage-body" data-i18n="stage.projector">six states, confidence, capabilities</span>
-          </li>
-        </ol>
-
-        <div class="projection" id="projection">
-          <span class="projection-label" data-i18n="sim.projection">Projection</span>
-          <span class="projection-value mono" id="projection-value">—</span>
-        </div>
-
-        <div class="tally-wrap">
-          <p class="panel-label tally-label" data-i18n="sim.tally">Every session, accounted for</p>
-          <div class="tally" id="tally"></div>
-        </div>
+    <article class="lp-block lp-flip">
+      <div class="lp-block-text">
+        <p class="lp-tag" data-i18n="l.f2.tag">AI search</p>
+        <h3 data-i18n="l.f2.title">Ask in plain language, get the session back</h3>
+        <p class="lp-body" data-i18n="l.f2.body"></p>
       </div>
-    </div>
+      <figure class="lp-block-shot">
+        <img loading="lazy" src="./assets/shots/03-ai-search.png" width="1440" height="900" alt="">
+      </figure>
+    </article>
 
-    <div class="controls">
-      <button type="button" id="btn-play" class="btn btn-primary" data-i18n="ctl.play">Play</button>
-      <button type="button" id="btn-step" class="btn" data-i18n="ctl.step">Step</button>
-      <button type="button" id="btn-reset" class="btn" data-i18n="ctl.reset">Reset</button>
-      <p class="narrator" id="narrator" aria-live="polite"></p>
-    </div>
-
-    <div class="panel panel-log">
-      <div class="log-head">
-        <p class="panel-label" data-i18n="sim.log">Event log</p>
-        <p class="log-hint" data-i18n="sim.logHint">Every line is fabricated, but the shape is the real contract.</p>
+    <article class="lp-block">
+      <div class="lp-block-text">
+        <p class="lp-tag" data-i18n="l.f3.tag">Resume</p>
+        <h3 data-i18n="l.f3.title">One click back into the conversation</h3>
+        <p class="lp-body" data-i18n="l.f3.body"></p>
       </div>
-      <pre class="log mono" id="log" aria-live="polite" aria-relevant="additions"></pre>
+      <figure class="lp-block-shot">
+        <img loading="lazy" src="./assets/shots/04-resume.png" width="1440" height="900" alt="">
+      </figure>
+    </article>
+
+    <article class="lp-block lp-flip">
+      <div class="lp-block-text">
+        <p class="lp-tag" data-i18n="l.f4.tag">Usage</p>
+        <h3 data-i18n="l.f4.title">Tokens and cost, per agent, per day</h3>
+        <p class="lp-body" data-i18n="l.f4.body"></p>
+      </div>
+      <figure class="lp-block-shot">
+        <img loading="lazy" src="./assets/shots/05-usage.png" width="1440" height="900" alt="">
+      </figure>
+    </article>
+
+    <article class="lp-block">
+      <div class="lp-block-text">
+        <p class="lp-tag" data-i18n="l.f5.tag">Feishu</p>
+        <h3 data-i18n="l.f5.title">Approvals on your phone, from anywhere</h3>
+        <p class="lp-body" data-i18n="l.f5.body"></p>
+      </div>
+      <figure class="lp-block-shot">
+        <img loading="lazy" src="./assets/shots/06-feishu.png" width="1440" height="900" alt="">
+      </figure>
+    </article>
+  </section>
+
+  <!-- ─────────────────────────── honest boundaries ─────────────────────────── -->
+
+  <section class="blocks" aria-labelledby="truth-heading">
+    <h2 id="truth-heading" data-i18n="l.truth.title">Where it draws the line</h2>
+    <div class="lp-cards">
+      <article class="lp-card">
+        <h3 data-i18n="l.truth1.title">It never reads your terminal</h3>
+        <p data-i18n="l.truth1.body"></p>
+      </article>
+      <article class="lp-card">
+        <h3 data-i18n="l.truth2.title">It reports capability honestly</h3>
+        <p data-i18n="l.truth2.body"></p>
+      </article>
+      <article class="lp-card">
+        <h3 data-i18n="l.truth3.title">Unsigned, hashed, inspectable</h3>
+        <p data-i18n="l.truth3.body"></p>
+      </article>
     </div>
   </section>
 
-  <section class="blocks" aria-labelledby="legend-heading">
-    <h2 id="legend-heading" data-i18n="legend.title">Six states, one of them glows</h2>
-    <p class="section-lede" data-i18n="legend.lede">
-      The status vocabulary is exactly these six values, and they are a projection of
-      events rather than a reading of the terminal. When the observer cannot be sure, it
-      says so with a confidence flag instead of inventing a seventh state.
+  <!-- ─────────────────────────── download ─────────────────────────── -->
+
+  <section class="blocks lp-download" aria-labelledby="dl-heading">
+    <h2 id="dl-heading" data-i18n="l.dl.title">Download</h2>
+    <p class="section-lede" data-i18n="l.dl.lede">
+      v1.0.3 for Windows, Linux and macOS. Unzip, run, and it finds the agents already on
+      your machine — the first scan takes seconds, and nothing leaves your computer.
     </p>
-    <ul class="legend" id="legend"></ul>
-    <p class="legend-note" data-i18n="legend.note"></p>
-  </section>
-
-  <section class="blocks" aria-labelledby="caps-heading">
-    <h2 id="caps-heading" data-i18n="caps.title">What each agent can actually report</h2>
-    <p class="section-lede" data-i18n="caps.lede">
-      Harnesses are not equally observable. These levels are not demo data — they are the
-      capabilities the adapters declare in the source, for the session in front of you.
+    <p class="cta-row lp-download-cta">
+      <a class="btn btn-primary" href="https://github.com/fatedawn/agent-session-center/releases/latest" rel="noopener" data-i18n="l.dl.cta">Get the latest release</a>
+      <a class="btn" href="https://github.com/fatedawn/agent-session-center" rel="noopener" data-i18n="l.dl.src">Read the source</a>
     </p>
-    <div class="table-wrap">
-      <table class="caps" id="caps"></table>
-    </div>
-    <p class="caps-note" data-i18n="caps.headNote"></p>
-    <p class="caps-note" data-i18n="caps.note"></p>
-  </section>
-
-  <section class="blocks blocks-split">
-    <div>
-      <h2 data-i18n="truth.title">What is real here, and what is not</h2>
-      <ul class="truth">
-        <li><strong data-i18n="truth.realLabel">Real:</strong> <span data-i18n="truth.real">the four pipeline stages, the six states, the event fields in the log (<span class="mono">seq</span>, <span class="mono">nativeId</span>, <span class="mono">observerHealth</span>, <span class="mono">statusConfidence</span>), the capability levels, and the degradation behaviour when an observer dies.</span></li>
-        <li><strong data-i18n="truth.fakeLabel">Fabricated:</strong> <span data-i18n="truth.fake">every session name, workspace path, timestamp, token count and cost. Nothing on this page contacted a CLI, and there is no backend.</span></li>
-        <li><strong data-i18n="truth.noneLabel">Not shown:</strong> <span data-i18n="truth.none">the terminal itself. In the real application the CLI keeps its native TUI in the main pane — the whole point is that ASC never parses those bytes.</span></li>
-      </ul>
-    </div>
-    <div>
-      <h2 data-i18n="try.title">Try it for real</h2>
-      <p class="section-lede" data-i18n="try.lede">
-        This page is a demonstration, not the application. The desktop app is an unsigned
-        download for Windows, Linux and macOS, and this repository is where it is built.
-      </p>
-      <p class="cta-row">
-        <a class="btn btn-primary" href="https://github.com/fatedawn/agent-session-center/releases/latest" rel="noopener" data-i18n="try.download">Download the latest release</a>
-        <a class="btn" href="https://github.com/fatedawn/agent-session-center" rel="noopener" data-i18n="try.repo">Read the source</a>
-      </p>
-    </div>
   </section>
 
 </main>
 
 <footer class="foot">
-  <p data-i18n="foot.line">Agent Session Center · Apache-2.0 · this demo is a static page with no network calls.</p>
+  <p data-i18n="l.foot.upstream"></p>
+  <p data-i18n="l.foot.demo"></p>
+  <p data-i18n="l.foot.line"></p>
 </footer>
 
 <script src="./assets/i18n.js"></script>
-<script src="./assets/app.js"></script>
+<script src="./assets/landing.js"></script>
 </body>
 </html>

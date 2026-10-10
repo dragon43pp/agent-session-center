@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en" data-default-lang="en" data-doc-title-key="doc.title" data-doc-desc-key="doc.description">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Session Center — interactive demo</title>
+<meta name="description" content="An interactive, entirely fabricated demo of Agent Session Center: watch an agent event become a session status, and watch one session ask for you.">
+<meta name="color-scheme" content="dark light">
+<link rel="stylesheet" href="./assets/style.css">
+<link rel="icon" href="./assets/mark.svg" type="image/svg+xml">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="./index.html">
+    <img src="./assets/mark.svg" alt="" width="26" height="26">
+    <span class="brand-name">Agent Session Center</span>
+  </a>
+  <div class="topbar-right">
+    <span class="chip chip-flag" data-i18n="badge.fake">Fabricated data</span>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="en" class="lang-btn">EN</button>
+      <button type="button" data-lang="zh" class="lang-btn">中文</button>
+    </div>
+    <a class="chip chip-link" href="https://github.com/fatedawn/agent-session-center" rel="noopener">GitHub</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <p class="kicker" data-i18n="hero.kicker">Interactive demo</p>
+    <h1 data-i18n="hero.title">Six sessions. One of them needs you.</h1>
+    <p class="lede" data-i18n="hero.lede">
+      Everything on this page is invented — the sessions, the paths, the token counts, the
+      timestamps. What is not invented is the mechanism: press play and watch a single
+      agent event travel through the four stages that turn it into a status, and watch one
+      session begin asking for you.
+    </p>
+    <p class="hero-note" data-i18n="hero.note">
+      Coral means one thing only: this session is blocked on your confirmation. It is the
+      only colour in the product that glows.
+    </p>
+  </section>
+
+  <section class="sim" aria-labelledby="sim-heading">
+    <div class="sim-head">
+      <h2 id="sim-heading" data-i18n="sim.title">The pipeline, one step at a time</h2>
+      <p class="sim-step"><span data-i18n="sim.step">Step</span>
+        <span class="mono" id="step-counter">0 / 8</span></p>
+    </div>
+
+    <div class="sim-grid">
+
+      <div class="panel panel-sessions">
+        <p class="panel-label" data-i18n="sim.sessions">Sessions</p>
+        <ul class="sessions" id="sessions"></ul>
+      </div>
+
+      <div class="panel panel-pipe">
+        <p class="panel-label" data-i18n="sim.pipeline">Event pipeline</p>
+
+        <div class="sources" id="sources"></div>
+        <p class="sources-note" data-i18n="sim.sourcesNote">
+          Six of the eight event sources the contract allows.
+        </p>
+        <div class="wire-down" aria-hidden="true"></div>
+
+        <ol class="stages" id="stages">
+          <li class="stage" data-stage="normalizer">
+            <span class="stage-name mono">normalizer</span>
+            <span class="stage-body" data-i18n="stage.normalizer">native protocol → AgentEvent</span>
+          </li>
+          <li class="stage" data-stage="queue">
+            <span class="stage-name mono">queue</span>
+            <span class="stage-body" data-i18n="stage.queue">ordered by seq, never by clock</span>
+          </li>
+          <li class="stage" data-stage="reducer">
+            <span class="stage-name mono">reducer</span>
+            <span class="stage-body" data-i18n="stage.reducer">correlates tools, approvals, input</span>
+          </li>
+          <li class="stage" data-stage="projector">
+            <span class="stage-name mono">projector</span>
+            <span class="stage-body" data-i18n="stage.projector">six states, confidence, capabilities</span>
+          </li>
+        </ol>
+
+        <div class="projection" id="projection">
+          <span class="projection-label" data-i18n="sim.projection">Projection</span>
+          <span class="projection-value mono" id="projection-value">—</span>
+        </div>
+
+        <div class="tally-wrap">
+          <p class="panel-label tally-label" data-i18n="sim.tally">Every session, accounted for</p>
+          <div class="tally" id="tally"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button type="button" id="btn-play" class="btn btn-primary" data-i18n="ctl.play">Play</button>
+      <button type="button" id="btn-step" class="btn" data-i18n="ctl.step">Step</button>
+      <button type="button" id="btn-reset" class="btn" data-i18n="ctl.reset">Reset</button>
+      <p class="narrator" id="narrator" aria-live="polite"></p>
+    </div>
+
+    <div class="panel panel-log">
+      <div class="log-head">
+        <p class="panel-label" data-i18n="sim.log">Event log</p>
+        <p class="log-hint" data-i18n="sim.logHint">Every line is fabricated, but the shape is the real contract.</p>
+      </div>
+      <pre class="log mono" id="log" aria-live="polite" aria-relevant="additions"></pre>
+    </div>
+  </section>
+
+  <section class="blocks" aria-labelledby="legend-heading">
+    <h2 id="legend-heading" data-i18n="legend.title">Six states, one of them glows</h2>
+    <p class="section-lede" data-i18n="legend.lede">
+      The status vocabulary is exactly these six values, and they are a projection of
+      events rather than a reading of the terminal. When the observer cannot be sure, it
+      says so with a confidence flag instead of inventing a seventh state.
+    </p>
+    <ul class="legend" id="legend"></ul>
+    <p class="legend-note" data-i18n="legend.note"></p>
+  </section>
+
+  <section class="blocks" aria-labelledby="caps-heading">
+    <h2 id="caps-heading" data-i18n="caps.title">What each agent can actually report</h2>
+    <p class="section-lede" data-i18n="caps.lede">
+      Harnesses are not equally observable. These levels are not demo data — they are the
+      capabilities the adapters declare in the source, for the session in front of you.
+    </p>
+    <div class="table-wrap">
+      <table class="caps" id="caps"></table>
+    </div>
+    <p class="caps-note" data-i18n="caps.headNote"></p>
+    <p class="caps-note" data-i18n="caps.note"></p>
+  </section>
+
+  <section class="blocks blocks-split">
+    <div>
+      <h2 data-i18n="truth.title">What is real here, and what is not</h2>
+      <ul class="truth">
+        <li><strong data-i18n="truth.realLabel">Real:</strong> <span data-i18n="truth.real">the four pipeline stages, the six states, the event fields in the log (<span class="mono">seq</span>, <span class="mono">nativeId</span>, <span class="mono">observerHealth</span>, <span class="mono">statusConfidence</span>), the capability levels, and the degradation behaviour when an observer dies.</span></li>
+        <li><strong data-i18n="truth.fakeLabel">Fabricated:</strong> <span data-i18n="truth.fake">every session name, workspace path, timestamp, token count and cost. Nothing on this page contacted a CLI, and there is no backend.</span></li>
+        <li><strong data-i18n="truth.noneLabel">Not shown:</strong> <span data-i18n="truth.none">the terminal itself. In the real application the CLI keeps its native TUI in the main pane — the whole point is that ASC never parses those bytes.</span></li>
+      </ul>
+    </div>
+    <div>
+      <h2 data-i18n="try.title">Try it for real</h2>
+      <p class="section-lede" data-i18n="try.lede">
+        This page is a demonstration, not the application. The desktop app is an unsigned
+        download for Windows, Linux and macOS, and this repository is where it is built.
+      </p>
+      <p class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/fatedawn/agent-session-center/releases/latest" rel="noopener" data-i18n="try.download">Download the latest release</a>
+        <a class="btn" href="https://github.com/fatedawn/agent-session-center" rel="noopener" data-i18n="try.repo">Read the source</a>
+        <a class="btn" href="./index.html" data-i18n="nav.home">Home</a>
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <p data-i18n="foot.line">Agent Session Center · Apache-2.0 · this demo is a static page with no network calls.</p>
+</footer>
+
+<script src="./assets/i18n.js"></script>
+<script src="./assets/app.js"></script>
+</body>
+</html>
