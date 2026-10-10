@@ -180,6 +180,12 @@ Every release publishes a SHA-256 checksum beside each installable file; see [Ve
 
 **No downloadable build is code-signed.** Windows shows a SmartScreen prompt on first launch, macOS blocks the app until you allow it, and Linux packages need no signature at all. None of that is an oversight — see the [code signing policy](#code-signing-policy).
 
+### Windows: where it installs
+
+The installer defaults to **per-user**: without touching anything it installs to `%LOCALAPPDATA%\Programs\Agent Session Center`, and you will not find it under `C:\Program Files`. To install into Program Files instead, pick **Install for all users** on the installer's first page (that choice asks for administrator approval).
+
+The Start-menu and desktop shortcuts are named **ASC (Agent Session Center)** — typing `asc` into the Start menu finds it.
+
 ### macOS: getting past Gatekeeper
 
 macOS builds are **unsigned and not notarized**, so the first launch is blocked. How you allow it depends on your version:
@@ -197,6 +203,24 @@ xattr -d com.apple.quarantine "/Applications/Agent Session Center.app"
 That touches only the bundle you name — it is not a system-wide change and it does not alter any security setting. Do it after checking the published SHA-256, not before.
 
 Removing the prompt entirely requires notarization, which requires a paid Apple Developer Program membership. This project does not have one, so macOS releases stay unsigned by design rather than by omission.
+
+### If the window never appears
+
+If the app flashes and exits on launch, the GPU process most likely cannot start. This happens on some machines with the virtual displays that remote-control software installs, inside VMs, or with broken GPU drivers: Chromium retries the GPU process a few times, gives up, and exits before any window is created.
+
+Two things to try:
+
+1. **Start it once with the GPU sandbox disabled:**
+
+   ```powershell
+   & "$env:LOCALAPPDATA\Programs\Agent Session Center\Agent Session Center.exe" --no-sandbox
+   ```
+
+   (Adjust the path if you installed elsewhere.) If the app opens this way, a virtual-display driver is the likely trigger.
+
+2. **Read the diagnostic log** at `%APPDATA%\Agent Session Center\logs\asc-diagnostic.jsonl`. GPU-process failures are recorded there with their reason and exit code; the same log is surfaced in Settings.
+
+Since v1.0.2 the app detects this condition itself and shows a dialog with these instructions instead of exiting silently.
 
 ### First run
 

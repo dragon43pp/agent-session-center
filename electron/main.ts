@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, dialog } from 'electron'
 import { cpSync, existsSync, mkdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { createWindow } from './window'
@@ -133,13 +133,38 @@ if (cliArgv) {
 
 const isPrimaryInstance = cliArgv ? false : app.requestSingleInstanceLock()
 
-const diagnosticLog = new DiagnosticLog(
-  join(app.getPath('userData'), 'logs', 'asc-diagnostic.jsonl')
-)
+const diagnosticLogPath = join(app.getPath('userData'), 'logs', 'asc-diagnostic.jsonl')
+const diagnosticLog = new DiagnosticLog(diagnosticLogPath)
 if (isPrimaryInstance) {
   diagnosticLog.installConsoleCapture()
   app.on('web-contents-created', (_event, contents) => {
     diagnosticLog.captureWebContents(contents)
+  })
+  // GPU 进程起不来时，Chromium 的行为是重试几次后打出
+  // 「GPU process isn't usable. Goodbye.」并整体退出——窗口从未出现过，
+  // 用户只看到「闪一下就没了」。`render-process-gone` 管不到 GPU 进程，
+  // `child-process-gone` 是唯一能拿到 reason / exitCode 的地方，先写日志再弹窗。
+  // 弹窗只给自救命令（带 --no-sandbox 重启），不自动重启：替所有用户静默关掉
+  // GPU 沙箱不是这个开关该有的默认值，必须是用户自己按命令执行的决定。
+  let gpuGoneCount = 0
+  let gpuDialogShown = false
+  app.on('child-process-gone', (_event, details) => {
+    if (details.type !== 'GPU') return
+    gpuGoneCount += 1
+    diagnosticLog.append(
+      'error',
+      'main',
+      `GPU process gone #${gpuGoneCount}: reason=${details.reason} exitCode=${details.exitCode}`
+    )
+    if (gpuDialogShown || gpuGoneCount < 2) return
+    gpuDialogShown = true
+    const isZh = app.getLocale().startsWith('zh')
+    dialog.showErrorBox(
+      isZh ? 'Agent Session Center 无法启动' : 'Agent Session Center cannot start',
+      isZh
+        ? `图形进程（GPU）反复启动失败，应用无法继续运行。远程控制软件的虚拟显示器、虚拟机或缺少显卡驱动都可能触发这个问题。\n\n请用下面的命令重新启动（本次运行会关闭 GPU 沙箱）：\n\n"${process.execPath}" --no-sandbox\n\n崩溃详情已写入诊断日志：\n${diagnosticLogPath}`
+        : `The GPU process failed to start repeatedly, so the app cannot run. Virtual displays from remote-control software, VMs, or missing GPU drivers can all trigger this.\n\nStart it once with the GPU sandbox disabled:\n\n"${process.execPath}" --no-sandbox\n\nThe crash details were written to the diagnostic log:\n${diagnosticLogPath}`
+    )
   })
 }
 

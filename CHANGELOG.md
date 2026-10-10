@@ -6,6 +6,21 @@
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-10-10
+
+### Fixed
+
+- **A machine where the GPU process cannot start no longer exits silently.** On affected machines (virtual displays from remote-control software, VMs, broken GPU drivers), Chromium used to print `GPU process isn't usable. Goodbye.` and exit before any window appeared — the app "flashed and vanished". The main process now listens for `child-process-gone`, records the reason and exit code into the diagnostic log (`%APPDATA%\Agent Session Center\logs\asc-diagnostic.jsonl`), and after repeated failures shows a dialog with the exact command to relaunch once with `--no-sandbox`. The app never disables the GPU sandbox on its own; that stays the user's call.
+
+### Changed
+
+- **Windows shortcuts are now named `ASC (Agent Session Center)`**, so typing `asc` into the Start menu finds the app. The installer reads the previous shortcut name from its registry entry and renames existing shortcuts in place during the upgrade, so nothing is duplicated.
+
+### Documented
+
+- **Where the Windows installer actually puts the app**: `%LOCALAPPDATA%\Programs\Agent Session Center` by default (per-user), plus how to choose Program Files instead.
+- **A "the window never appears" troubleshooting section** in both READMEs, covering the `--no-sandbox` workaround and the diagnostic log path.
+
 ## [1.0.1] - 2026-10-07
 
 ### Added

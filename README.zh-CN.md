@@ -181,6 +181,12 @@ Agent 提供可恢复会话时，ASC 支持一键在原工作目录恢复；原�
 
 **所有可下载的构建都没有代码签名。** Windows 首次启动会走 SmartScreen 提示，macOS 会直接拦下直到你放行，Linux 包则本来就不需要签名。这几件事都不是疏忽 —— 见 [代码签名政策](#代码签名政策)。
 
+### Windows：装到哪了
+
+安装包默认**按用户安装**：什么都不改的话，程序装在 `%LOCALAPPDATA%\Programs\Agent Session Center`，**不在** `C:\Program Files` 下。想装进 Program Files，请在安装向导第一页选**为所有用户安装**（这一项会请求管理员授权）。
+
+开始菜单和桌面快捷方式的名称是 **ASC (Agent Session Center)** —— 开始菜单里敲 `asc` 就能搜到。
+
 ### macOS：怎么过 Gatekeeper
 
 macOS 构建**未签名、也未公证**，所以第一次启动会被系统拦下。放行方式取决于系统版本：
@@ -198,6 +204,24 @@ xattr -d com.apple.quarantine "/Applications/Agent Session Center.app"
 它只作用于你指定的这一个 bundle —— 不是系统级改动，也不会动任何安全设置。请在核对过公布的 SHA-256 **之后**再执行，而不是之前。
 
 彻底消除这个提示需要公证（notarization），而公证需要付费的 Apple Developer Program 会员。本项目没有，所以 macOS 版本是**有意**保持未签名，不是漏了这一步。
+
+### 窗口压根没出现
+
+如果应用是「闪一下就没了」，多半是 GPU 进程起不来。装了远程控制软件虚拟显示器、跑在虚拟机里、或显卡驱动有问题的机器都可能触发：Chromium 重试几次 GPU 进程后就放弃并退出，窗口根本来不及创建。
+
+可以按顺序试两件事：
+
+1. **关闭 GPU 沙箱启动一次：**
+
+   ```powershell
+   & "$env:LOCALAPPDATA\Programs\Agent Session Center\Agent Session Center.exe" --no-sandbox
+   ```
+
+   （装在别的目录就换成那个路径。）这样能打开的话，触发源大概率是虚拟显示器驱动。
+
+2. **看诊断日志**：`%APPDATA%\Agent Session Center\logs\asc-diagnostic.jsonl`。GPU 进程的崩溃会带着 reason 和 exitCode 记在里面；应用内「设置」里也能看到同一份日志。
+
+从 v1.0.2 起，应用自己会检测到这种情况，弹窗给出上面的指引，而不是静默退出。
 
 ### 第一次启动
 
